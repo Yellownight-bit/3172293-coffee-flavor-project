@@ -1,2 +1,2 @@
-export { default as UserRegisterForm } from "../auth/UserRegisterForm";
-export { default as UserRegisterForm2 } from "./components/UserRegisterForm2"
+export { default as UserRegisterForm } from "./components/UserRegisterForm";
+export { default as UserRegisterLogin } from "../auth/UserRegisterLogin"

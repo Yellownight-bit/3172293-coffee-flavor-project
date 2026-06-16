@@ -1,17 +1,16 @@
 // UserRegisterForm2 componente para modificar el URF
 
-import { useState, } from "react"
-import { Input, Checkbox, Button} from "@/shared";
+import { useState } from "react"
+import { Input, Checkbox, Button } from "@/shared";
 // import { getDocumentTypes } from "@/services/selectService";
 // import { useNavigate } from "react-router-dom";
-import { userSchema } from "../schemas/userSchema"
+import { userSchema } from "../users/schemas/userSchema"
 
 export default function UserRegisterForm (){
 
     // const navigate = useNavigate();
 
     //Estado
-    
 
     //Estado del error
     const [errors, setErrors] = useState({})
@@ -67,7 +66,7 @@ export default function UserRegisterForm (){
 
     //Validamos los datos del formulario contra el esquema Zod
     //safeParse No lanza excepción, retorna un objeto controlado
-    const result = userSchema. safeParse(formData);
+    const result = userSchema.safeParse(formData);
 
     //Verificar en consola si el esquema esta funcionando correctamente
     //console.log(result)

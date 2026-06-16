@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
 import authBg from "@/assets/images/bg-1.png";
-import { UserRegisterForm2 } from "../../features/users";
+import { UserRegisterLogin } from "../../features/users";
 
-export default function DashboardLayout() {
+export default function AuthLayout() {
   return (
     <>
       <div className="min-h-screen grid grid-cols-2">
@@ -18,7 +18,7 @@ export default function DashboardLayout() {
         <div className="bg-orange-50 flex justify-center items-center">
           <main>
 
-            <UserRegisterForm2 />
+            <UserRegisterLogin />
 
             <Outlet />
 

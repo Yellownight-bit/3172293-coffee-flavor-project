@@ -1,0 +1,18 @@
+[
+    {
+        "id":"Sodas",
+        "label":"Gaseosa"
+    },
+    {
+        "id":"Alimento",
+        "label":"Hamburguesas"
+    },
+    {
+        "id":"Salsas",
+        "label":"Salsa de mayonesa"
+    },
+    {
+        "id":"jugos",
+        "label":"Jugo de limonada"
+    }
+]

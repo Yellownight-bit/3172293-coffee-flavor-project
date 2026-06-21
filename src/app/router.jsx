@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AuthLayout, DashboardLayout } from "@/shared";
 import CreateUser  from "@/features/create/CreateUser";
 import CreateSupplier from "@/features/create/CreateSupplier"
+import CreateInventory from "@/features/create/CreateInventory"
 
 const router = createBrowserRouter ([ 
     {
@@ -44,6 +45,15 @@ const router = createBrowserRouter ([
             // { path: "/dashboard/userList", element: <h1>Hello3</h1> },
         ],
     },
+    {
+    path: "/createinventory",
+    element: <CreateInventory />,
+    children: [
+            {
+            index: true,
+            },
+        ],
+    }
 ]);
 
 export default router;

@@ -35,4 +35,6 @@ export const userSchema = z.object({
     isSuperUser: z.boolean(),
 
     // userImage: fileSchema.pick({ file: true }).shape.files.optional(),
+
+
 })

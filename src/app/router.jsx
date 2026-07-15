@@ -3,6 +3,8 @@ import { AuthLayout, DashboardLayout } from "@/shared";
 import CreateUser  from "@/features/create/CreateUser";
 import CreateSupplier from "@/features/create/CreateSupplier"
 import CreateInventory from "@/features/create/CreateInventory"
+import { UserRegisterForm } from "../features/users";
+import { UserListPage } from "@/features/users";
 
 const router = createBrowserRouter ([ 
     {
@@ -24,7 +26,8 @@ const router = createBrowserRouter ([
     children: [
             { index: true},
             // { path: "/dashboard/auth", element: <h1>Hello2</h1> },
-            // { path: "/dashboard/userList", element: <h1>Hello3</h1> },
+            { path: "/dashboard/userList", element: <UserListPage/> },
+            { path: "/dashboard/userCreate", element: <UserRegisterForm/> },
         ],
     },
     {

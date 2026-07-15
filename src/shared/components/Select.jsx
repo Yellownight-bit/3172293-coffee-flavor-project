@@ -37,12 +37,11 @@ export default function Select({
                     h-12
                     rounded-md
                     border
-                    border-gray-400
                     px-4
-                    bg-gray-100
 
+                    hover:border
                     hover:border-2
-                    hover:bg-[var(--gray-50)]
+                    hover:border-focus-border
                     "
             >
 

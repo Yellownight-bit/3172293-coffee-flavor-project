@@ -29,7 +29,7 @@ console.log("Campo limpiado");
 };
 
 return (
-    <nav className="w-full bg-transparent border-b-2">
+    <nav className="w-full bg-orange-500 border-b-2">
         <div className="mx-auto max-w-7xl px-4">
             <div className="flex h-16 items-center justify-between">
             {/* Logo de marca */}

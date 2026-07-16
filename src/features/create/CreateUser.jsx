@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
 import { userSchema } from "../users/schemas/userSchema";
+import Navbar from "@/shared/layouts/Navbar";
 
 export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
@@ -14,7 +15,7 @@ export default function UserRegisterForm() {
     userPassword: "",
     userImage: [],
     isStaff: false,
-    isActive: true, 
+    isActive: true,
     isSuperUser: false,
   });
 
@@ -26,6 +27,7 @@ export default function UserRegisterForm() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -38,18 +40,22 @@ export default function UserRegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const result = userSchema.safeParse(formData);
 
     if (!result.success) {
       const fieldErrors = {};
+
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+
       setErrors(fieldErrors);
       return;
     }
 
     setErrors({});
+
     try {
       alert("Usuario creado correctamente");
     } catch (error) {
@@ -60,16 +66,14 @@ export default function UserRegisterForm() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
-      
-      {/* Barra superior de color primary 900 que ocupa todo el ancho de la pantalla */}
-      <div className="w-full h-16 bg-[var(--color-primary-900)] shadow-md"></div>
+      {/* Navbar */}
+      <Navbar />
 
-      {/* Contenedor inferior que toma todo el espacio restante y centra el formulario */}
+      {/* Contenido */}
       <div className="flex-1 p-4 flex items-center justify-center">
-        
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
-          
-          <button 
+
+          <button
             type="button"
             className="absolute top-6 left-6 bg-[var(--color-primary-950)] text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
             onClick={() => console.log("Atrás")}
@@ -78,14 +82,21 @@ export default function UserRegisterForm() {
           </button>
 
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
-            <div className="text-2xl text-[var(--color-primary-950)]">👤<span className="font-bold text-xl relative -top-2 -left-1">+</span></div>
-            <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">Registrar usuario</h2>
+            <div className="text-2xl text-[var(--color-primary-950)]">
+              👤
+              <span className="font-bold text-xl relative -top-2 -left-1">
+                +
+              </span>
+            </div>
+
+            <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">
+              Registrar usuario
+            </h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
-              
+
               <div className="space-y-4">
                 <Input
                   label="Nombre completo"
@@ -98,7 +109,7 @@ export default function UserRegisterForm() {
                   error={errors.userName}
                 />
 
-                <Select   
+                <Select
                   label="Tipo de documento"
                   name="userDocumentTypes"
                   value={formData.userDocumentTypes}
@@ -127,7 +138,8 @@ export default function UserRegisterForm() {
                     onClick={handleImageClick}
                     className="h-[42px] relative w-full rounded-md border border-[var(--gray-300)] px-4 text-sm flex items-center justify-center gap-2 hover:bg-[var(--gray-50)] transition"
                   >
-                    <span>↑</span> Subir imagen
+                    <span>↑</span>
+                    Subir imagen
                   </button>
                 </div>
 
@@ -150,11 +162,13 @@ export default function UserRegisterForm() {
                     onChange={handleChange}
                     error={errors.userPhone}
                   />
-                  <button 
-                    type="button" 
+
+                  <button
+                    type="button"
                     className="absolute right-0 -bottom-6 text-xs text-gray-700 flex items-center gap-1 hover:underline"
                   >
-                    <span>+</span> Agregar teléfono
+                    <span>+</span>
+                    Agregar teléfono
                   </button>
                 </div>
               </div>
@@ -179,11 +193,13 @@ export default function UserRegisterForm() {
                     placeholder="Confirmar correo electrónico"
                     onChange={handleChange}
                   />
-                  <button 
-                    type="button" 
+
+                  <button
+                    type="button"
                     className="absolute right-0 -bottom-6 text-xs text-gray-700 flex items-center gap-1 hover:underline"
                   >
-                    <span>+</span> Agregar correo
+                    <span>+</span>
+                    Agregar correo
                   </button>
                 </div>
 
@@ -202,10 +218,12 @@ export default function UserRegisterForm() {
             </div>
 
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-between items-center gap-6">
-              
+
               <div className="flex items-center gap-6 bg-[var(--color-primary-100)] p-3 rounded-xl px-5 border border-[var(--color-primary-200)]">
-                <span className="font-bold text-gray-700 text-sm uppercase">Estado:</span>
-                
+                <span className="font-bold text-gray-700 text-sm uppercase">
+                  Estado:
+                </span>
+
                 <div className="flex gap-4">
                   <Checkbox
                     id="isActive"
@@ -214,6 +232,7 @@ export default function UserRegisterForm() {
                     checked={formData.isActive}
                     onChange={handleChange}
                   />
+
                   <Checkbox
                     id="isStaff"
                     name="isStaff"

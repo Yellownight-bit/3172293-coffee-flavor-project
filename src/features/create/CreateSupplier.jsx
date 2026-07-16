@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
 import { userSchema } from "../users/schemas/userSchema";
+import Navbar from "@/shared/layouts/Navbar";
 
 export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
@@ -60,9 +61,8 @@ export default function UserRegisterForm() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
-      
-      {/* Barra superior de color primary 900 que ocupa todo el ancho de la pantalla */}
-      <div className="w-full h-16 bg-[var(--color-primary-900)] shadow-md"></div>
+      {/* Navbar */}
+      <Navbar />
 
       {/* Contenedor inferior que toma todo el espacio restante y centra el formulario */}
       <div className="flex-1 p-4 flex items-center justify-center">

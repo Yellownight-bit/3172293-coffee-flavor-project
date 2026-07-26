@@ -101,7 +101,7 @@ export default function FileInput({
       {/* Trigger de input oculto + loader */}
       <div
         onClick={() => !isLoading && inputRef.current.click()}
-        className="w-24 h-24 border-2 border-dashed rounded flex items-center justify-center cursor-pointer"
+        className="w-24 h-24 bg-white border-2 border-dashed border-[var(--color-primary-500)] flex items-center justify-center cursor-pointer"
       >
         {isLoading ? (
           <InfinityLoader
@@ -113,7 +113,7 @@ export default function FileInput({
             color="black"
           />
         ) : (
-          <span className="text-blue-500 text-sm">Seleccionar</span>
+          <span className="text-blue-500 text-sm">Subir imagen </span>
         )}
       </div>
 

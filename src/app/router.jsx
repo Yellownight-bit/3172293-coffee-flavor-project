@@ -6,6 +6,7 @@ import CreateInventory from "@/features/create/CreateInventory"
 import CreateMenu from "@/features/create/CreateMenu"
 import { UserRegisterForm } from "../features/users";
 import { UserListPage } from "@/features/users";
+import { HomePage } from "@/features/home"
 
 const router = createBrowserRouter ([ 
     {
@@ -29,6 +30,7 @@ const router = createBrowserRouter ([
             // { path: "/dashboard/auth", element: <h1>Hello2</h1> },
             { path: "/dashboard/userList", element: <UserListPage/> },
             { path: "/dashboard/userCreate", element: <UserRegisterForm/> },
+            { path: "/dashboard/Card", element: <HomePage/> },
         ],
     },
     {

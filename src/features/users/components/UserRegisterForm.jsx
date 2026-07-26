@@ -1,11 +1,11 @@
 // UserRegisterForm  componente para registrar un usuario
 
 import { useState, useEffect } from "react"
-import { Input, Select, Checkbox, Button } from "@/shared";
+import { Input, Select, Checkbox, Button, FileInput } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
 // import { useNavigate } from "react-router-dom";
 import { userSchema } from "../schemas/userSchema";
-import { User, Pencil } from "lucide-react";
+// import { User, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function UserRegisterForm (){
@@ -243,6 +243,22 @@ export default function UserRegisterForm (){
                 onChange={handleChange}
             />
 
+            <div>
+            <h2>Cantidad maxima de archivos: 12</h2>
+            <h3>Peso maximo: 10MB </h3>
+            </div>
+
+            <FileInput
+                    value={formData.userImage}
+                    onChange={(files) =>
+                        setFormData((prev) => ({ ...prev, userImage: files }))
+                    }
+                    multiple={true}
+                />
+                {errors.userImage && (
+                    <span className="text-red-500 text-sm">{errors.userImage}</span>
+                )}
+
             </div>
             
                 {/*Actions*/}
@@ -269,8 +285,8 @@ export default function UserRegisterForm (){
                 </div>
 
                 {/* Icons */}
-               <User/>
-               <Pencil/>
+               {/* <User/>
+               <Pencil/> */}
 
             </form>
         </div>

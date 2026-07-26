@@ -3,7 +3,8 @@ import {
     Input,
     SelectInventory, 
     Checkbox, 
-    Button } from "@/shared";
+    Button,
+    FileInput } from "@/shared";
 // import { getDocumentTypes } from "@/services/selectService";
 import { getSupplierNames } from "@/services/selectService";
 import { userSchema } from "../users/schemas/userSchema";
@@ -44,9 +45,9 @@ export default function CreateProductInventory() {
     }));
   };
 
-  const handleImageClick = () => {
-    console.log("Simular apertura de explorador de archivos");
-  };
+//   const handleImageClick = () => {
+//     console.log("Simular apertura de explorador de archivos");
+//   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -160,16 +161,10 @@ export default function CreateProductInventory() {
                     />
                 </div>
 
-                <div className="space-y-5">
-                    <div className="bg-[var(--color-primary-950)] rounded-md w-80">
-                        <button
-                            type="button"
-                            onClick={handleImageClick}
-                            className="h-[42px] relative w-full rounded-md border border-[var(--gray-800)] px-4 text-sm flex items-center justify-center gap-2 hover:bg-[var(--color-primary-300)] transition"
-                        >
-                            <span>🔼</span> Subir imagen
-                        </button>
-                    </div>
+                <div className="space-y-5 flex flex-col items-center">
+                <div className="w-full flex justify-center">
+                  <FileInput/>
+                </div>
 
                     <Input
                         label="Precio total"

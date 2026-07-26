@@ -93,64 +93,64 @@ export default function UserRegisterForm() {
 
                 <div className="grid md:grid-cols-[30%_35%_35%] gap-4 items-center">
 
-  {/* Columna 1 */}
-     <div className="space-y-4 mr-8">
-      <button 
-        type="button"
-        onClick={handleImageClick}
-        className="h-[42px] w-full rounded-md border bg-white px-4 text-sm flex items-center justify-center gap-2 "
-      >
-        <span>↑</span> Subir imagen
-        </button>
-        
-    </div>
+          {/* Columna 1 */}
+            <div className="space-y-4 mr-8">
+              <button 
+                type="button"
+                onClick={handleImageClick}
+                className="h-[42px] w-full rounded-md border bg-white px-4 text-sm flex items-center justify-center gap-2 "
+              >
+                <span>↑</span> Subir imagen
+                </button>
+                
+            </div>
 
-  {/* Columna 2 */}
-  <div className="space-y-4">
-    <Input
-         label="Nombre del platillo"
-         name="userName"
-         type="text"
-         value={formData.userName}
-         placeholder="Agregar nombre"
-         htmlFor="user-name"
-         onChange={handleChange}
-         error={errors.userName}
-    />
+          {/* Columna 2 */}
+          <div className="space-y-4">
+            <Input
+                label="Nombre del platillo"
+                name="userName"
+                type="text"
+                value={formData.userName}
+                placeholder="Agregar nombre"
+                htmlFor="user-name"
+                onChange={handleChange}
+                error={errors.userName}
+            />
 
-    <Select
-         name="userDocumentTypes"
-         value={formData.userDocumentTypes}
-         htmlFor="FoodTypes"
-         onChange={handleChange}
-         options={documentTypes}
-         error={errors.userDocumentTypes}
-    />
-  </div>
+            <Select
+                name="userDocumentTypes"
+                value={formData.userDocumentTypes}
+                htmlFor="FoodTypes"
+                onChange={handleChange}
+                options={documentTypes}
+                error={errors.userDocumentTypes}
+            />
+          </div>
 
-  {/* Columna 3 */}
-  <div className="space-y-4">
-    <Input
-         label="Precio"
-         name="userPhone"
-         type="tel"
-         value={formData.userPhone}
-         placeholder="Agregar precio"
-         htmlFor="user-phone"
-         onChange={handleChange}
-         error={errors.userPhone}
-    />
+          {/* Columna 3 */}
+          <div className="space-y-4">
+            <Input
+                label="Precio"
+                name="userPhone"
+                type="tel"
+                value={formData.userPhone}
+                placeholder="Agregar precio"
+                htmlFor="user-phone"
+                onChange={handleChange}
+                error={errors.userPhone}
+            />
 
-    <Input
-         label="Descripción"
-         name="userAddress"
-         type="text"
-         placeholder="Agregar descripción"
-         onChange={handleChange}
-        />
-     </div>
+            <Input
+                label="Descripción"
+                name="userAddress"
+                type="text"
+                placeholder="Agregar descripción"
+                onChange={handleChange}
+                />
+            </div>
 
-    </div>
+            </div>
 
             </div>
 

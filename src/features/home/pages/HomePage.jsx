@@ -3,10 +3,13 @@
 import heroBg from "../../../assets/images/bg-3.jpg";
 import { products } from "@/features/products/data/products";
 import Card  from "@/shared/components/Card";
+import { Navbar } from "@/shared";
 
 export default function HomePage(){
 
     return (
+        <div>
+            <Navbar/>
         <section
             className="relative min-h-screen w-full flex items-center justify-center text-black"
 
@@ -50,5 +53,6 @@ export default function HomePage(){
                 </div>            
             </div>       
         </section>
+    </div>
     );
 }

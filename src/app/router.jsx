@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { AuthLayout, DashboardLayout } from "@/shared";
 import CreateUser  from "@/features/create/CreateUser";
 import CreateSupplier from "@/features/create/CreateSupplier"
@@ -6,12 +6,15 @@ import CreateInventory from "@/features/create/CreateInventory"
 import CreateMenu from "@/features/create/CreateMenu"
 import { UserRegisterForm } from "../features/users";
 import { UserListPage } from "@/features/users";
+import { InventoryListPage } from "@/features/inventory";
 import { HomePage } from "@/features/home"
+import { SupplierListPage } from "@/features/suppliers";
+import { ProductListPage } from "../features/products";
 
 const router = createBrowserRouter ([ 
     {
-    path: "/dashboard",
-    element: <Navigate to="/dashboard" replace />
+    path: "/",
+    element: <HomePage to="/dashboard" replace />
     },
     {
     path: "/auth",
@@ -30,7 +33,10 @@ const router = createBrowserRouter ([
             // { path: "/dashboard/auth", element: <h1>Hello2</h1> },
             { path: "/dashboard/userList", element: <UserListPage/> },
             { path: "/dashboard/userCreate", element: <UserRegisterForm/> },
-            { path: "/dashboard/Card", element: <HomePage/> },
+            { path: "inventoryList", element: <InventoryListPage/> },
+            { path: "supplierList", element: <SupplierListPage/> },
+            { path: "productList", element: <ProductListPage/> },
+            // { path: "/dashboard/Card", element: <HomePage/> },
         ],
     },
     {

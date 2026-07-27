@@ -29,7 +29,7 @@ console.log("Campo limpiado");
 };
 
 return (
-    <nav className="w-full bg-orange-500 border-b-2">
+    <nav className="w-full bg-[var(--color-primary-950)] border-b-2">
         <div className="mx-auto max-w-7xl px-4">
             <div className="flex h-16 items-center justify-between">
             {/* Logo de marca */}
@@ -83,7 +83,7 @@ return (
                 
                     
                 </div>
-                <Dropdown>
+                <Dropdown className="z-50">
                         <DropdownTrigger>
                             <IconButton ariaLabel="Menú de usuario">
                                 <Menu />
@@ -93,16 +93,19 @@ return (
                         {/*Contenido*/}
                         <DropdownContent>
                             <DropdownItem>
-                                Gestión de productos
-                            </DropdownItem>
-                             <DropdownItem>
-                                <Link to="/dashboard/userCreate" className="block w-full">Crear usuario</Link>
+                                <Link to="/dashboard/userList" className="block w-full">Usuarios</Link>
                             </DropdownItem>
                             <DropdownItem>
-                                <Link to="/dashboard/userList" className="block w-full">Listar usuarios</Link>
+                                <Link to="/dashboard/productList" className="block w-full">Productos</Link>
+                            </DropdownItem>
+                            <DropdownItem>
+                                <Link to="inventoryList" className="block w-full">Inventario</Link>
+                            </DropdownItem>
+                            <DropdownItem>
+                                <Link to="supplierList" className="block w-full">Proveedores</Link>
                             </DropdownItem>
                              <DropdownItem>
-                                Cerrar sesión
+                                <Link to="/auth" className="block w-full">Cerrar sesión</Link>
                             </DropdownItem>
                         </DropdownContent>
                     </Dropdown>

@@ -21,7 +21,7 @@ export default function UserListPage() {
             Reportar usuario
             </Button>
 
-            <Link to="/dashboard/userCreate">
+            <Link to="/CreateUser">
             <Button size="sm" variant="primary">
             Crear usuario
             </Button>

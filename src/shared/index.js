@@ -18,6 +18,7 @@ export { default as DataTable } from "./components/DataTable";
 export { default as FileInput } from "./components/Filelnput";
 export { default as Card } from "./components/Card";
 export { default as ListReportModal } from "./components/ListReportModal";
+export { default as DetailItem } from "./components/DetailItem";
 
 // Layout components
 export {default as Navbar } from "./layouts/Navbar";

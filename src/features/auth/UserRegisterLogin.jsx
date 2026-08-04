@@ -5,6 +5,7 @@ import { Input, Checkbox, Button } from "@/shared";
 // import { getDocumentTypes } from "@/services/selectService";
 // import { useNavigate } from "react-router-dom";
 import { userSchema } from "../users/schemas/userSchema"
+import { Link } from "react-router-dom";
 
 export default function UserRegisterForm (){
 
@@ -207,23 +208,26 @@ export default function UserRegisterForm (){
                 {/*Actions*/}
                 <div className="flex gap-6 items-center justify-center" >
 
+                <Link to="/CreateUser">
                 <Button
-                    variant= "secondary"
-                    size= "md"
-                    type= "button"
-                    onClick={() => console.log("Se oprimio el cancelar")}
-                
-                >Registrarse
+                    variant="secondary"
+                    size="md"
+                    type="button"
+                >
+                    Registrarse
                 </Button>
+                </Link>
 
+                <Link to="/dashboard/userList">
                 <Button
-                    variant= "primary"
-                    size= "md"
-                    type= "sumbit"
-                    onClick={() => console.log("Se oprimio el submit")}
-                
-                >Iniciar Sesión
+                    variant="primary"
+                    size="md"
+                    type="button"
+                    onClick={() => console.log("Se oprimió el botón Iniciar Sesión")}
+                >
+                    Iniciar Sesión
                 </Button>
+                </Link>
 
                 </div>
             </form>

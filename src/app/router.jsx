@@ -10,6 +10,13 @@ import { InventoryListPage } from "@/features/inventory";
 import { HomePage } from "@/features/home"
 import { SupplierListPage } from "@/features/suppliers";
 import { ProductListPage } from "../features/products";
+import ReadUser from "@/features/read/ReadUser"
+import ReadUserDavid from "@/features/read/users/ReadUserDavid"
+import UpdateUser from "@/features/update/users/UpdateUser"
+
+import ReadUserDilan from "@/features/read/users/ReadUserDilan"
+import ReadUserNicolas from "@/features/read/users/ReadUserNicolas"
+import ReadUserMaycol from "@/features/read/users/ReadUserMaycol"
 
 const router = createBrowserRouter ([ 
     {
@@ -36,6 +43,12 @@ const router = createBrowserRouter ([
             { path: "inventoryList", element: <InventoryListPage/> },
             { path: "supplierList", element: <SupplierListPage/> },
             { path: "productList", element: <ProductListPage/> },
+            { path: "readUser", element: <ReadUser/> },
+            { path: "readUser2", element: <ReadUserDavid/> },
+            { path: "readUser3", element: <ReadUserDilan/> },
+            { path: "readUser4", element: <ReadUserNicolas/> },
+            { path: "readUser5", element: <ReadUserMaycol/> },
+            // { path: "UpdateUser", element: <UpdateUser/> },
             // { path: "/dashboard/Card", element: <HomePage/> },
         ],
     },
@@ -69,6 +82,15 @@ const router = createBrowserRouter ([
     {
     path: "/CreateMenu",
     element: <CreateMenu />,
+    children: [
+            {
+            index: true,
+            },
+        ],
+    },
+    {
+    path: "/UpdateUser",
+    element: <UpdateUser />,
     children: [
             {
             index: true,

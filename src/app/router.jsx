@@ -11,12 +11,17 @@ import { HomePage } from "@/features/home"
 import { SupplierListPage } from "@/features/suppliers";
 import { ProductListPage } from "../features/products";
 import ReadUser from "@/features/read/ReadUser"
+import ReadSupplier from "@/features/read/ReadSupplier"
 import ReadUserDavid from "@/features/read/users/ReadUserDavid"
 import UpdateUser from "@/features/update/users/UpdateUser"
-
+import UpdateSupplier from "@/features/update/suppliers/UpdateSupplier"
 import ReadUserDilan from "@/features/read/users/ReadUserDilan"
 import ReadUserNicolas from "@/features/read/users/ReadUserNicolas"
 import ReadUserMaycol from "@/features/read/users/ReadUserMaycol"
+import Supplier1 from "@/features/read/suppliers/Supplier1"
+import Supplier2 from "@/features/read/suppliers/Supplier2"
+import Supplier3 from "@/features/read/suppliers/Supplier3"
+import Supplier4 from "@/features/read/suppliers/Supplier4"
 
 const router = createBrowserRouter ([ 
     {
@@ -44,10 +49,15 @@ const router = createBrowserRouter ([
             { path: "supplierList", element: <SupplierListPage/> },
             { path: "productList", element: <ProductListPage/> },
             { path: "readUser", element: <ReadUser/> },
+            { path: "readSupplier", element: <ReadSupplier/> },
             { path: "readUser2", element: <ReadUserDavid/> },
             { path: "readUser3", element: <ReadUserDilan/> },
             { path: "readUser4", element: <ReadUserNicolas/> },
             { path: "readUser5", element: <ReadUserMaycol/> },
+            { path: "readSupplier1", element: <Supplier1/> },
+            { path: "readSupplier2", element: <Supplier2/> },
+            { path: "readSupplier3", element: <Supplier3/> },
+            { path: "readSupplier4", element: <Supplier4/> },
             // { path: "UpdateUser", element: <UpdateUser/> },
             // { path: "/dashboard/Card", element: <HomePage/> },
         ],
@@ -91,6 +101,15 @@ const router = createBrowserRouter ([
     {
     path: "/UpdateUser",
     element: <UpdateUser />,
+    children: [
+            {
+            index: true,
+            },
+        ],
+    },
+    {
+    path: "/UpdateSupplier",
+    element: <UpdateSupplier />,
     children: [
             {
             index: true,

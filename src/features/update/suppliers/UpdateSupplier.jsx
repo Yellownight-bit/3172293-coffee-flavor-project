@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button, FileInput, CheckboxGroup } from "@/shared";
 import { getSupplierDocumentTypes } from "@/services/selectSupplierService";
 import { getSupplierProducts } from "@/services/selectProductService"
-import { userSchema } from "../users/schemas/userSchema";
+import { userSchema } from "../../users/schemas/userSchema";
 import Navbar from "@/shared/layouts/Navbar";
 
 export default function UserRegisterForm() {
@@ -98,7 +98,7 @@ export default function UserRegisterForm() {
 
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
             <div className="text-2xl text-[var(--color-primary-950)]">👤<span className="font-bold text-xl relative -top-2 -left-1">+</span></div>
-            <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">Registrar Proveedor</h2>
+            <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">Actualizar Proveedor</h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -107,7 +107,7 @@ export default function UserRegisterForm() {
               
               <div className="space-y-4">
                 <Input
-                  label="Nombre de la Empresa"
+                  label="Actualizar - Nombre de la Empresa"
                   name="userName"
                   type="text"
                   value={formData.userName}
@@ -154,7 +154,7 @@ export default function UserRegisterForm() {
 
                 <div className="relative">
                   <Input
-                    label="Número de contacto"
+                    label="Actualizar - Número de contacto"
                     name="userPhone"
                     type="tel"
                     value={formData.userPhone}
@@ -174,7 +174,7 @@ export default function UserRegisterForm() {
 
               <div className="space-y-5">
                 <Input
-                  label="Correo electrónico Empresa"
+                  label="Actualizar - Correo electrónico Empresa"
                   name="userEmail"
                   type="email"
                   value={formData.userEmail}
@@ -203,7 +203,7 @@ export default function UserRegisterForm() {
                 </div>
 
                 <Input
-                  label="Contraseña"
+                  label="Actualizar - Contraseña"
                   name="userPassword"
                   type="password"
                   value={formData.userPassword}

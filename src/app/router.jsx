@@ -10,11 +10,15 @@ import { InventoryListPage } from "@/features/inventory";
 import { HomePage } from "@/features/home"
 import { SupplierListPage } from "@/features/suppliers";
 import { ProductListPage } from "../features/products";
+
 import ReadUser from "@/features/read/ReadUser"
 import ReadSupplier from "@/features/read/ReadSupplier"
+import ReadMenu from "@/features/read/ReadMenu"
 import ReadUserDavid from "@/features/read/users/ReadUserDavid"
+
 import UpdateUser from "@/features/update/users/UpdateUser"
 import UpdateSupplier from "@/features/update/suppliers/UpdateSupplier"
+
 import ReadUserDilan from "@/features/read/users/ReadUserDilan"
 import ReadUserNicolas from "@/features/read/users/ReadUserNicolas"
 import ReadUserMaycol from "@/features/read/users/ReadUserMaycol"
@@ -22,6 +26,10 @@ import Supplier1 from "@/features/read/suppliers/Supplier1"
 import Supplier2 from "@/features/read/suppliers/Supplier2"
 import Supplier3 from "@/features/read/suppliers/Supplier3"
 import Supplier4 from "@/features/read/suppliers/Supplier4"
+import CaféAme from "@/features/read/menu/CaféAme"
+import Capucchino from "@/features/read/menu/Capucchino"
+import Croissant from "@/features/read/menu/Croissant"
+import TortaChocolate from "@/features/read/menu/TortaChocolate"
 
 const router = createBrowserRouter ([ 
     {
@@ -50,14 +58,19 @@ const router = createBrowserRouter ([
             { path: "productList", element: <ProductListPage/> },
             { path: "readUser", element: <ReadUser/> },
             { path: "readSupplier", element: <ReadSupplier/> },
-            { path: "readUser2", element: <ReadUserDavid/> },
-            { path: "readUser3", element: <ReadUserDilan/> },
+            { path: "readMenu", element: <ReadMenu/> },
+            { path: "readUser3", element: <ReadUserDavid/> },
+            { path: "readUser2", element: <ReadUserDilan/> },
             { path: "readUser4", element: <ReadUserNicolas/> },
             { path: "readUser5", element: <ReadUserMaycol/> },
             { path: "readSupplier1", element: <Supplier1/> },
             { path: "readSupplier2", element: <Supplier2/> },
             { path: "readSupplier3", element: <Supplier3/> },
             { path: "readSupplier4", element: <Supplier4/> },
+            { path: "readMenu1", element: <CaféAme/> },
+            { path: "readMenu2", element: <Capucchino/> },
+            { path: "readMenu3", element: <Croissant/> },
+            { path: "readMenu4", element: <TortaChocolate/> },
             // { path: "UpdateUser", element: <UpdateUser/> },
             // { path: "/dashboard/Card", element: <HomePage/> },
         ],

@@ -1,18 +1,21 @@
 import { Button } from "@/shared";
 import Postobon from "@/assets/images/suppliers/postobon.png";
+import { useNavigate } from "react-router-dom";
 
 export default function ReadSupplier() {
   const supplier = {
     companyName: "Postobon",
     supplierImage: Postobon,
     documentType: "NIT",
-    documentNumber: "503449851-4",
+    documentNumber: "860002503",
     supplierEmail: "postobonExpss@email.com",
     supplierPhone: "+57 311 123 5678",
     supplierAddress: "Diagonal 25a DB",
     productTypes: ["Bebidas", "Utencilios"],
     status: "Activo",
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -25,7 +28,7 @@ export default function ReadSupplier() {
             size="sm"
             type="button"
             className="mt-2 border-2 border-[var(--color-primary-950)] rounded-full px-4 py-2 hover:bg-white transition duration-300"
-            onClick={() => console.log("Atrás")}
+            onClick={() => navigate("/dashboard/supplierList")}
           >
             ← Atrás
           </Button>
@@ -72,7 +75,7 @@ export default function ReadSupplier() {
                 size="md"
                 type="button"
                 className="mt-8 border-2 border-[var(--color-primary-950)] rounded-full px-8 py-2 hover:bg-white transition duration-300"
-                onClick={() => console.log("Editar proveedor")}
+                onClick={() => navigate("/UpdateSupplier")}
               >
                 ✏ Editar
               </Button>

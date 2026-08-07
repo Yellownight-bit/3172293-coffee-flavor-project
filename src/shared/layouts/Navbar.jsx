@@ -52,17 +52,20 @@ return (
                     to={"/dashboard"}
                     className="hover:text-primary transition"
                 >
-                    Cursos
+                    Usuarios
                 </Link>
                 </li>
                 <li>
                 <Link to={"/inicio"} className="hover:text-primary transition">
-                    Multimedia
+                    Permisos
                 </Link>
                 </li>
                 <li>
-                <Link to={"/inicio"} className="hover:text-primary transition">
-                    Contacto
+                <Link
+                    to={"/dashboard/readMenu"}
+                    className="hover:text-primary transition"
+                >
+                    Menu
                 </Link>
                 </li>
             </ul>

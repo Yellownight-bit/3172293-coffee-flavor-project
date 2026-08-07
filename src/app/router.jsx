@@ -17,11 +17,13 @@ import ReadMenu from "@/features/read/ReadMenu"
 import ReadUserDavid from "@/features/read/users/ReadUserDavid"
 
 import UpdateUser from "@/features/update/users/UpdateUser"
+// import PermitManagement from "@/features/permissions/components/PermitManagement"
 import UpdateSupplier from "@/features/update/suppliers/UpdateSupplier"
 
 import ReadUserDilan from "@/features/read/users/ReadUserDilan"
 import ReadUserNicolas from "@/features/read/users/ReadUserNicolas"
 import ReadUserMaycol from "@/features/read/users/ReadUserMaycol"
+import { PermissionManagement } from "../features/permissions";
 import Supplier1 from "@/features/read/suppliers/Supplier1"
 import Supplier2 from "@/features/read/suppliers/Supplier2"
 import Supplier3 from "@/features/read/suppliers/Supplier3"
@@ -63,6 +65,7 @@ const router = createBrowserRouter ([
             { path: "readUser2", element: <ReadUserDilan/> },
             { path: "readUser4", element: <ReadUserNicolas/> },
             { path: "readUser5", element: <ReadUserMaycol/> },
+            // { path: "PermitManagement", element: <PermitManagement /> },
             { path: "readSupplier1", element: <Supplier1/> },
             { path: "readSupplier2", element: <Supplier2/> },
             { path: "readSupplier3", element: <Supplier3/> },
@@ -120,6 +123,9 @@ const router = createBrowserRouter ([
             },
         ],
     },
+        {
+    path: "/Permissions",
+    element: <PermissionManagement />,
     {
     path: "/UpdateSupplier",
     element: <UpdateSupplier />,

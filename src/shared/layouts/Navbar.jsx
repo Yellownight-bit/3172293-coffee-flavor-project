@@ -105,6 +105,9 @@ return (
                                 <Link to="supplierList" className="block w-full">Proveedores</Link>
                             </DropdownItem>
                              <DropdownItem>
+                                <Link to="/Permissions" className="block w-full">Gestión permisos</Link>
+                            </DropdownItem>
+                             <DropdownItem>
                                 <Link to="/auth" className="block w-full">Cerrar sesión</Link>
                             </DropdownItem>
                         </DropdownContent>

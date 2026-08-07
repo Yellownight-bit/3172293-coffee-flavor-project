@@ -14,7 +14,7 @@
 --color-primary-100: #FFF0E5;
 --color-primary-50: #FFF8F2;
 
-/* Secondary color (Rojo) */
+  /* Secondary color (Rojo) */
 --color-secondary-950: #FF0000;
 --color-secondary-900: #FF1A1A;
 --color-secondary-800: #FF3333;
@@ -28,32 +28,32 @@
 --color-secondary-50: #FFF5F5;
 
   /* Tertiary-2 color */
-    --color-tertiary-950: #FFD500;
-    --color-tertiary-900: #FFDB1A;
-    --color-tertiary-800: #FFE033;
-    --color-tertiary-700: #FFE64D;
-    --color-tertiary-600: #FFEB66;
-    --color-tertiary-500: #FFF080;
-    --color-tertiary-400: #FFF599;
-    --color-tertiary-300: #FFFAB3;
-    --color-tertiary-200: #FFFCCC;
-    --color-tertiary-100: #FFFEE5;
-    --color-tertiary-50: #FFFFF2;
+--color-tertiary-950: #FFD500;
+--color-tertiary-900: #FFDB1A;
+--color-tertiary-800: #FFE033;
+--color-tertiary-700: #FFE64D;
+--color-tertiary-600: #FFEB66;
+--color-tertiary-500: #FFF080;
+--color-tertiary-400: #FFF599;
+--color-tertiary-300: #FFFAB3;
+--color-tertiary-200: #FFFCCC;
+--color-tertiary-100: #FFFEE5;
+--color-tertiary-50: #FFFFF2;
 
     /* Basic color */
-    --white: #fff;
-    --black: #000;
-    --gray-950: #101010;
-    --gray-900: #262626;
-    --gray-800: #3B3B3B;
-    --gray-700: #515151;
-    --gray-600: #676767;
-    --gray-500: #7D7D7D;
-    --gray-400: #929292;
-    --gray-300: #A8A8A8;
-    --gray-200: #BEBEBE;
-    --gray-100: #D4D4D4;
-    --gray-50:  #E9E9E9;
+    --color-white: #fff;
+    --color-black: #000;
+    --color-gray-950: #101010;
+    --color-gray-900: #262626;
+    --color-gray-800: #3B3B3B;
+    --color-gray-700: #515151;
+    --color-gray-600: #676767;
+    --color-gray-500: #7D7D7D;
+    --color-gray-400: #929292;
+    --color-gray-300: #A8A8A8;
+    --color-gray-200: #BEBEBE;
+    --color-gray-100: #D4D4D4;
+    --color-gray-50:  #E9E9E9;
 
     /* Font Family */
     --main-font: helvetica, Arial, sans-serif;

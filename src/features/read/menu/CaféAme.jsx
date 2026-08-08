@@ -78,7 +78,7 @@ export default function ReadUser() {
               size="md"
               type="button"
               className="mt-8 border-2 border-[var(--color-primary-950)] rounded-full px-8 py-2 hover:bg-white transition duration-300"
-              onClick={() => console.log("Editar platillo")}
+              onClick={() => navigate("/UpdateProduct")}
             >
               ✏ Editar
             </Button>

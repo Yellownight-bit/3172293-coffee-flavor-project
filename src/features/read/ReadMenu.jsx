@@ -171,7 +171,7 @@ export default function ReadMenu() {
                     size="md"
                     type="button"
                     className="mt-2 border-2 border-[var(--color-primary-950)] bg-[var(--color-primary-950)] rounded-full px-4 py-2 hover:bg-white transition duration-300"
-                    onClick={() => console.log("Editar menú")}
+                    onClick={() => navigate("/UpdateProduct")}
                   >
                     ✏ Editar menú
                   </Button>

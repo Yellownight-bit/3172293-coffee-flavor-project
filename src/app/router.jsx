@@ -3,7 +3,7 @@ import { AuthLayout, DashboardLayout } from "@/shared";
 import CreateUser  from "@/features/create/CreateUser";
 import CreateSupplier from "@/features/create/CreateSupplier"
 import CreateInventory from "@/features/create/CreateInventory"
-import CreateMenu from "@/features/create/CreateMenu"
+import CreateProduct from "@/features/create/CreateProduct"
 import { UserRegisterForm } from "../features/users";
 import { UserListPage } from "@/features/users";
 import { InventoryListPage } from "@/features/inventory";
@@ -19,6 +19,7 @@ import ReadUserDavid from "@/features/read/users/ReadUserDavid"
 import UpdateUser from "@/features/update/users/UpdateUser"
 import UpdateSupplier from "@/features/update/suppliers/UpdateSupplier"
 import UpdateInventory from "@/features/update/inventory/UpdateInventory"
+import UpdateProduct from "@/features/update/products/UpdateProduct"
 
 import ReadUserDilan from "@/features/read/users/ReadUserDilan"
 import ReadUserNicolas from "@/features/read/users/ReadUserNicolas"
@@ -103,8 +104,8 @@ const router = createBrowserRouter ([
         ],
     },
     {
-    path: "/CreateMenu",
-    element: <CreateMenu />,
+    path: "/CreateProduct",
+    element: <CreateProduct />,
     children: [
             {
             index: true,
@@ -136,6 +137,15 @@ const router = createBrowserRouter ([
     {
     path: "/UpdateInventory",
     element: <UpdateInventory />,
+    children: [
+            {
+            index: true,
+            },
+        ],
+    },
+    {
+    path: "/UpdateProduct",
+    element: <UpdateProduct />,
     children: [
             {
             index: true,

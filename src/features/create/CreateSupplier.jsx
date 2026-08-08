@@ -4,6 +4,7 @@ import { getSupplierDocumentTypes } from "@/services/selectSupplierService";
 import { getSupplierProducts } from "@/services/selectProductService"
 import { userSchema } from "../users/schemas/userSchema";
 import Navbar from "@/shared/layouts/Navbar";
+import { useNavigate } from "react-router-dom";
 
 export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
@@ -20,6 +21,8 @@ export default function UserRegisterForm() {
     isActive: true, 
     isSuperUser: false,
   });
+
+  const navigate = useNavigate();
 
   const [documentTypes, setDocumentTypes] = useState([]);
 
@@ -91,7 +94,7 @@ export default function UserRegisterForm() {
           <button 
             type="button"
             className="absolute top-6 left-6 bg-[var(--color-primary-950)] text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
-            onClick={() => console.log("Atrás")}
+            onClick={() => navigate("/dashboard/supplierList")}
           >
             <span>←</span> Atrás
           </button>
@@ -272,7 +275,7 @@ export default function UserRegisterForm() {
                   variant="secondary"
                   size="md"
                   type="button"
-                  onClick={() => console.log("Se oprimio el cancelar")}
+                  onClick={() => navigate("/dashboard/supplierList")}
                   className="px-6 py-2 rounded-full font-semibold border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
                 >
                   Cancelar

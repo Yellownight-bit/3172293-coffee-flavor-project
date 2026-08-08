@@ -20,7 +20,7 @@ export default function ReadUser() {
     status: "Activo",
   };
 
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col font-sans">

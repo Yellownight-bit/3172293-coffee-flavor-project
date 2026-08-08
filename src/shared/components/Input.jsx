@@ -11,7 +11,7 @@ export default function Input({
         // Estos valroes deben ser cin variables
         primary: `
             border-brand
-            bg-gray-100
+            bg-white
         `,
         secondary: `
             border-red-950

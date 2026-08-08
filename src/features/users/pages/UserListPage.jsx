@@ -17,7 +17,7 @@ export default function UserListPage() {
             <h1 className="text-xl font-semibold">Listador de Usuarios</h1>
 
             <div className="flex gap-12">
-            <Button size="sm" variant="primary" onClick={() => setIsReportModalOpen(true)}>
+            <Button size="sm" variant="secondary" onClick={() => setIsReportModalOpen(true)}>
             Reportar usuario
             </Button>
 

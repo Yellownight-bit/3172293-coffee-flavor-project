@@ -17,8 +17,8 @@ import ReadMenu from "@/features/read/ReadMenu"
 import ReadUserDavid from "@/features/read/users/ReadUserDavid"
 
 import UpdateUser from "@/features/update/users/UpdateUser"
-// import PermitManagement from "@/features/permissions/components/PermitManagement"
 import UpdateSupplier from "@/features/update/suppliers/UpdateSupplier"
+import UpdateInventory from "@/features/update/inventory/UpdateInventory"
 
 import ReadUserDilan from "@/features/read/users/ReadUserDilan"
 import ReadUserNicolas from "@/features/read/users/ReadUserNicolas"
@@ -52,7 +52,6 @@ const router = createBrowserRouter ([
     element: <DashboardLayout/>,
     children: [
             { index: true},
-            // { path: "/dashboard/auth", element: <h1>Hello2</h1> },
             { path: "/dashboard/userList", element: <UserListPage/> },
             { path: "/dashboard/userCreate", element: <UserRegisterForm/> },
             { path: "inventoryList", element: <InventoryListPage/> },
@@ -65,7 +64,6 @@ const router = createBrowserRouter ([
             { path: "readUser2", element: <ReadUserDilan/> },
             { path: "readUser4", element: <ReadUserNicolas/> },
             { path: "readUser5", element: <ReadUserMaycol/> },
-            // { path: "PermitManagement", element: <PermitManagement /> },
             { path: "readSupplier1", element: <Supplier1/> },
             { path: "readSupplier2", element: <Supplier2/> },
             { path: "readSupplier3", element: <Supplier3/> },
@@ -74,8 +72,7 @@ const router = createBrowserRouter ([
             { path: "readMenu2", element: <Capucchino/> },
             { path: "readMenu3", element: <Croissant/> },
             { path: "readMenu4", element: <TortaChocolate/> },
-            // { path: "UpdateUser", element: <UpdateUser/> },
-            // { path: "/dashboard/Card", element: <HomePage/> },
+            { path: "UpdateUser", element: <UpdateUser/> },
         ],
     },
     {
@@ -123,12 +120,22 @@ const router = createBrowserRouter ([
             },
         ],
     },
-        {
+    {
     path: "/Permissions",
     element: <PermissionManagement />,
+    },
     {
     path: "/UpdateSupplier",
     element: <UpdateSupplier />,
+    children: [
+            {
+            index: true,
+            },
+        ],
+    },
+    {
+    path: "/UpdateInventory",
+    element: <UpdateInventory />,
     children: [
             {
             index: true,

@@ -2,6 +2,7 @@ import { Button } from "@/shared";
 import { DetailItem } from "@/shared";
 import { products } from "@/features/products/data/products";
 import Pizza from "@/assets/images/pizza2.png";
+import { useNavigate } from "react-router-dom";
 
 export default function ReadMenu() {
   const menu = {
@@ -13,6 +14,8 @@ export default function ReadMenu() {
     menuCategory: "Combos",
     menuStatus: "Activo",
   };
+
+    const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -26,7 +29,7 @@ export default function ReadMenu() {
             size="sm"
             type="button"
             className="mt-2 border-2 border-[var(--color-primary-950)] rounded-full px-4 py-2 hover:bg-white transition duration-300"
-            onClick={() => console.log("Atrás")}
+            onClick={() => navigate("/")}
           >
             ← Atrás
           </Button>
@@ -167,7 +170,7 @@ export default function ReadMenu() {
                     variant="primary"
                     size="md"
                     type="button"
-                    className="border-2 border-[var(--color-primary-950)] bg-[var(--color-primary-950)] rounded-full px-8 py-2"
+                    className="mt-2 border-2 border-[var(--color-primary-950)] bg-[var(--color-primary-950)] rounded-full px-4 py-2 hover:bg-white transition duration-300"
                     onClick={() => console.log("Editar menú")}
                   >
                     ✏ Editar menú

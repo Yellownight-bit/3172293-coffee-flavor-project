@@ -9,7 +9,7 @@ export default function UserRowActions({ user }) {
 
   // Editar usuario
   const handleEdit = () => {
-    navigate(`/users/${user.id}/edit`);
+    navigate(`/UpdateUser`);
   };
 
   // Eliminar usuario

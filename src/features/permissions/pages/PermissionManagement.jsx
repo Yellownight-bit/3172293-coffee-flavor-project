@@ -134,6 +134,7 @@ export default function PermissionManagement() {
                   setSelectedUser("");
                   setPermissions({});
                 }}
+                onClick={() => window.history.back()}
               >
                 Cancelar
               </Button>

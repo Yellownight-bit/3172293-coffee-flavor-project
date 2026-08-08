@@ -34,7 +34,7 @@ return (
             <div className="flex h-16 items-center justify-between">
             {/* Logo de marca */}
             <div className=" hidden sm:block items-center">
-                <Link to={"/dashboard/"} className="text-h1 font-heading">
+                <Link to={"/"} className="text-h1 font-heading">
                 <img src={logo} alt="logo" className="h-12" />
                 </Link>
             </div>
@@ -43,20 +43,20 @@ return (
             {/* Links de navegación */}
             <ul className="hidden md:flex items-center gap-6">
                 <li>
-                <Link to={"/auth"} className="hover:text-primary transition">
+                <Link to={"/"} className="hover:text-primary transition">
                     Inicio
                 </Link>
                 </li>
                 <li>
                 <Link
-                    to={"/dashboard"}
+                    to={"/dashboard/userList"}
                     className="hover:text-primary transition"
                 >
                     Usuarios
                 </Link>
                 </li>
                 <li>
-                <Link to={"/inicio"} className="hover:text-primary transition">
+                <Link to={"/Permissions"} className="hover:text-primary transition">
                     Permisos
                 </Link>
                 </li>

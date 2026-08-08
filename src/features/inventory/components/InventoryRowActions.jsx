@@ -5,7 +5,7 @@ export default function InventoryRowActions({ item }) {
     const navigate = useNavigate();
 
     const handleEdit = () => {
-        navigate(`/inventory/${item.id}/edit`);
+        navigate("/UpdateInventory");
     };
 
     const handleDelete = () => {
@@ -20,6 +20,7 @@ export default function InventoryRowActions({ item }) {
             >
                 <Pencil size={16} />
             </button>
+
             <button
                 onClick={handleDelete}
                 className="p-1 rounded hover:bg-gray-100"

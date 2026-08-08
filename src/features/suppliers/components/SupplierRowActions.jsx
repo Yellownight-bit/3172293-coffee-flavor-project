@@ -15,7 +15,7 @@ export default function SupplierRowActions({ supplier }) {
 
   // Acción para editar el proveedor
   const handleEdit = () => {
-    navigate(`/suppliers/${supplier.id}/edit`);
+    navigate(`/UpdateSupplier`);
   };
 
   // Acción para eliminar el proveedor

@@ -17,7 +17,7 @@ export default function ProductListPage() {
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-xl font-semibold">Listado de productos</h1>
+                <h1 className="text-xl font-semibold">Listado de Menus</h1>
                 <div className="flex gap-2">
                     <Button variant="secondary" onClick={() => setIsReportOpen(true)}>
                         Generar reporte

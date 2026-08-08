@@ -218,7 +218,6 @@ export default function UserRegisterForm (){
                 </Button>
                 </Link>
 
-                <Link to="/dashboard/userList">
                 <Button
                     variant="primary"
                     size="md"
@@ -227,7 +226,7 @@ export default function UserRegisterForm (){
                 >
                     Iniciar Sesión
                 </Button>
-                </Link>
+                
 
                 </div>
             </form>

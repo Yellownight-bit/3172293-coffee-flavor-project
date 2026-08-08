@@ -7,10 +7,9 @@ import {
     FileInput } from "@/shared";
 // import { getDocumentTypes } from "@/services/selectService";
 import { getSupplierNames } from "@/services/selectService";
-import { userSchema } from "../users/schemas/userSchema";
+import { userSchema } from "../../users/schemas/userSchema";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
-
 
 export default function CreateProductInventory() {
   const [errors, setErrors] = useState({});
@@ -26,7 +25,7 @@ export default function CreateProductInventory() {
     isActive: true,
   });
 
-  const navigate = useNavigate();
+ const navigate = useNavigate();
 
 //   const [documentTypes, setDocumentTypes] = useState([]);
 
@@ -101,6 +100,7 @@ export default function CreateProductInventory() {
                 <span>👁️‍🗨️</span> Ver inventario
             </button>
 
+
             <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
                 <div className="text-2xl text-[var(--color-text-inverse)]"
                     >
@@ -113,7 +113,7 @@ export default function CreateProductInventory() {
                 <h2 className=
                     "text-[var(--color-text-inverse)] font-bold text-xl uppercase tracking-wider"
                 >
-                    Registrar producto
+                    Actualizar inventario
                 </h2>
             </div>
 
@@ -271,7 +271,7 @@ export default function CreateProductInventory() {
                         type="submit"
                         className="px-8 py-2 rounded-full font-semibold bg-[var(--color-primary-950)] hover:bg-[var(--color-primary-900)] text-white shadow-md transition"
                     >
-                        Registrar
+                        Actualizar
                     </Button>
               </div>
 

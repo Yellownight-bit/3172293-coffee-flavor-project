@@ -25,6 +25,8 @@ export default function CreateProductInventory() {
     isActive: true,
   });
 
+  const [files, setFiles] = useState([]);
+
  const navigate = useNavigate();
 
 //   const [documentTypes, setDocumentTypes] = useState([]);
@@ -158,7 +160,12 @@ export default function CreateProductInventory() {
 
                 <div className="space-y-5 flex flex-col items-center">
                 <div className="w-full flex justify-center">
-                  <FileInput/>
+                    <FileInput
+                        value={files}
+                        onChange={setFiles}
+                        multiple={false}
+                        accept="image/*"
+                    />
                 </div>
 
                     <Input

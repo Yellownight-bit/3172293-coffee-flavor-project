@@ -15,7 +15,7 @@ export default function ProductRowActions({ product }) {
 
   // Acción para editar el producto
   const handleEdit = () => {
-    navigate(`/products/${product.id}/edit`);
+    navigate(`/UpdateProduct`);
   };
 
   // Acción para eliminar el producto

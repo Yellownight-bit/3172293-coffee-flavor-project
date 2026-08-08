@@ -20,6 +20,8 @@ export default function UserRegisterForm() {
     isSuperUser: false,
   });
 
+  const [files, setFiles] = useState([]);
+
   const navigate = useNavigate();
 
   const [documentTypes, setDocumentTypes] = useState([]);
@@ -136,7 +138,12 @@ export default function UserRegisterForm() {
 
               <div className="space-y-5 flex flex-col items-center">
                 <div className="w-full flex justify-center">
-                  <FileInput/>
+                  <FileInput
+                  value={files}
+                  onChange={setFiles}
+                  multiple={false}
+                  accept="image/*"
+              />
                 </div>
 
                 <Input

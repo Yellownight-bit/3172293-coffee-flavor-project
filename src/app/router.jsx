@@ -4,6 +4,7 @@ import CreateUser  from "@/features/create/CreateUser";
 import CreateSupplier from "@/features/create/CreateSupplier"
 import CreateInventory from "@/features/create/CreateInventory"
 import CreateProduct from "@/features/create/CreateProduct"
+import CreateOrder from "@/features/create/CreateOrder"
 import { UserRegisterForm } from "../features/users";
 import { UserListPage } from "@/features/users";
 import { InventoryListPage } from "@/features/inventory";
@@ -20,6 +21,7 @@ import UpdateUser from "@/features/update/users/UpdateUser"
 import UpdateSupplier from "@/features/update/suppliers/UpdateSupplier"
 import UpdateInventory from "@/features/update/inventory/UpdateInventory"
 import UpdateProduct from "@/features/update/products/UpdateProduct"
+import UpdateOrder from "@/features/update/order/UpdateOrder"
 
 import ReadUserDilan from "@/features/read/users/ReadUserDilan"
 import ReadUserNicolas from "@/features/read/users/ReadUserNicolas"
@@ -113,6 +115,15 @@ const router = createBrowserRouter ([
         ],
     },
     {
+    path: "/CreateOrder",
+    element: <CreateOrder />,
+    children: [
+            {
+            index: true,
+            },
+        ],
+    },
+    {
     path: "/UpdateUser",
     element: <UpdateUser />,
     children: [
@@ -146,6 +157,15 @@ const router = createBrowserRouter ([
     {
     path: "/UpdateProduct",
     element: <UpdateProduct />,
+    children: [
+            {
+            index: true,
+            },
+        ],
+    },
+    {
+    path: "/UpdateOrder",
+    element: <UpdateOrder />,
     children: [
             {
             index: true,

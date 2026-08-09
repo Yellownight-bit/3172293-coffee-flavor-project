@@ -11,6 +11,7 @@ import { InventoryListPage } from "@/features/inventory";
 import { HomePage } from "@/features/home"
 import { SupplierListPage } from "@/features/suppliers";
 import { ProductListPage } from "../features/products";
+import { OrderListPage } from "../features/order";
 
 import ReadUser from "@/features/read/ReadUser"
 import ReadSupplier from "@/features/read/ReadSupplier"
@@ -60,6 +61,7 @@ const router = createBrowserRouter ([
             { path: "inventoryList", element: <InventoryListPage/> },
             { path: "supplierList", element: <SupplierListPage/> },
             { path: "productList", element: <ProductListPage/> },
+            { path: "orderList", element: <OrderListPage/> },
             { path: "readUser", element: <ReadUser/> },
             { path: "readSupplier", element: <ReadSupplier/> },
             { path: "readMenu", element: <ReadMenu/> },

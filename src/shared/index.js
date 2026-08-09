@@ -5,7 +5,7 @@ export { default as DashboardLayout } from "./layouts/DashboardLayout";
 export {default as Input} from "./components/Input";
 export {default as Button} from "./components/Button";
 // export {default as DeteleCounter} from "./components/DeleteCounter";
-export {default as DeteleCounter2} from "./components/DeleteCounter2";
+// export {default as DeteleCounter2} from "./components/DeleteCounter2";
 export {default as SelectInventory} from "./components/SelectInventory"
 export {default as EffectDemo} from "./components/EffectDemo";
 export {default as CounterEffect} from "./components/CounterEffect";

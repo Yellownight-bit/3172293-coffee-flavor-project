@@ -1,42 +1,71 @@
 import { z } from "zod";
 import { fileSchema } from "@/shared/schemas/fileSchema";
 
-export const userSchema = z.object({
+export const userSchema = z
+  .object({
     userName: z
-        .string()
-        .min(3, "El nombre debe tener mínimo 3 caracteres")
-        .max(60, "El nombre es demasiado largo"),
-    
+      .string()
+      .min(3, "El nombre debe tener mínimo 3 caracteres")
+      .max(60, "El nombre es demasiado largo"),
+
     userEmail: z
-        .email()
-        .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Debe ingresar un email válido"),
+      .email("Debe ingresar un email válido")
+      .regex(
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Debe ingresar un email válido"
+      ),
+
+    confirmEmail: z
+      .email("Debe ingresar un email válido")
+      .regex(
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Debe ingresar un email válido"
+      ),
 
     userPhone: z
-        .string()
-        .regex(/^[0-9]{10}$/, "El teléfono debe tener 10 digitos"),
+      .string()
+      .regex(
+        /^[0-9]{10}$/,
+        "El teléfono debe tener 10 digitos"
+      ),
 
-    userDocumentTypes: z.string().min(1, "Debe seleccionar un tipo de documento"),
+    userAddress: z
+      .string()
+      .min(5, "La dirección debe tener mínimo 5 caracteres")
+      .max(100, "La dirección es demasiado larga"),
+
+    userDocumentTypes: z
+      .string()
+      .min(1, "Debe seleccionar un tipo de documento"),
 
     userDocumentNumber: z
-        .string()
-        .min(5, "Número de documento inváido")
-        .max(20, "Número de documento demasiado largo"),
+      .string()
+      .min(5, "Número de documento inváido")
+      .max(20, "Número de documento demasiado largo"),
 
     userPassword: z
-        .string()
-        .min(8, "Contraseña debe tener mínimo 8 caracteres")
-        .regex(/[A-Z]/, "Debe contener al menos una mayúscula")
-        .regex(/[a-z]/, "Debo contener al menos una minúscula")
-        .regex(/[0-9]/, "Debe contener almenos un número")
-        .regex(/[^A-Za-z0-9]/, "Debe contener al menos un carácter especial"),
+      .string()
+      .min(8, "Contraseña debe tener mínimo 8 caracteres")
+      .regex(/[A-Z]/, "Debe contener al menos una mayúscula")
+      .regex(/[a-z]/, "Debe contener al menos una minúscula")
+      .regex(/[0-9]/, "Debe contener almenos un número")
+      .regex(
+        /[^A-Za-z0-9]/,
+        "Debe contener al menos un carácter especial"
+      ),
 
     isStaff: z.boolean(),
+
     isActive: z.boolean(),
+
     isSuperUser: z.boolean(),
 
-    // userImage: fileSchema.pick({ file: true }).shape.files.optional(),
-
-    userImage : fileSchema.shape.files.optional()
-
-
-})
+    userImage: fileSchema.shape.files.optional(),
+  })
+  .refine(
+    (data) => data.userEmail === data.confirmEmail,
+    {
+      message: "Los correos electrónicos no coinciden",
+      path: ["confirmEmail"],
+    }
+  );

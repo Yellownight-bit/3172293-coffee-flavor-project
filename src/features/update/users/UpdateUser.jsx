@@ -11,7 +11,9 @@ export default function UserRegisterForm() {
   const [formData, setFormData] = useState({
     userName: "",
     userEmail: "",
+    confirmEmail: "",
     userPhone: "",
+    userAddress: "",
     userDocumentTypes: "",
     userDocumentNumber: "",
     userPassword: "",
@@ -19,7 +21,7 @@ export default function UserRegisterForm() {
     isStaff: false,
     isActive: true,
     isSuperUser: false,
-  });
+});
 
   const [files, setFiles] = useState([]);
 
@@ -150,12 +152,15 @@ export default function UserRegisterForm() {
                 </div>
 
                 <Input
-                  label="Actualizar - Dirección"
-                  name="userAddress"
-                  type="text"
-                  placeholder="Dirección"
-                  onChange={handleChange}
-                />
+                    label="Actualizar - Dirección"
+                    name="userAddress"
+                    type="text"
+                    value={formData.userAddress}
+                    placeholder="Dirección"
+                    htmlFor="user-address"
+                    onChange={handleChange}
+                    error={errors.userAddress}
+                  />
 
                 <div className="relative">
                   <Input
@@ -196,8 +201,11 @@ export default function UserRegisterForm() {
                     label="Confirmar correo electrónico"
                     name="confirmEmail"
                     type="email"
+                    value={formData.confirmEmail}
                     placeholder="Confirmar correo electrónico"
+                    htmlFor="confirm-email"
                     onChange={handleChange}
+                    error={errors.confirmEmail}
                   />
 
                   <button

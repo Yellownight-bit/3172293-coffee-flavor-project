@@ -11,6 +11,7 @@ import { userSchema } from "../users/schemas/userSchema";
 import Navbar from "@/shared/layouts/Navbar";
 import { getCategorieTypes } from "@/services/selectCategorieTypes";
 import { useNavigate } from "react-router-dom";
+import backgroundImage from "@/assets/images/restaurant.jpg";
 
 export default function CreateProductInventory() {
   const [errors, setErrors] = useState({});
@@ -73,7 +74,8 @@ export default function CreateProductInventory() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans w-full max-w-full overflow-x-hidden">
+    <div className="min-h-screen flex flex-col font-sans w-full max-w-full overflow-x-hidden bg-center bg-cover bg-no-repeat"
+    style={{ backgroundImage: `url(${backgroundImage})` }}>
       {/* Navbar */}
       <Navbar />
 

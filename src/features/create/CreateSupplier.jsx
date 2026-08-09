@@ -1,26 +1,28 @@
 import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button, FileInput, CheckboxGroup } from "@/shared";
 import { getSupplierDocumentTypes } from "@/services/selectSupplierService";
-import { getSupplierProducts } from "@/services/selectProductService"
-import { userSchema } from "../users/schemas/userSchema";
+import { getSupplierProducts } from "@/services/selectProductService";
+import { supplierSchema } from "../users/schemas/supplierSchema";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
 
-export default function UserRegisterForm() {
+export default function SupplierRegisterForm() {
   const [errors, setErrors] = useState({});
+
   const [formData, setFormData] = useState({
-    userName: "",
-    userEmail: "",
-    userPhone: "",
-    userDocumentTypes: "",
-    userDocumentNumber: "",
-    userPassword: "",
+    supplierName: "",
+    supplierEmail: "",
+    confirmSupplierEmail: "",
+    supplierPhone: "",
+    supplierDocumentType: "",
+    supplierDocumentNumber: "",
+    supplierPassword: "",
+    supplierAddress: "",
     suppliedProducts: [],
-    userImage: [],
-    isStaff: false,
-    isActive: true, 
-    isSuperUser: false,
+    observations: "",
+    supplierImage: [],
+    isActive: true,
   });
 
   const [files, setFiles] = useState([]);
@@ -31,53 +33,60 @@ export default function UserRegisterForm() {
 
   const [products, setProducts] = useState([]);
 
-    useEffect(() => {
-        getSupplierProducts().then(setProducts);
-    }, []);
+  useEffect(() => {
+    getSupplierProducts().then(setProducts);
+  }, []);
 
   useEffect(() => {
     getSupplierDocumentTypes().then(setDocumentTypes);
   }, []);
 
   const handleChange = (e) => {
-  const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target;
 
-  if (name === "suppliedProducts") {
+    if (name === "suppliedProducts") {
+      setFormData((prev) => ({
+        ...prev,
+        suppliedProducts: checked
+          ? [...prev.suppliedProducts, value]
+          : prev.suppliedProducts.filter((item) => item !== value),
+      }));
+
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      suppliedProducts: checked
-        ? [...prev.suppliedProducts, value]
-        : prev.suppliedProducts.filter((item) => item !== value),
+      [name]: type === "checkbox" ? checked : value,
     }));
-    return;
-  }
-
-  setFormData((prev) => ({
-    ...prev,
-    [name]: type === "checkbox" ? checked : value,
-  }));
-};
-
-  // const handleImageClick = () => {
-  //   console.log("Simular apertura de explorador de archivos");
-  // };
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = userSchema.safeParse(formData);
+
+    const dataToValidate = {
+      ...formData,
+      supplierImage: files,
+    };
+
+    const result = supplierSchema.safeParse(dataToValidate);
 
     if (!result.success) {
       const fieldErrors = {};
+
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+
       setErrors(fieldErrors);
       return;
     }
 
     setErrors({});
+
     try {
-      alert("Usuario creado correctamente");
+      alert("Proveedor creado correctamente");
+      navigate("/dashboard/supplierList");
     } catch (error) {
       console.error("Error:", error.message);
       alert(error.message);
@@ -85,17 +94,16 @@ export default function UserRegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
-    style={{ backgroundImage: `url(${backgroundImage})` }}>
-      {/* Navbar */}
+    <div
+      className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
       <Navbar />
 
-      {/* Contenedor inferior que toma todo el espacio restante y centra el formulario */}
       <div className="flex-1 p-4 flex items-center justify-center">
-        
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
-          
-          <button 
+
+          <button
             type="button"
             className="absolute top-6 left-6 bg-[var(--color-primary-950)] text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
             onClick={() => navigate("/dashboard/supplierList")}
@@ -104,105 +112,125 @@ export default function UserRegisterForm() {
           </button>
 
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
-            <div className="text-2xl text-[var(--color-primary-950)]">👤<span className="font-bold text-xl relative -top-2 -left-1">+</span></div>
-            <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">Registrar Proveedor</h2>
+            <div className="text-2xl text-[var(--color-primary-950)]">
+              👤
+              <span className="font-bold text-xl relative -top-2 -left-1">
+                +
+              </span>
+            </div>
+
+            <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">
+              Registrar Proveedor
+            </h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
-              
+
               <div className="space-y-4">
+
                 <Input
                   label="Nombre de la Empresa"
-                  name="userName"
+                  name="supplierName"
                   type="text"
-                  value={formData.userName}
+                  value={formData.supplierName}
                   placeholder="Empresa"
-                  htmlFor="user-name"
+                  htmlFor="supplier-name"
                   onChange={handleChange}
-                  error={errors.userName}
+                  error={errors.supplierName}
                 />
 
-                <Select   
+                <Select
                   label="Tipo de documento"
-                  name="userDocumentTypes"
-                  value={formData.userDocumentTypes}
-                  htmlFor="userDocumentTypes"
+                  name="supplierDocumentType"
+                  value={formData.supplierDocumentType}
+                  htmlFor="supplierDocumentType"
                   onChange={handleChange}
                   options={documentTypes}
-                  error={errors.userDocumentTypes}
+                  error={errors.supplierDocumentType}
                 />
 
                 <Input
                   label="Número de documento"
-                  name="userDocumentNumber"
+                  name="supplierDocumentNumber"
                   type="text"
-                  value={formData.userDocumentNumber}
+                  value={formData.supplierDocumentNumber}
                   placeholder="Número de documento"
-                  htmlFor="user-document-number"
+                  htmlFor="supplier-document-number"
                   onChange={handleChange}
-                  error={errors.userDocumentNumber}
+                  error={errors.supplierDocumentNumber}
                 />
+
               </div>
 
               <div className="space-y-5 flex flex-col items-center">
+
                 <div className="w-full flex justify-center">
                   <FileInput
-                  value={files}
-                  onChange={setFiles}
-                  multiple={false}
-                  accept="image/*"
-              />
+                    value={files}
+                    onChange={setFiles}
+                    multiple={false}
+                    accept="image/*"
+                  />
                 </div>
 
                 <Input
                   label="Dirección"
-                  name="userAddress"
+                  name="supplierAddress"
                   type="text"
+                  value={formData.supplierAddress}
                   placeholder="Dirección"
+                  htmlFor="supplier-address"
                   onChange={handleChange}
+                  error={errors.supplierAddress}
                 />
 
                 <div className="relative">
                   <Input
                     label="Número de contacto"
-                    name="userPhone"
+                    name="supplierPhone"
                     type="tel"
-                    value={formData.userPhone}
+                    value={formData.supplierPhone}
                     placeholder="Número de contacto"
-                    htmlFor="user-phone"
+                    htmlFor="supplier-phone"
                     onChange={handleChange}
-                    error={errors.userPhone}
+                    error={errors.supplierPhone}
                   />
-                  <button 
-                    type="button" 
+
+                  <button
+                    type="button"
                     className="absolute right-0 -bottom-6 text-xs text-gray-700 flex items-center gap-1 hover:underline"
                   >
                     <span>+</span> Agregar teléfono
                   </button>
                 </div>
+
               </div>
 
               <div className="space-y-5">
+
                 <Input
                   label="Correo electrónico Empresa"
-                  name="userEmail"
+                  name="supplierEmail"
                   type="email"
-                  value={formData.userEmail}
+                  value={formData.supplierEmail}
                   placeholder="Correo electrónico Empresa"
-                  htmlFor="user-email"
+                  htmlFor="supplier-email"
                   onChange={handleChange}
-                  error={errors.userEmail}
+                  error={errors.supplierEmail}
                 />
 
                 <div className="relative">
                   <Input
                     label="Confirmar correo electrónico"
-                    name="confirmEmail"
+                    name="confirmSupplierEmail"
                     type="email"
+                    value={formData.confirmSupplierEmail}
                     placeholder="Confirmar correo electrónico"
+                    htmlFor="confirm-supplier-email"
                     onChange={handleChange}
+                    error={errors.confirmSupplierEmail}
                   />
 
                   <button
@@ -216,52 +244,71 @@ export default function UserRegisterForm() {
 
                 <Input
                   label="Contraseña"
-                  name="userPassword"
+                  name="supplierPassword"
                   type="password"
-                  value={formData.userPassword}
+                  value={formData.supplierPassword}
                   placeholder="Escribe tu contraseña"
-                  htmlFor="user-password"
+                  htmlFor="supplier-password"
                   onChange={handleChange}
-                  error={errors.userPassword}
+                  error={errors.supplierPassword}
                 />
+
               </div>
 
               <div>
 
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Observaciones
-                  </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Observaciones
+                </label>
 
-                  <textarea
-                    name="observations"
-                    rows={4}
-                    value={formData.observations}
-                    onChange={handleChange}
-                    placeholder="Escriba observaciones del proveedor..."
-                    className="w-full rounded-xl border border-gray-300 p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-700)]"
-                  />
+                <textarea
+                  name="observations"
+                  rows={4}
+                  value={formData.observations}
+                  onChange={handleChange}
+                  placeholder="Escriba observaciones del proveedor..."
+                  className="w-full rounded-xl border border-gray-300 p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-700)]"
+                />
+
+                {errors.observations && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.observations}
+                  </p>
+                )}
 
               </div>
-                <div className="flex justify-center">
+
+              <div className="flex justify-center">
 
                 <CheckboxGroup
-                    label="Productos que suministra"
-                    className=""
-                    name="suppliedProducts"
-                    options={products}
-                    value={formData.suppliedProducts}
-                    onChange={handleChange}
+                  label="Productos que suministra"
+                  className=""
+                  name="suppliedProducts"
+                  options={products}
+                  value={formData.suppliedProducts}
+                  onChange={handleChange}
                 />
-                </div>
+
+                {errors.suppliedProducts && (
+                  <p className="text-red-500 text-sm">
+                    {errors.suppliedProducts}
+                  </p>
+                )}
+
+              </div>
 
             </div>
 
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-between items-center gap-6">
-              
+
               <div className="flex items-center gap-6 bg-[var(--color-primary-100)] p-3 rounded-xl px-5 border border-[var(--color-primary-200)]">
-                <span className="font-bold text-gray-700 text-sm uppercase">Estado:</span>
-                
+
+                <span className="font-bold text-gray-700 text-sm uppercase">
+                  Estado:
+                </span>
+
                 <div className="flex gap-4">
+
                   <Checkbox
                     id="isActive"
                     name="isActive"
@@ -269,17 +316,26 @@ export default function UserRegisterForm() {
                     checked={formData.isActive}
                     onChange={handleChange}
                   />
+
                   <Checkbox
-                    id="isStaff"
-                    name="isStaff"
+                    id="isInactive"
+                    name="isActive"
                     label="Inactivo"
-                    checked={formData.isStaff}
-                    onChange={handleChange}
+                    checked={!formData.isActive}
+                    onChange={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        isActive: false,
+                      }))
+                    }
                   />
+
                 </div>
+
               </div>
 
               <div className="flex gap-4 self-end">
+
                 <Button
                   variant="secondary"
                   size="md"
@@ -298,9 +354,11 @@ export default function UserRegisterForm() {
                 >
                   Finalizar
                 </Button>
+
               </div>
 
             </div>
+
           </form>
         </div>
       </div>

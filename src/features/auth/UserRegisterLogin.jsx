@@ -1,235 +1,228 @@
-// UserRegisterForm2 componente para modificar el URF
-
-import { useState } from "react"
+import { useState } from "react";
 import { Input, Checkbox, Button } from "@/shared";
-// import { getDocumentTypes } from "@/services/selectService";
-// import { useNavigate } from "react-router-dom";
-import { userSchema } from "../users/schemas/userSchema"
-import { Link } from "react-router-dom";
+import { loginSchema } from "../users/schemas/loginSchema";
+import { Link, useNavigate } from "react-router-dom";
 
-export default function UserRegisterForm (){
+export default function UserRegisterForm() {
 
-    // const navigate = useNavigate();
+  // Permite navegar entre las diferentes rutas
+  const navigate = useNavigate();
 
-    //Estado
+  // Estado de los errores
+  const [errors, setErrors] = useState({});
 
-    //Estado del error
-    const [errors, setErrors] = useState({})
+  // Estado del formulario
+  const [formData, setFormData] = useState({
+    userEmail: "",
+    userPassword: "",
+    isSuperUser: false,
+  });
 
-    const [formData, setFormData] = useState({
-        userName: "",
-        userEmail: "",
-        userPhone: "",
-        userDocumentTypes: "",
-        userDocumentNumber: "",
-        userPassword: "",
-        userImage: [],
+  // ========================================================
+  //                    HANDLE CHANGE
+  // ========================================================
 
-        //Flags booleanos
-        isStaff: false,
-        isActive: true,
-        isSuperUser: false,
-    });
+  // Se ejecuta cada vez que cambia un campo del formulario
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
 
-    //Estado para los tipos de documento
-    // const [documentTypes, setDocumentTypes] = useState([])
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
 
-    //Uso del estado useEffect
-    //  useEffect(() => {
-    //     getDocumentTypes().then(setDocumentTypes);
-    //   },[])
+    // Limpia el error del campo mientras el usuario escribe
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
 
-    //================================================
-    //         handleGenerico
-    //===============================================
+  // ========================================================
+  //                    HANDLE SUBMIT
+  // ========================================================
 
-
-    //Función que se ejecutra cada vez que cambia el valor de un input del formulario
-
-    const handleChange = (e) => {
-        // Se obtiene el nombre del campo y su valor
-        const { name, value, type, checked } = e.target;
-
-        setFormData((prev) => ({
-            //Se copian todos los valores anteriores del estado
-            ...prev,
-
-            //Se actualiza unicamente lo que cambio
-            [name]: type === "checkbox" ? checked : value,
-        }));
-    };
-
-    //============handle submit======================//
-
-    const handleSubmit = async (e) => {
-    //Evita que el formulario recargue la página
+  const handleSubmit = async (e) => {
+    // Evita que el formulario recargue la página
     e.preventDefault();
 
-    //Validamos los datos del formulario contra el esquema Zod
-    //safeParse No lanza excepción, retorna un objeto controlado
-    const result = userSchema.safeParse(formData);
+    // Validamos únicamente los campos necesarios para iniciar sesión
+    const result = loginSchema.safeParse({
+      userEmail: formData.userEmail,
+      userPassword: formData.userPassword,
+    });
 
-    //Verificar en consola si el esquema esta funcionando correctamente
-    //console.log(result)
+    // Si la validación falla
+    if (!result.success) {
 
-    //Si la validación falla
-    if(!result.sucess) {
-        //Objeto donde almacenaremos los errores por campo
-        const fieldErrors = {};
+      // Objeto donde almacenaremos los errores
+      const fieldErrors = {};
 
-        //Recorremos cada error generado por Zod
-        result.error.issues.forEach((issue) => {
-            //issue.path[0] corresponde al nombre del campo
-            //issue.message contiene el mensaje de error definido en el schema
-            fieldErrors[issue.path[0]] = issue.message;
-        });
+      // Recorremos los errores generados por Zod
+      result.error.issues.forEach((issue) => {
 
-        //Actualiza,ps el estado de errores para mostrarlos en la UI
-        setErrors(fieldErrors);
+        // issue.path[0] corresponde al nombre del campo
+        // issue.message contiene el mensaje definido en el schema
+        fieldErrors[issue.path[0]] = issue.message;
+      });
 
-        //Cortamos la ejecución: NO se envia nada al backend
+      // Mostramos los errores en la interfaz
+      setErrors(fieldErrors);
 
-        return;
+      // Detenemos el envío
+      return;
     }
 
-    //Si la validación pasa, limpiamos errores previos
+    // Si la validación pasa, limpiamos los errores
     setErrors({});
-    
-    //Activamos estado de envio (útil para deshabilitar el botón)
-    // setIsSubmitting(true);
 
     try {
-        //Lamamos al servicio fronted que consume la API
-        //result.data contiene los datos ya validados por Zod
-        // const response = await createUser(result.data);
 
-        //Log informativo para desarrollo
-        // console.log("Usuario creado:", response);
+      /*
+       * Aquí posteriormente puedes conectar el servicio
+       * que haga el login contra tu API.
+       *
+       * Ejemplo:
+       *
+       * const response = await loginUser(result.data);
+       */
 
-        //Feedback basico al usuario
-        alert("Usuario creado correctamente");
+      // Mensaje de inicio de sesión
+      alert("Usuario iniciado correctamente");
 
-        //Navegamos a la vista anterior
-        //Navigate(-1) equivale a "volver atras"
-        // navigate(-1);
-    }   catch(error) {
-        //Capturamos errores de red o errores lanzados por el service
-        console.error("Error:", error.message);
+      /*
+       * Limpiamos los datos del formulario.
+       *
+       * La contraseña NO se guarda en localStorage
+       * ni en sessionStorage.
+       */
+      setFormData({
+        userEmail: "",
+        userPassword: "",
+        isSuperUser: false,
+      });
 
-        //Mostramos el mensaje de error al usuario
-        alert(error.message);
-    }   finally {
-        //Pase lo que pase, desactivamos el estado de envio
-        // setIsSubmitting(false);
+      // Navegamos al listado de usuarios
+      navigate("/dashboard/userList");
+
+    } catch (error) {
+
+      console.error("Error:", error.message);
+
+      alert(error.message);
     }
-};
+  };
 
-    //================================================
-    //         Handle NameChange
-    //===============================================
+  // ========================================================
+  //                       RETURN
+  // ========================================================
 
-    // const handleNameChange = (e) => {
-    //     const value = e.target.value.trim();
+  return (
+    <div className="grid items-center justify-center bg-orange-100 border border-orange-500 rounded p-16">
 
-    //     if (value ==="") {
-    //         console.log("El nombre no puede estar vació");
-    //     }
-    // };
+      {/* Título */}
+      <h1 className="mx-auto my-2 text-title font-bold">
+        Inicio de sesión
+      </h1>
 
-    return(
-        <div className="grid items-center justify-center bg-orange-100 border border-orange-500 rounded p-16">
-            <h1 className="mx-auto my-2 text-title font-bold">Inicio de sesión</h1>
-            <div className="flex justify-center">
-            <img className = "flex w-16 h-16 align-center justify-center" src="/src/assets/icons/icon1.png" alt="Imagen" />
-            </div>
-            {/*formulario*/}
-            <form 
-            action=""
-            onSubmit={handleSubmit}
-            >
+      {/* Imagen */}
+      <div className="flex justify-center">
+        <img
+          className="flex w-16 h-16 align-center justify-center"
+          src="/src/assets/icons/icon1.png"
+          alt="Imagen"
+        />
+      </div>
 
-            <Input
-            label="Correo"
-            name="userEmail"
-            type="email"
-            value={formData.userEmail}
-            placeholder="Escribe tu correo electronico"
-            htmlFor= "user-email"
-            onChange={handleChange}
-            error={errors.userEmail}
+      {/* Formulario */}
+      <form
+        action=""
+        onSubmit={handleSubmit}
+      >
 
+        {/* Correo */}
+        <Input
+          label="Correo"
+          name="userEmail"
+          type="email"
+          value={formData.userEmail}
+          placeholder="Escribe tu correo electronico"
+          htmlFor="user-email"
+          onChange={handleChange}
+          error={errors.userEmail}
+        />
 
-            />
-           
-            <Input
-            label="Contraseña"
-            name="userPassword"
-            type="password"
-            value={formData.userPassword}
-            placeholder="Escribe tu contraseña"
-            htmlFor= "user-password"
-            onChange={handleChange}
-            error={errors.userPassword}
-            />
+        {/* Contraseña */}
+        <Input
+          label="Contraseña"
+          name="userPassword"
+          type="password"
+          value={formData.userPassword}
+          placeholder="Escribe tu contraseña"
+          htmlFor="user-password"
+          onChange={handleChange}
+          error={errors.userPassword}
+        />
 
-            <div className="grid gap-0 my-auto">
+        <div className="grid gap-0 my-auto">
 
-                {/* checkbox */}
-            <div className="flex items-center justify-between my-6">
+          {/* Checkbox */}
+          <div className="flex items-center justify-between my-6">
 
             <Checkbox
-                id="isSuperUser"
-                name="isSuperUser"
-                label="Recuerdame"
-                checked={formData.isSuperUser}
-                onChange={handleChange}
+              id="isSuperUser"
+              name="isSuperUser"
+              label="Recuerdame"
+              checked={formData.isSuperUser}
+              onChange={handleChange}
             />
 
+            {/* Olvidaste contraseña */}
             <button
-                type="button"
-                className="text-sm text-orange-500 hover:underline"
+              type="button"
+              className="text-sm text-orange-500 hover:underline"
             >
-                ¿Olvidaste tu contraseña?
+              ¿Olvidaste tu contraseña?
             </button>
 
-            </div>
+          </div>
 
-            <button
-                type="button"
-                className="text-sm text-orange-500 hover:underline mb-4"
-            >
-                ¿No tienes cuenta?
-            </button>
+          {/* Crear cuenta */}
+          <button
+            type="button"
+            className="text-sm text-orange-500 hover:underline mb-4"
+          >
+            ¿No tienes cuenta?
+          </button>
 
-            {/* Botón secundario */}
-            
-            </div>
-            
-                {/*Actions*/}
-                <div className="flex gap-6 items-center justify-center" >
-
-                <Link to="/CreateUser">
-                <Button
-                    variant="secondary"
-                    size="md"
-                    type="button"
-                >
-                    Registrarse
-                </Button>
-                </Link>
-
-                <Button
-                    variant="primary"
-                    size="md"
-                    type="button"
-                    onClick={() => console.log("Se oprimió el botón Iniciar Sesión")}
-                >
-                    Iniciar Sesión
-                </Button>
-                
-
-                </div>
-            </form>
         </div>
-    )
+
+        {/* Actions */}
+        <div className="flex gap-6 items-center justify-center">
+
+          {/* Registrarse */}
+          <Link to="/CreateUser">
+            <Button
+              variant="secondary"
+              size="md"
+              type="button"
+            >
+              Registrarse
+            </Button>
+          </Link>
+
+          {/* Iniciar sesión */}
+          <Button
+            variant="primary"
+            size="md"
+            type="submit"
+          >
+            Iniciar Sesión
+          </Button>
+
+        </div>
+
+      </form>
+    </div>
+  );
 }

@@ -9,6 +9,7 @@ import {
   getIndividualUsers,
   savePermissions,
 } from "../services/permissionService";
+import backgroundImage from "@/assets/images/restaurant.jpg";
 
 export default function PermissionManagement() {
   const [selectedGroup, setSelectedGroup] = useState("");
@@ -72,14 +73,17 @@ export default function PermissionManagement() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex flex-col font-sans">
-      <Navbar />
+ return (
+  <div 
+    className="min-h-screen flex flex-col font-sans bg-cover bg-center bg-no-repeat"
+    style={{ backgroundImage: `url(${backgroundImage})` }}
+  >
+    <Navbar />
 
-      <div className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
-        
-        {/* Encabezado */}
-        <div className="flex items-center justify-between border-b border-gray-300 pb-4">
+    <div className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+      
+      {/* Encabezado */}
+        <div className="flex items-center justify-between border-b-4 border-[var(--color-primary-950)] pb-4">
           <Button
             variant="secondary"
             type="button"

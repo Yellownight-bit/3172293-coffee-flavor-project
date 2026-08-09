@@ -5,40 +5,79 @@ import { inventory } from "../data/inventory";
 import { Link } from "react-router-dom";
 
 const inventoryReportFields = [
-    { key: "productName", label: "Producto", default: true },
-    { key: "productCategory", label: "Categoría", default: true },
-    { key: "currentStock", label: "Stock actual", default: true },
-    { key: "minStock", label: "Stock mínimo", default: true },
-    { key: "maxStock", label: "Stock máximo", default: true },
-    { key: "supplier", label: "Proveedor", default: true },
-    { key: "lastUpdated", label: "Última actualización", default: false },
+  { key: "productName", label: "Producto", default: true },
+  { key: "productCategory", label: "Categoría", default: true },
+  { key: "currentStock", label: "Stock actual", default: true },
+  { key: "minStock", label: "Stock mínimo", default: true },
+  { key: "maxStock", label: "Stock máximo", default: true },
+  { key: "supplier", label: "Proveedor", default: true },
+  { key: "lastUpdated", label: "Última actualización", default: false },
 ];
 
 export default function InventoryListPage() {
-    const [isReportOpen, setIsReportOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
-    return (
-        <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-                <h1 className="text-xl font-semibold">Listado de inventario</h1>
-                <div className="flex gap-2">
-                    <Button variant="secondary" onClick={() => setIsReportOpen(true)}>
-                        Generar reporte
-                    </Button>
-                    <Link to="/Createinventory">
-                        <Button>Agregar producto</Button>
-                    </Link>
-                </div>
-            </div>
-            <DataTable data={inventory} columns={inventoryColumns} />
-            <ListReportModal
-                isOpen={isReportOpen}
-                onClose={() => setIsReportOpen(false)}
-                title="inventario"
-                data={inventory}
-                fields={inventoryReportFields}
-                filePrefix="inventory"
-            />
+  return (
+    <div className="p-6">
+      {/* Contenedor principal */}
+      <div
+        className="
+          rounded-2xl
+          bg-white/80
+          backdrop-blur-md
+          shadow-lg
+          p-6
+          border border-white/40
+        "
+      >
+        {/* Encabezado */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-semibold text-gray-900">
+            Listado de inventario
+          </h1>
+
+          <div className="flex gap-4">
+            <Button
+              variant="secondary"
+              onClick={() => setIsReportOpen(true)}
+            >
+              Generar reporte
+            </Button>
+
+            <Link to="/Createinventory">
+              <Button variant="primary">
+                Agregar producto
+              </Button>
+            </Link>
+          </div>
         </div>
-    );
+
+        {/* Tabla */}
+        <div
+          className="
+            rounded-xl
+            overflow-hidden
+            bg-white/95
+            shadow-md
+            border border-gray-200
+          "
+        >
+          <DataTable
+            data={inventory}
+            columns={inventoryColumns}
+          />
+        </div>
+      </div>
+
+      {/* Modal de reportes */}
+      <ListReportModal
+        isOpen={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
+        title="inventario"
+        data={inventory}
+        fields={inventoryReportFields}
+        filePrefix="inventory"
+      />
+    </div>
+  );
 }

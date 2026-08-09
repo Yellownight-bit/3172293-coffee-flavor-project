@@ -4,6 +4,7 @@ import { getDocumentTypes } from "@/services/selectService";
 import { userSchema } from "../../users/schemas/userSchema";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
+import backgroundImage from "@/assets/images/restaurant.jpg";
 
 export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
@@ -70,7 +71,8 @@ export default function UserRegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
+    style={{ backgroundImage: `url(${backgroundImage})` }}>
 
     {/* Navbar */}
       <Navbar />

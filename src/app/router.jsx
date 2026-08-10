@@ -36,6 +36,7 @@ import CaféAme from "@/features/read/menu/CaféAme"
 import Capucchino from "@/features/read/menu/Capucchino"
 import Croissant from "@/features/read/menu/Croissant"
 import TortaChocolate from "@/features/read/menu/TortaChocolate"
+import { ReadOrder } from "@/features/read/orders";
 
 const router = createBrowserRouter ([ 
     {
@@ -78,6 +79,7 @@ const router = createBrowserRouter ([
             { path: "readMenu3", element: <Croissant/> },
             { path: "readMenu4", element: <TortaChocolate/> },
             { path: "UpdateUser", element: <UpdateUser/> },
+            { path: "/dashboard/ReadOrder", element: <ReadOrder /> },
         ],
     },
     {

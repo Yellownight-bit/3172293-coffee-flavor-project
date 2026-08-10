@@ -5,7 +5,7 @@ export const orders = [
     waiter: "Jacobo Agudelo López",
     status: "Abierta",
     date: "2026-08-09",
-    total: 12500,
+    total: 56000,
   },
   {
     id: 2,

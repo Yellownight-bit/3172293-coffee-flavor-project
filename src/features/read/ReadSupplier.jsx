@@ -86,7 +86,7 @@ export default function ReadSupplier() {
             <div className="flex flex-col gap-6">
 
               {/* Información */}
-              <div className="bg-gray-100 rounded-2xl shadow-md p-8">
+              <div className="bg-white rounded-2xl shadow-md p-8">
 
                 <div className="grid grid-cols-[220px_1fr] gap-y-5 text-gray-900">
 
@@ -113,7 +113,7 @@ export default function ReadSupplier() {
               </div>
 
               {/* Productos */}
-              <div className="bg-gray-100 rounded-2xl shadow-md p-6">
+              <div className="bg-white rounded-2xl shadow-md p-6 ">
 
                 <h3 className="text-center text-2xl font-medium mb-6">
                   Productos que suministra

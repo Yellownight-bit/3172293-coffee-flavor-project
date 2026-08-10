@@ -37,6 +37,7 @@ export const orderColumns = [
   {
     id: "actions",
     header: "Acciones",
-    cell: ({ row }) => <OrderRowActions row={row} />,
+    // 💡 AQUÍ ESTÁ EL CAMBIO: enviamos row.original como prop 'order'
+    cell: ({ row }) => <OrderRowActions order={row.original} />,
   },
 ];

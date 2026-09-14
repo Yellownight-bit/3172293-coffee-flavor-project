@@ -1,42 +1,36 @@
 import { useState, useEffect } from "react";
-import {
-  Input,
-  SelectInventory,
-  Checkbox,
-  Button,
-  FileInput
-} from "@/shared";
-import { getSupplierNames } from "@/services/selectService";
-import { inventorySchema } from "../users/schemas/inventorySchema";
-import Navbar from "@/shared/layouts/Navbar";
+import { Input, Select, Checkbox, Button, FileInput } from "@/shared";
+import { getDocumentTypes } from "@/services/selectService";
+import { userSchema } from "../users/schemas/userSchema";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
 
-export default function CreateProductInventory() {
+export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
-    productName: "",
-    productId: "",
-    productQuantity: "",
-    productSupplierNames: "",
-    productSupplierNit: "",
-    productDescription: "",
-    productPrice: "",
-    productEntryDate: "",
-    productImage: [],
+    userName: "",
+    userEmail: "",
+    confirmEmail: "",
+    userPhone: "",
+    userAddress: "",
+    userDocumentTypes: "",
+    userDocumentNumber: "",
+    userPassword: "",
+    userImage: [],
     isStaff: false,
     isActive: true,
+    isSuperUser: false,
   });
 
   const [files, setFiles] = useState([]);
 
+  const [documentTypes, setDocumentTypes] = useState([]);
+
   const navigate = useNavigate();
 
-  const [supplierNames, setSupplierNames] = useState([]);
-
   useEffect(() => {
-    getSupplierNames().then(setSupplierNames);
+    getDocumentTypes().then(setDocumentTypes);
   }, []);
 
   const handleChange = (e) => {
@@ -46,121 +40,130 @@ export default function CreateProductInventory() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleFileChange = (newFiles) => {
+    setFiles(newFiles);
 
-    const result = inventorySchema.safeParse({
-      ...formData,
-      productImage: files,
+    setFormData((prev) => ({
+      ...prev,
+      userImage: newFiles,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      userImage: "",
+    }));
+  };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const result = userSchema.safeParse({
+    ...formData,
+    userImage: files,
+  });
+
+  if (!result.success) {
+    console.log("ERRORES:", result.error.issues);
+
+    result.error.issues.forEach((issue) => {
+      console.log(
+        "Campo:",
+        issue.path[0],
+        "| Error:",
+        issue.message
+      );
     });
 
-    if (!result.success) {
-      const fieldErrors = {};
+    const fieldErrors = {};
 
-      result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
-      });
+    result.error.issues.forEach((issue) => {
+      fieldErrors[issue.path[0]] = issue.message;
+    });
 
-      setErrors(fieldErrors);
-      return;
-    }
+    setErrors(fieldErrors);
+    return;
+  }
 
-    setErrors({});
+  setErrors({});
 
-    try {
-      alert("Producto creado correctamente");
-      navigate("/dashboard/inventoryList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
-  };
+  alert("Usuario creado correctamente");
+
+  navigate("/dashboard/userList");
+};
+
+
 
   return (
     <div
       className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <Navbar/>
-
       <div className="flex-1 p-4 flex items-center justify-center">
-
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
 
           <button
             type="button"
             className="absolute top-6 left-6 bg-[var(--color-primary-950)] text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
-            onClick={() => navigate("/dashboard/inventoryList")}
+            onClick={() => navigate("/auth")}
           >
             <span>←</span> Atrás
           </button>
 
-          <button
-            type="button"
-            className="absolute top-6 left-240 bg-[var(--color-primary-950)] text-white px-4 py-2 rounded-lg text-md font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
-            onClick={() => navigate("/dashboard/inventoryList")}
-          >
-            <span>👁️‍🗨️</span> Ver inventario
-          </button>
-
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
-
-            <div
-              className="text-2xl text-[var(--color-text-inverse)]"
-            >
-              📋
+            <div className="text-2xl text-[var(--color-primary-950)]">
+              👤
               <span className="font-bold text-xl relative -top-2 -left-1">
                 +
               </span>
             </div>
 
-            <h2
-              className="text-[var(--color-text-inverse)] font-bold text-xl uppercase tracking-wider"
-            >
-              Registrar producto
+            <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">
+              Registrar usuario
             </h2>
-
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
 
               <div className="space-y-4">
 
                 <Input
-                  label="Nombre del producto"
-                  name="productName"
+                  label="Nombre completo"
+                  name="userName"
                   type="text"
-                  value={formData.productName}
-                  placeholder="Nombre del producto"
+                  value={formData.userName}
+                  placeholder="Nombre completo"
                   htmlFor="user-name"
                   onChange={handleChange}
-                  error={errors.productName}
+                  error={errors.userName}
                 />
 
-                <Input
-                  label="ID del producto"
-                  name="productId"
-                  type="text"
-                  value={formData.productId}
-                  placeholder="ID del producto"
-                  htmlFor="product-name"
+                <Select
+                  label="Tipo de documento"
+                  name="userDocumentTypes"
+                  value={formData.userDocumentTypes}
+                  htmlFor="userDocumentTypes"
                   onChange={handleChange}
-                  error={errors.productId}
+                  options={documentTypes}
+                  error={errors.userDocumentTypes}
                 />
 
                 <Input
-                  label="Nit del proveedor"
-                  name="productSupplierNit"
+                  label="Número de documento"
+                  name="userDocumentNumber"
                   type="text"
-                  value={formData.productSupplierNit}
-                  placeholder="Nit del proveedor"
+                  value={formData.userDocumentNumber}
+                  placeholder="Número de documento"
                   htmlFor="user-document-number"
                   onChange={handleChange}
-                  error={errors.productSupplierNit}
+                  error={errors.userDocumentNumber}
                 />
 
               </div>
@@ -168,43 +171,44 @@ export default function CreateProductInventory() {
               <div className="space-y-5 flex flex-col items-center">
 
                 <div className="w-full flex justify-center">
-
                   <FileInput
                     value={files}
-                    onChange={setFiles}
+                    onChange={handleFileChange}
                     multiple={false}
                     accept="image/*"
                   />
-
                 </div>
 
                 <Input
-                  label="Precio total"
-                  name="productPrice"
+                  label="Dirección"
+                  name="userAddress"
                   type="text"
-                  value={formData.productPrice}
-                  placeholder="Precio total"
+                  value={formData.userAddress}
+                  placeholder="Dirección"
+                  htmlFor="user-address"
                   onChange={handleChange}
-                  error={errors.productPrice}
+                  error={errors.userAddress}
                 />
 
                 <div className="relative">
 
                   <Input
-                    label="Cantidad del producto"
-                    name="productQuantity"
-                    type="text"
-                    value={formData.productQuantity}
-                    placeholder="Cantidad del producto"
+                    label="Número telefónico"
+                    name="userPhone"
+                    type="tel"
+                    value={formData.userPhone}
+                    placeholder="Número telefónico"
                     htmlFor="user-phone"
                     onChange={handleChange}
-                    error={errors.productQuantity}
+                    error={errors.userPhone}
                   />
 
                   <button
                     type="button"
                     className="absolute right-0 -bottom-6 text-xs text-gray-700 flex items-center gap-1 hover:underline"
                   >
+                    <span>+</span>
+                    Agregar teléfono
                   </button>
 
                 </div>
@@ -213,39 +217,49 @@ export default function CreateProductInventory() {
 
               <div className="space-y-5">
 
-                <SelectInventory
-                  label="Nombre del proveedor"
-                  name="productSupplierNames"
-                  value={formData.productSupplierNames}
-                  htmlFor="productSupplierNames"
+                <Input
+                  label="Correo electrónico"
+                  name="userEmail"
+                  type="email"
+                  value={formData.userEmail}
+                  placeholder="Correo electrónico"
+                  htmlFor="user-email"
                   onChange={handleChange}
-                  options={supplierNames}
-                  error={errors.productSupplierNames}
+                  error={errors.userEmail}
                 />
 
                 <div className="relative">
 
                   <Input
-                    label="Descripcion del producto"
-                    name="productDescription"
-                    value={formData.productDescription}
-                    type="text"
-                    placeholder="Descripcion del producto"
+                    label="Confirmar correo electrónico"
+                    name="confirmEmail"
+                    type="email"
+                    value={formData.confirmEmail}
+                    placeholder="Confirmar correo electrónico"
+                    htmlFor="confirm-email"
                     onChange={handleChange}
-                    error={errors.productDescription}
+                    error={errors.confirmEmail}
                   />
+
+                  <button
+                    type="button"
+                    className="absolute right-0 -bottom-6 text-xs text-gray-700 flex items-center gap-1 hover:underline"
+                  >
+                    <span>+</span>
+                    Agregar correo
+                  </button>
 
                 </div>
 
                 <Input
-                  label="fecha ingreso"
-                  name="productEntryDate"
-                  type="date"
-                  value={formData.productEntryDate}
-                  placeholder="Fecha de ingreso"
-                  htmlFor="product-entry-date"
+                  label="Contraseña"
+                  name="userPassword"
+                  type="password"
+                  value={formData.userPassword}
+                  placeholder="Escribe tu contraseña"
+                  htmlFor="user-password"
                   onChange={handleChange}
-                  error={errors.productEntryDate}
+                  error={errors.userPassword}
                 />
 
               </div>
@@ -254,10 +268,10 @@ export default function CreateProductInventory() {
 
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-between items-center gap-6">
 
-              <div className="flex items-center gap-6 bg-[var(--color-primary-200)] p-3 rounded-xl px-5 border-2 border-[var(--color-primary-800)]">
+              <div className="flex items-center gap-6 bg-[var(--color-primary-100)] p-3 rounded-xl px-5 border border-[var(--color-primary-200)]">
 
                 <span className="font-bold text-gray-700 text-sm uppercase">
-                  Estado en el inventario:
+                  Estado:
                 </span>
 
                 <div className="flex gap-4">
@@ -265,7 +279,7 @@ export default function CreateProductInventory() {
                   <Checkbox
                     id="isActive"
                     name="isActive"
-                    label="Disponible"
+                    label="Activo"
                     checked={formData.isActive}
                     onChange={handleChange}
                   />
@@ -273,7 +287,7 @@ export default function CreateProductInventory() {
                   <Checkbox
                     id="isStaff"
                     name="isStaff"
-                    label="Agotado"
+                    label="Inactivo"
                     checked={formData.isStaff}
                     onChange={handleChange}
                   />
@@ -288,7 +302,7 @@ export default function CreateProductInventory() {
                   variant="secondary"
                   size="md"
                   type="button"
-                  onClick={() => navigate("/dashboard/inventoryList")}
+                  onClick={() => navigate("/auth")}
                   className="px-6 py-2 rounded-full font-semibold border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
                 >
                   Cancelar
@@ -300,19 +314,16 @@ export default function CreateProductInventory() {
                   type="submit"
                   className="px-8 py-2 rounded-full font-semibold bg-[var(--color-primary-950)] hover:bg-[var(--color-primary-900)] text-white shadow-md transition"
                 >
-                  Registrar
+                  Finalizar
                 </Button>
 
               </div>
 
             </div>
-
           </form>
-
         </div>
-
       </div>
-
     </div>
   );
 }
+

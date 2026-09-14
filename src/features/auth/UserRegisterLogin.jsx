@@ -178,22 +178,26 @@ export default function UserRegisterForm() {
             />
 
             {/* Olvidaste contraseña */}
+            <Link to="/recover-password">
             <button
               type="button"
               className="text-sm text-orange-500 hover:underline"
             >
               ¿Olvidaste tu contraseña?
             </button>
+            </Link>
 
           </div>
 
           {/* Crear cuenta */}
+          <Link to="/CreateUserLogin">
           <button
             type="button"
             className="text-sm text-orange-500 hover:underline mb-4"
           >
             ¿No tienes cuenta?
           </button>
+          </Link>
 
         </div>
 
@@ -201,7 +205,7 @@ export default function UserRegisterForm() {
         <div className="flex gap-6 items-center justify-center">
 
           {/* Registrarse */}
-          <Link to="/CreateUser">
+          <Link to="/CreateUserLogin">
             <Button
               variant="secondary"
               size="md"

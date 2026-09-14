@@ -21,7 +21,7 @@ export default function UserRegisterForm() {
     isStaff: false,
     isActive: true,
     isSuperUser: false,
-});
+  });
 
   const [files, setFiles] = useState([]);
 
@@ -42,10 +42,6 @@ export default function UserRegisterForm() {
     }));
   };
 
-  // const handleImageClick = () => {
-  //   console.log("Simular apertura de explorador de archivos");
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -64,22 +60,17 @@ export default function UserRegisterForm() {
 
     setErrors({});
 
-    try {
-      alert("Usuario creado correctamente");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
+    alert("Usuario actualizado correctamente");
+    navigate("/dashboard/userList");
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
-    style={{ backgroundImage: `url(${backgroundImage})` }}>
-
-    {/* Navbar */}
+    <div
+      className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
       <Navbar />
 
-      {/* Contenido */}
       <div className="flex-1 p-4 flex items-center justify-center">
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
 
@@ -143,24 +134,31 @@ export default function UserRegisterForm() {
 
               <div className="space-y-5 flex flex-col items-center">
                 <div className="w-full flex justify-center">
-            <FileInput
-                  value={files}
-                  onChange={setFiles}
-                  multiple={false}
-                  accept="image/*"
-              />
+                  <FileInput
+                    value={files}
+                    onChange={(newFiles) => {
+                      setFiles(newFiles);
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        userImage: newFiles,
+                      }));
+                    }}
+                    multiple={false}
+                    accept="image/*"
+                  />
                 </div>
 
                 <Input
-                    label="Actualizar - Dirección"
-                    name="userAddress"
-                    type="text"
-                    value={formData.userAddress}
-                    placeholder="Dirección"
-                    htmlFor="user-address"
-                    onChange={handleChange}
-                    error={errors.userAddress}
-                  />
+                  label="Actualizar - Dirección"
+                  name="userAddress"
+                  type="text"
+                  value={formData.userAddress}
+                  placeholder="Dirección"
+                  htmlFor="user-address"
+                  onChange={handleChange}
+                  error={errors.userAddress}
+                />
 
                 <div className="relative">
                   <Input

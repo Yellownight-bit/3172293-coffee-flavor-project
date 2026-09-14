@@ -241,9 +241,8 @@ export default function CreateProductInventory() {
                 <Input
                   label="Fecha de envío"
                   name="shippingDate"
-                  type="text"
+                  type="date"
                   value={formData.shippingDate}
-                  placeholder="Ej. 20/04/2026"
                   htmlFor="shippingDate"
                   onChange={handleChange}
                   error={errors.shippingDate}

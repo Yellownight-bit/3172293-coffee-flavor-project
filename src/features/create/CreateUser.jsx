@@ -47,30 +47,28 @@ export default function UserRegisterForm() {
   // };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const result = userSchema.safeParse(formData);
+  const result = userSchema.safeParse(formData);
 
-    if (!result.success) {
-      const fieldErrors = {};
+  if (!result.success) {
+    console.log(result.error.issues);
 
-      result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
-      });
+    const fieldErrors = {};
 
-      setErrors(fieldErrors);
-      return;
-    }
+    result.error.issues.forEach((issue) => {
+      fieldErrors[issue.path[0]] = issue.message;
+    });
 
-    setErrors({});
+    setErrors(fieldErrors);
+    return;
+  }
 
-    try {
-      alert("Usuario creado correctamente");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
-  };
+  setErrors({});
+
+  alert("Usuario creado correctamente");
+  navigate("/dashboard/userList");
+};
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
@@ -144,10 +142,17 @@ export default function UserRegisterForm() {
                 <div className="w-full flex justify-center">
                   <FileInput
                   value={files}
-                  onChange={setFiles}
+                  onChange={(newFiles) => {
+                    setFiles(newFiles);
+
+                    setFormData((prev) => ({
+                      ...prev,
+                      userImage: newFiles,
+                    }));
+                  }}
                   multiple={false}
                   accept="image/*"
-              />
+                />
                 </div>
 
                 <Input
@@ -261,11 +266,11 @@ export default function UserRegisterForm() {
                   variant="secondary"
                   size="md"
                   type="button"
-                  onClick={() => console.log("Se oprimio el cancelar")}
+                  onClick={() => navigate("/dashboard/userList")}
                   className="px-6 py-2 rounded-full font-semibold border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
                 >
                   Cancelar
-                </Button>
+              </Button>
 
                 <Button
                   variant="primary"

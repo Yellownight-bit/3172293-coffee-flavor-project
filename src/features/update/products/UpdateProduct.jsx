@@ -27,9 +27,8 @@ export default function UpdateProduct() {
     productDescription: "",
     shippingDate: "",
     userImage: [],
-
     nuevo: false,
-    garantia: false,
+    incluido: false,
     agotable: false,
     oferta: false,
     envio: false,
@@ -65,42 +64,40 @@ export default function UpdateProduct() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const result = productSchema.safeParse(formData);
+  const result = productSchema.safeParse(formData);
 
-    if (!result.success) {
-      const fieldErrors = {};
+  console.log("FORM DATA:", formData);
+  console.log("RESULTADO:", result);
 
-      result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
-      });
+  if (!result.success) {
+    console.log("ERRORES:", result.error.issues);
 
-      setErrors(fieldErrors);
-      return;
-    }
+    const fieldErrors = {};
 
-    setErrors({});
+    result.error.issues.forEach((issue) => {
+      fieldErrors[issue.path[0]] = issue.message;
+    });
 
-    try {
-      alert("Producto actualizado correctamente");
-      navigate("/dashboard/productList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
-  };
+    setErrors(fieldErrors);
+    return;
+  }
+
+  setErrors({});
+
+  alert("Producto actualizado correctamente");
+  navigate("/dashboard/productList");
+};
 
   return (
     <div
       className="min-h-screen flex flex-col font-sans w-full max-w-full overflow-x-hidden bg-center bg-cover bg-no-repeat"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-    
-      <Navbar/>
+      <Navbar />
 
       <div className="flex-1 px-3 py-4 sm:px-6 sm:py-8 flex items-center justify-center w-full max-w-full box-border">
-
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-md min-w-0 box-border overflow-hidden">
 
           <button
@@ -114,13 +111,11 @@ export default function UpdateProduct() {
           <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-primary-950)]/30 pb-4 mb-6">
 
             <div className="flex items-center gap-2">
-
               <span className="text-2xl">🍝</span>
 
               <h2 className="text-[var(--color-text-inverse)] font-bold text-lg sm:text-xl uppercase tracking-wider">
                 Actualizar Platillo / Menu
               </h2>
-
             </div>
 
           </div>
@@ -182,14 +177,19 @@ export default function UpdateProduct() {
               <div className="space-y-4 flex flex-col items-center w-full min-w-0">
 
                 <div className="w-full flex justify-center min-w-0">
-
                   <FileInput
                     value={files}
-                    onChange={setFiles}
+                    onChange={(newFiles) => {
+                      setFiles(newFiles);
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        userImage: newFiles,
+                      }));
+                    }}
                     multiple={false}
                     accept="image/*"
                   />
-
                 </div>
 
                 <div className="w-full min-w-0">
@@ -242,9 +242,8 @@ export default function UpdateProduct() {
                 <Input
                   label="Fecha de envío"
                   name="shippingDate"
-                  type="text"
+                  type="date"
                   value={formData.shippingDate}
-                  placeholder="Ej. 20/04/2026"
                   htmlFor="shippingDate"
                   onChange={handleChange}
                   error={errors.shippingDate}
@@ -274,7 +273,7 @@ export default function UpdateProduct() {
 
                   <Checkbox
                     id="incluido"
-                    name="garantia"
+                    name="incluido"
                     label="Bebida incluida"
                     checked={formData.garantia}
                     onChange={handleChange}
@@ -368,9 +367,7 @@ export default function UpdateProduct() {
           </form>
 
         </div>
-
       </div>
-
     </div>
   );
 }

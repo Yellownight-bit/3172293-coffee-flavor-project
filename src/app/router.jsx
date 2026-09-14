@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { AuthLayout, DashboardLayout } from "@/shared";
 import CreateUser  from "@/features/create/CreateUser";
+import CreateUserLogin  from "@/features/create/CreateUserLogin";
 import CreateSupplier from "@/features/create/CreateSupplier"
 import CreateInventory from "@/features/create/CreateInventory"
 import CreateProduct from "@/features/create/CreateProduct"
@@ -12,6 +13,10 @@ import { HomePage } from "@/features/home"
 import { SupplierListPage } from "@/features/suppliers";
 import { ProductListPage } from "../features/products";
 import { OrderListPage } from "../features/order";
+
+import RecoverPassword from "@/features/password/pages/RecoverPassword";
+import VerifyCode from "@/features/password/pages/VerifyCode";
+import ResetPassword from "@/features/password/pages/ResetPassword";
 
 import ReadUser from "@/features/read/ReadUser"
 import ReadSupplier from "@/features/read/ReadSupplier"
@@ -53,6 +58,18 @@ const router = createBrowserRouter ([
         ],
     },
     {
+        path: "/recover-password",
+        element: <RecoverPassword />,
+    },
+    {
+    path: "/verify-code",
+    element: <VerifyCode />,
+    },
+    {
+    path: "/reset-password",
+    element: <ResetPassword />,
+    },
+    {
     path: "/dashboard",
     element: <DashboardLayout/>,
     children: [
@@ -85,6 +102,15 @@ const router = createBrowserRouter ([
     {
     path: "/CreateUser",
     element: <CreateUser />,
+    children: [
+            { index: true},
+            // { path: "/dashboard/auth", element: <h1>Hello2</h1> },
+            // { path: "/dashboard/userList", element: <h1>Hello3</h1> },
+        ],
+    },
+    {
+    path: "/CreateUserLogin",
+    element: <CreateUserLogin />,
     children: [
             { index: true},
             // { path: "/dashboard/auth", element: <h1>Hello2</h1> },

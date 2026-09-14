@@ -9,25 +9,16 @@ export const userSchema = z
       .max(60, "El nombre es demasiado largo"),
 
     userEmail: z
-      .email("Debe ingresar un email válido")
-      .regex(
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        "Debe ingresar un email válido"
-      ),
+      .string()
+      .email("Debe ingresar un email válido"),
 
     confirmEmail: z
-      .email("Debe ingresar un email válido")
-      .regex(
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        "Debe ingresar un email válido"
-      ),
+      .string()
+      .email("Debe ingresar un email válido"),
 
     userPhone: z
       .string()
-      .regex(
-        /^[0-9]{10}$/,
-        "El teléfono debe tener 10 digitos"
-      ),
+      .regex(/^[0-9]{10}$/, "El teléfono debe tener 10 dígitos"),
 
     userAddress: z
       .string()
@@ -40,7 +31,7 @@ export const userSchema = z
 
     userDocumentNumber: z
       .string()
-      .min(5, "Número de documento inváido")
+      .min(5, "Número de documento inválido")
       .max(20, "Número de documento demasiado largo"),
 
     userPassword: z
@@ -48,16 +39,11 @@ export const userSchema = z
       .min(8, "Contraseña debe tener mínimo 8 caracteres")
       .regex(/[A-Z]/, "Debe contener al menos una mayúscula")
       .regex(/[a-z]/, "Debe contener al menos una minúscula")
-      .regex(/[0-9]/, "Debe contener almenos un número")
-      .regex(
-        /[^A-Za-z0-9]/,
-        "Debe contener al menos un carácter especial"
-      ),
+      .regex(/[0-9]/, "Debe contener al menos un número")
+      .regex(/[^A-Za-z0-9]/, "Debe contener al menos un carácter especial"),
 
     isStaff: z.boolean(),
-
     isActive: z.boolean(),
-
     isSuperUser: z.boolean(),
 
     userImage: fileSchema.shape.files.optional(),
@@ -69,3 +55,4 @@ export const userSchema = z
       path: ["confirmEmail"],
     }
   );
+

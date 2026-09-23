@@ -6,6 +6,10 @@ import { supplierSchema } from "../users/schemas/supplierSchema";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertService";
 
 export default function SupplierRegisterForm() {
   const [errors, setErrors] = useState({});
@@ -79,18 +83,25 @@ export default function SupplierRegisterForm() {
       });
 
       setErrors(fieldErrors);
+
+      await showUserErrorAlert({
+        title: "Error al crear proveedor",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
       return;
     }
 
     setErrors({});
 
-    try {
-      alert("Proveedor creado correctamente");
-      navigate("/dashboard/supplierList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
+    await showSuccessAlert({
+      title: "Proveedor creado correctamente",
+      text: "El proveedor se registró correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
+    });
+
+    navigate("/dashboard/supplierList");
   };
 
   return (
@@ -365,3 +376,4 @@ export default function SupplierRegisterForm() {
     </div>
   );
 }
+

@@ -6,6 +6,10 @@ import {
   Button,
   FileInput
 } from "@/shared";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertService";
 import { getSupplierNames } from "@/services/selectService";
 import { getCategorieTypes } from "@/services/selectCategorieTypes";
 import { productSchema } from "../users/schemas/productSchema";
@@ -75,18 +79,25 @@ export default function CreateProductInventory() {
       });
 
       setErrors(fieldErrors);
+
+      await showUserErrorAlert({
+        title: "Error al crear producto",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
       return;
     }
 
     setErrors({});
 
-    try {
-      alert("Producto creado correctamente");
-      navigate("/dashboard/productList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
+    await showSuccessAlert({
+      title: "Producto creado correctamente",
+      text: "El producto se registró correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
+    });
+
+    navigate("/dashboard/productList");
   };
 
   return (
@@ -124,8 +135,6 @@ export default function CreateProductInventory() {
           <form onSubmit={handleSubmit} className="space-y-6 w-full min-w-0">
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-start w-full min-w-0">
-
-              {/* Columna 1 */}
 
               <div className="space-y-4 w-full min-w-0">
 
@@ -174,8 +183,6 @@ export default function CreateProductInventory() {
 
               </div>
 
-              {/* Columna 2 */}
-
               <div className="space-y-4 flex flex-col items-center w-full min-w-0">
 
                 <div className="w-full flex justify-center min-w-0">
@@ -220,8 +227,6 @@ export default function CreateProductInventory() {
 
               </div>
 
-              {/* Columna 3 */}
-
               <div className="space-y-4 w-full min-w-0 md:col-span-2 lg:col-span-1">
 
                 <div className="w-full min-w-0">
@@ -251,8 +256,6 @@ export default function CreateProductInventory() {
               </div>
 
             </div>
-
-            {/* Sección de Características */}
 
             <div className="pt-6 border-t border-[var(--color-primary-950)]/20 flex flex-col lg:flex-row justify-between items-start gap-6 w-full min-w-0">
 
@@ -340,8 +343,6 @@ export default function CreateProductInventory() {
 
               </div>
 
-              {/* Botones de Acción */}
-
               <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:self-end pt-2">
 
                 <Button
@@ -376,3 +377,4 @@ export default function CreateProductInventory() {
     </div>
   );
 }
+

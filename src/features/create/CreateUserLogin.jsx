@@ -4,6 +4,10 @@ import { getDocumentTypes } from "@/services/selectService";
 import { userSchema } from "../users/schemas/userSchema";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertService";
 
 export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
@@ -61,44 +65,42 @@ export default function UserRegisterForm() {
     }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const result = userSchema.safeParse({
-    ...formData,
-    userImage: files,
-  });
-
-  if (!result.success) {
-    console.log("ERRORES:", result.error.issues);
-
-    result.error.issues.forEach((issue) => {
-      console.log(
-        "Campo:",
-        issue.path[0],
-        "| Error:",
-        issue.message
-      );
+    const result = userSchema.safeParse({
+      ...formData,
+      userImage: files,
     });
 
-    const fieldErrors = {};
+    if (!result.success) {
+      const fieldErrors = {};
 
-    result.error.issues.forEach((issue) => {
-      fieldErrors[issue.path[0]] = issue.message;
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+
+      setErrors(fieldErrors);
+
+      await showUserErrorAlert({
+        title: "Error al crear usuario",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
+      return;
+    }
+
+    setErrors({});
+
+    await showSuccessAlert({
+      title: "Usuario creado correctamente",
+      text: "El usuario se registró correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
     });
 
-    setErrors(fieldErrors);
-    return;
-  }
-
-  setErrors({});
-
-  alert("Usuario creado correctamente");
-
-  navigate("/dashboard/userList");
-};
-
-
+    navigate("/dashboard/userList");
+  };
 
   return (
     <div

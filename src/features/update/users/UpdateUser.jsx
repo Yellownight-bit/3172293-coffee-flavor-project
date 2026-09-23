@@ -5,6 +5,10 @@ import { userSchema } from "../../users/schemas/userSchema";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertservice";
 
 export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
@@ -55,12 +59,24 @@ export default function UserRegisterForm() {
       });
 
       setErrors(fieldErrors);
+
+      await showUserErrorAlert({
+        title: "Error al actualizar usuario",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
       return;
     }
 
     setErrors({});
 
-    alert("Usuario actualizado correctamente");
+    await showSuccessAlert({
+      title: "Usuario actualizado correctamente",
+      text: "La información del usuario se actualizó correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
+    });
+
     navigate("/dashboard/userList");
   };
 
@@ -283,3 +299,4 @@ export default function UserRegisterForm() {
     </div>
   );
 }
+

@@ -6,6 +6,10 @@ import {
   Button,
   FileInput
 } from "@/shared";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertService";
 import { getSupplierNames } from "@/services/selectService";
 import { inventorySchema } from "../users/schemas/inventorySchema";
 import Navbar from "@/shared/layouts/Navbar";
@@ -64,18 +68,25 @@ export default function CreateProductInventory() {
       });
 
       setErrors(fieldErrors);
+
+      await showUserErrorAlert({
+        title: "Error al crear producto",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
       return;
     }
 
     setErrors({});
 
-    try {
-      alert("Producto creado correctamente");
-      navigate("/dashboard/inventoryList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
+    await showSuccessAlert({
+      title: "Producto creado correctamente",
+      text: "El producto se registró correctamente en el inventario.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
+    });
+
+    navigate("/dashboard/inventoryList");
   };
 
   return (
@@ -316,3 +327,4 @@ export default function CreateProductInventory() {
     </div>
   );
 }
+

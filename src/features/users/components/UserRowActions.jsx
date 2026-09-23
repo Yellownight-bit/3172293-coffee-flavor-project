@@ -2,6 +2,12 @@
 
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import {
+  showConfirmDeleteAlert,
+  showCancelDeleteAlert,
+  showSuccessAlert,
+} from "@/shared";
 
 export default function UserRowActions({ user }) {
 
@@ -13,8 +19,34 @@ export default function UserRowActions({ user }) {
   };
 
   // Eliminar usuario
-  const handleDelete = () => {
-    console.log("Eliminar usuario", user.id);
+  const handleDelete = async () => {
+
+    const result = await showConfirmDeleteAlert({
+      title: "¿Eliminar usuario?",
+      text: `¿Estás seguro de eliminar al usuario ${user.userName}?`,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "No, cancelar",
+    });
+
+    if (result.isConfirmed) {
+
+      console.log("Eliminar usuario", user.id);
+
+      await showSuccessAlert({
+        title: "Usuario eliminado",
+        text: "El usuario se eliminó correctamente.",
+        confirmButtonText: "Aceptar",
+      });
+
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+      await showCancelDeleteAlert({
+        title: "Eliminación cancelada",
+        text: "El usuario no fue eliminado.",
+        confirmButtonText: "Aceptar",
+      });
+
+    }
   };
 
   // Ver usuario
@@ -22,16 +54,16 @@ export default function UserRowActions({ user }) {
 
     if (user.id === 1) {
       navigate("/dashboard/readUser");
-    } 
+    }
     else if (user.id === 3) {
       navigate("/dashboard/readUser3");
-    } 
+    }
     else if (user.id === 2) {
       navigate("/dashboard/readUser2");
-    } 
+    }
     else if (user.id === 4) {
       navigate("/dashboard/readUser4");
-    } 
+    }
     else if (user.id === 5) {
       navigate("/dashboard/readUser5");
     }
@@ -68,3 +100,4 @@ export default function UserRowActions({ user }) {
     </div>
   );
 }
+

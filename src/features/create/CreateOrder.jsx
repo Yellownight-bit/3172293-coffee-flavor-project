@@ -6,6 +6,10 @@ import { getOrderProducts } from "@/services/selectOrderProductService";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertService";
 
 export default function CreateOrder() {
   const navigate = useNavigate();
@@ -29,22 +33,18 @@ export default function CreateOrder() {
     status: "Abierta",
   });
 
-  // Obtener mesas
   useEffect(() => {
     getOrderTables().then(setTables);
   }, []);
 
-  // Obtener meseros
   useEffect(() => {
     getOrderUsers().then(setUsers);
   }, []);
 
-  // Obtener productos
   useEffect(() => {
     getOrderProducts().then(setProducts);
   }, []);
 
-  // Cambios de mesa, mesero y observaciones
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -54,7 +54,6 @@ export default function CreateOrder() {
     }));
   };
 
-  // Cambiar producto o cantidad
   const handleDishChange = (index, field, value) => {
     setFormData((prev) => {
       const updatedDishes = [...prev.dishes];
@@ -71,7 +70,6 @@ export default function CreateOrder() {
     });
   };
 
-  // Agregar otro platillo
   const addDish = () => {
     setFormData((prev) => ({
       ...prev,
@@ -85,7 +83,6 @@ export default function CreateOrder() {
     }));
   };
 
-  // Eliminar platillo
   const removeDish = (index) => {
     setFormData((prev) => ({
       ...prev,
@@ -93,7 +90,6 @@ export default function CreateOrder() {
     }));
   };
 
-  // Enviar formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -125,21 +121,27 @@ export default function CreateOrder() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+
+      await showUserErrorAlert({
+        title: "Error al crear orden",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
       return;
     }
 
     setErrors({});
 
-    try {
-      console.log("Orden creada:", formData);
+    console.log("Orden creada:", formData);
 
-      alert("Orden creada correctamente");
+    await showSuccessAlert({
+      title: "Orden creada correctamente",
+      text: "La orden se registró correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
+    });
 
-      navigate("/dashboard/orderList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
+    navigate("/dashboard/orderList");
   };
 
   return (
@@ -149,15 +151,12 @@ export default function CreateOrder() {
         backgroundImage: `url(${backgroundImage})`,
       }}
     >
-      {/* Navbar */}
       <Navbar />
 
-      {/* Contenedor principal */}
       <div className="flex-1 p-4 flex items-center justify-center">
 
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
 
-          {/* Botón atrás */}
           <button
             type="button"
             className="absolute top-6 left-6 bg-[var(--color-primary-950)] text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
@@ -166,7 +165,6 @@ export default function CreateOrder() {
             <span>←</span> Atrás
           </button>
 
-          {/* Título */}
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
 
             <div className="text-2xl text-[var(--color-primary-950)]">
@@ -182,10 +180,8 @@ export default function CreateOrder() {
 
           </div>
 
-          {/* Formulario */}
           <form onSubmit={handleSubmit} className="space-y-6">
 
-            {/* Mesa y mesero */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
               <Select
@@ -210,10 +206,8 @@ export default function CreateOrder() {
 
             </div>
 
-            {/* Platillos */}
             <div className="bg-[var(--color-primary-100)] p-5 rounded-2xl border border-[var(--color-primary-200)]">
 
-              {/* Título y botón agregar */}
               <div className="flex items-center justify-between mb-5">
 
                 <h3 className="font-bold text-gray-700 uppercase text-sm">
@@ -230,7 +224,6 @@ export default function CreateOrder() {
 
               </div>
 
-              {/* Lista de platillos */}
               <div className="space-y-4">
 
                 {formData.dishes.map((dish, index) => (
@@ -240,7 +233,6 @@ export default function CreateOrder() {
                     className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_100px_45px] gap-4 items-end"
                   >
 
-                    {/* Platillo */}
                     <Select
                       label={`Platillo ${index + 1}`}
                       name={`product-${index}`}
@@ -256,33 +248,31 @@ export default function CreateOrder() {
                       options={products}
                     />
 
-                    {/* Cantidad */}
                     <div className="w-[100px] max-w-full">
-                    <label
+                      <label
                         htmlFor={`quantity-${index}`}
                         className="block text-sm font-semibold text-gray-700 mb-2"
-                    >
+                      >
                         Cantidad
-                    </label>
+                      </label>
 
-                    <input
+                      <input
                         id={`quantity-${index}`}
                         name={`quantity-${index}`}
                         type="number"
                         min="1"
                         value={dish.quantity}
                         onChange={(e) =>
-                        handleDishChange(
+                          handleDishChange(
                             index,
                             "quantity",
                             Number(e.target.value)
-                        )
+                          )
                         }
                         className="w-full h-10 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-700)]"
-                    />
+                      />
                     </div>
 
-                    {/* Eliminar */}
                     {formData.dishes.length > 1 && (
 
                       <button
@@ -302,7 +292,6 @@ export default function CreateOrder() {
 
               </div>
 
-              {/* Error de platillos */}
               {errors.dishes && (
                 <p className="text-red-600 text-sm mt-3">
                   {errors.dishes}
@@ -311,7 +300,6 @@ export default function CreateOrder() {
 
             </div>
 
-            {/* Observaciones */}
             <div>
 
               <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -329,7 +317,6 @@ export default function CreateOrder() {
 
             </div>
 
-            {/* Botones */}
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-end items-center gap-4">
 
               <Button
@@ -359,3 +346,4 @@ export default function CreateOrder() {
     </div>
   );
 }
+

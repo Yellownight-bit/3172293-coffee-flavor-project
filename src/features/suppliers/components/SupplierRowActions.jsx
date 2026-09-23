@@ -1,63 +1,63 @@
-// src/features/suppliers/components/SupplierRowActions.jsx
-
-// Iconos usados en los botones de acciones
 import { Pencil, Trash2, Eye } from "lucide-react";
-
-// Hook de React Router para navegar programáticamente
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import {
+  showConfirmDeleteAlert,
+  showCancelDeleteAlert,
+  showSuccessAlert,
+} from "@/shared/services/alertService";
 
-// Componente que renderiza las acciones de cada fila de proveedores
-// Recibe como prop el objeto supplier
 export default function SupplierRowActions({ supplier }) {
-
-  // Hook que permite navegar entre rutas
   const navigate = useNavigate();
 
-  // Acción para editar el proveedor
   const handleEdit = () => {
     navigate(`/UpdateSupplier`);
   };
 
-  // Acción para eliminar el proveedor
-  const handleDelete = () => {
-    console.log("Eliminar proveedor", supplier.id);
+  const handleDelete = async () => {
+    const result = await showConfirmDeleteAlert({
+      title: "¿Eliminar proveedor?",
+      text: `¿Estás seguro de eliminar el proveedor ${supplier.companyName}?`,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "No, cancelar",
+    });
+
+    if (result.isConfirmed) {
+      console.log("Eliminar proveedor", supplier.id);
+
+      await showSuccessAlert({
+        title: "Proveedor eliminado",
+        text: "El proveedor se eliminó correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      await showCancelDeleteAlert({
+        title: "Eliminación cancelada",
+        text: "El proveedor no fue eliminado.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+    }
   };
 
-  // Acción para ver el proveedor
   const handleView = () => {
-
-    // Yupi S.A.S.
     if (supplier.id === 800123456) {
       navigate("/dashboard/readSupplier2");
-    }
-
-    // Nestlé Colombia
-    else if (supplier.id === 860002130) {
+    } else if (supplier.id === 860002130) {
       navigate("/dashboard/readSupplier");
-    }
-
-    // Alpina Productos Alimenticios
-    else if (supplier.id === 860025900) {
+    } else if (supplier.id === 860025900) {
       navigate("/dashboard/readSupplier3");
-    }
-
-    // Postobón S.A.
-    else if (supplier.id === 860002503) {
+    } else if (supplier.id === 860002503) {
       navigate("/dashboard/readSupplier1");
-    }
-
-    // Colombina S.A.
-    else if (supplier.id === 890300186) {
+    } else if (supplier.id === 890300186) {
       navigate("/dashboard/readSupplier4");
     }
-
   };
 
   return (
-    // Contenedor de los botones de acciones
     <div className="flex gap-2">
 
-      {/* Botón editar */}
       <button
         onClick={handleEdit}
         className="p-1 rounded hover:bg-gray-100"
@@ -65,7 +65,6 @@ export default function SupplierRowActions({ supplier }) {
         <Pencil size={16} />
       </button>
 
-      {/* Botón eliminar */}
       <button
         onClick={handleDelete}
         className="p-1 rounded hover:bg-gray-100"
@@ -73,7 +72,6 @@ export default function SupplierRowActions({ supplier }) {
         <Trash2 size={16} />
       </button>
 
-      {/* Botón ver */}
       <button
         onClick={handleView}
         className="p-1 rounded hover:bg-gray-100"

@@ -5,9 +5,14 @@ import { userSchema } from "../users/schemas/userSchema";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertservice";
 
 export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
+
   const [formData, setFormData] = useState({
     userName: "",
     userEmail: "",
@@ -21,7 +26,7 @@ export default function UserRegisterForm() {
     isStaff: false,
     isActive: true,
     isSuperUser: false,
-});
+  });
 
   const [files, setFiles] = useState([]);
 
@@ -42,41 +47,49 @@ export default function UserRegisterForm() {
     }));
   };
 
-  // const handleImageClick = () => {
-  //   console.log("Simular apertura de explorador de archivos");
-  // };
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const result = userSchema.safeParse(formData);
+    const result = userSchema.safeParse(formData);
 
-  if (!result.success) {
-    console.log(result.error.issues);
+    if (!result.success) {
+      console.log(result.error.issues);
 
-    const fieldErrors = {};
+      const fieldErrors = {};
 
-    result.error.issues.forEach((issue) => {
-      fieldErrors[issue.path[0]] = issue.message;
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+
+      setErrors(fieldErrors);
+
+      await showUserErrorAlert({
+        title: "Error al crear usuario",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
+      return;
+    }
+
+    setErrors({});
+
+    await showSuccessAlert({
+      title: "Usuario creado correctamente",
+      text: "El usuario se registró correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
     });
 
-    setErrors(fieldErrors);
-    return;
-  }
-
-  setErrors({});
-
-  alert("Usuario creado correctamente");
-  navigate("/dashboard/userList");
-};
+    navigate("/dashboard/userList");
+  };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
-    style={{ backgroundImage: `url(${backgroundImage})` }}>
-      {/* Navbar */}
+    <div
+      className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
       <Navbar />
 
-      {/* Contenido */}
       <div className="flex-1 p-4 flex items-center justify-center">
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
 
@@ -141,30 +154,30 @@ export default function UserRegisterForm() {
               <div className="space-y-5 flex flex-col items-center">
                 <div className="w-full flex justify-center">
                   <FileInput
-                  value={files}
-                  onChange={(newFiles) => {
-                    setFiles(newFiles);
+                    value={files}
+                    onChange={(newFiles) => {
+                      setFiles(newFiles);
 
-                    setFormData((prev) => ({
-                      ...prev,
-                      userImage: newFiles,
-                    }));
-                  }}
-                  multiple={false}
-                  accept="image/*"
-                />
+                      setFormData((prev) => ({
+                        ...prev,
+                        userImage: newFiles,
+                      }));
+                    }}
+                    multiple={false}
+                    accept="image/*"
+                  />
                 </div>
 
                 <Input
-                    label="Dirección"
-                    name="userAddress"
-                    type="text"
-                    value={formData.userAddress}
-                    placeholder="Dirección"
-                    htmlFor="user-address"
-                    onChange={handleChange}
-                    error={errors.userAddress}
-                  />
+                  label="Dirección"
+                  name="userAddress"
+                  type="text"
+                  value={formData.userAddress}
+                  placeholder="Dirección"
+                  htmlFor="user-address"
+                  onChange={handleChange}
+                  error={errors.userAddress}
+                />
 
                 <div className="relative">
                   <Input
@@ -270,7 +283,7 @@ export default function UserRegisterForm() {
                   className="px-6 py-2 rounded-full font-semibold border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
                 >
                   Cancelar
-              </Button>
+                </Button>
 
                 <Button
                   variant="primary"
@@ -289,3 +302,4 @@ export default function UserRegisterForm() {
     </div>
   );
 }
+

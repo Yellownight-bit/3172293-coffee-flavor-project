@@ -10,6 +10,7 @@ import {
 } from "@/shared";
 import  logo  from "@/assets/images/1-logo.png";
 import { Link } from "react-router-dom";
+import { showOpsAlert } from "@/shared/services/alertservice";
 
 
 export default function Navbar(){
@@ -67,6 +68,30 @@ return (
                 >
                     Menu
                 </Link>
+                </li>
+                
+                <li
+                onClick={() =>
+                    showOpsAlert({
+                    title: "Ops, hubo un error",
+                    text: "Esta opción no está disponible en este momento.",
+                    })
+                }
+                className="cursor-pointer"
+                >
+                Cursos
+                </li>
+
+                <li
+                onClick={() =>
+                    showOpsAlert({
+                    title: "Ops, hubo un error",
+                    text: "Esta opción no está disponible en este momento.",
+                    })
+                }
+                className="cursor-pointer"
+                >
+                Multimedia
                 </li>
             </ul>
 

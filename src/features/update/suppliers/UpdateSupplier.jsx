@@ -6,6 +6,10 @@ import { supplierSchema } from "../../users/schemas/supplierSchema";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertService";
 
 export default function UpdateSupplier() {
   const [errors, setErrors] = useState({});
@@ -79,18 +83,25 @@ export default function UpdateSupplier() {
       });
 
       setErrors(fieldErrors);
+
+      await showUserErrorAlert({
+        title: "Error al actualizar proveedor",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
       return;
     }
 
     setErrors({});
 
-    try {
-      alert("Proveedor actualizado correctamente");
-      navigate("/dashboard/supplierList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
+    await showSuccessAlert({
+      title: "Proveedor actualizado correctamente",
+      text: "La información del proveedor se actualizó correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
+    });
+
+    navigate("/dashboard/supplierList");
   };
 
   return (
@@ -377,3 +388,4 @@ export default function UpdateSupplier() {
     </div>
   );
 }
+

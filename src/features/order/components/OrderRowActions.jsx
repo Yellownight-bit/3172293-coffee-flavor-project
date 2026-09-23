@@ -1,8 +1,12 @@
-// src/features/order/components/OrderRowActions.jsx
-
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared";
+import Swal from "sweetalert2";
+import {
+  showConfirmDeleteAlert,
+  showCancelDeleteAlert,
+  showSuccessAlert,
+} from "@/shared/services/alertService";
 
 export default function OrderRowActions({ order }) {
   const navigate = useNavigate();
@@ -11,12 +15,34 @@ export default function OrderRowActions({ order }) {
     navigate("/UpdateOrder");
   };
 
-  const handleDelete = () => {
-    console.log("Eliminar orden", order?.id);
+  const handleDelete = async () => {
+    const result = await showConfirmDeleteAlert({
+      title: "¿Eliminar orden?",
+      text: `¿Estás seguro de eliminar la orden ${order?.id}?`,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "No, cancelar",
+    });
+
+    if (result.isConfirmed) {
+      console.log("Eliminar orden", order?.id);
+
+      await showSuccessAlert({
+        title: "Orden eliminada",
+        text: "La orden se eliminó correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      await showCancelDeleteAlert({
+        title: "Eliminación cancelada",
+        text: "La orden no fue eliminada.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+    }
   };
 
   const handleView = () => {
-    // Si la orden tiene ID de ejemplo
     if (order?.id === "ORD-00001" || order?.id === 1) {
       navigate("/dashboard/ReadOrder");
     } else if (order?.id === "ORD-00002" || order?.id === 2) {
@@ -59,3 +85,4 @@ export default function OrderRowActions({ order }) {
     </div>
   );
 }
+

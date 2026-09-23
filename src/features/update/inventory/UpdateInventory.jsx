@@ -11,6 +11,10 @@ import { inventorySchema } from "../../users/schemas/inventorySchema";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertService";
 
 export default function CreateProductInventory() {
   const [errors, setErrors] = useState({});
@@ -64,18 +68,25 @@ export default function CreateProductInventory() {
       });
 
       setErrors(fieldErrors);
+
+      await showUserErrorAlert({
+        title: "Error al actualizar inventario",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
       return;
     }
 
     setErrors({});
 
-    try {
-      alert("Inventario actualizado correctamente");
-      navigate("/dashboard/inventoryList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
+    await showSuccessAlert({
+      title: "Inventario actualizado correctamente",
+      text: "La información del inventario se actualizó correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
+    });
+
+    navigate("/dashboard/inventoryList");
   };
 
   return (
@@ -83,7 +94,7 @@ export default function CreateProductInventory() {
       className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <Navbar/>
+      <Navbar />
 
       <div className="flex-1 p-4 flex items-center justify-center">
 
@@ -107,18 +118,14 @@ export default function CreateProductInventory() {
 
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
 
-            <div
-              className="text-2xl text-[var(--color-text-inverse)]"
-            >
+            <div className="text-2xl text-[var(--color-text-inverse)]">
               📋
               <span className="font-bold text-xl relative -top-2 -left-1">
                 +
               </span>
             </div>
 
-            <h2
-              className="text-[var(--color-text-inverse)] font-bold text-xl uppercase tracking-wider"
-            >
+            <h2 className="text-[var(--color-text-inverse)] font-bold text-xl uppercase tracking-wider">
               Actualizar inventario
             </h2>
 
@@ -316,3 +323,4 @@ export default function CreateProductInventory() {
     </div>
   );
 }
+

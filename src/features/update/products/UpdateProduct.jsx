@@ -6,6 +6,10 @@ import {
   Button,
   FileInput
 } from "@/shared";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertService";
 import { getSupplierNames } from "@/services/selectService";
 import { productSchema } from "../../users/schemas/productSchema";
 import Navbar from "@/shared/layouts/Navbar";
@@ -64,31 +68,43 @@ export default function UpdateProduct() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const result = productSchema.safeParse(formData);
+    const result = productSchema.safeParse(formData);
 
-  console.log("FORM DATA:", formData);
-  console.log("RESULTADO:", result);
+    console.log("FORM DATA:", formData);
+    console.log("RESULTADO:", result);
 
-  if (!result.success) {
-    console.log("ERRORES:", result.error.issues);
+    if (!result.success) {
+      console.log("ERRORES:", result.error.issues);
 
-    const fieldErrors = {};
+      const fieldErrors = {};
 
-    result.error.issues.forEach((issue) => {
-      fieldErrors[issue.path[0]] = issue.message;
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+
+      setErrors(fieldErrors);
+
+      await showUserErrorAlert({
+        title: "Error al actualizar producto",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
+      return;
+    }
+
+    setErrors({});
+
+    await showSuccessAlert({
+      title: "Producto actualizado correctamente",
+      text: "La información del producto se actualizó correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
     });
 
-    setErrors(fieldErrors);
-    return;
-  }
-
-  setErrors({});
-
-  alert("Producto actualizado correctamente");
-  navigate("/dashboard/productList");
-};
+    navigate("/dashboard/productList");
+  };
 
   return (
     <div
@@ -371,3 +387,4 @@ export default function UpdateProduct() {
     </div>
   );
 }
+

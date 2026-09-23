@@ -6,6 +6,10 @@ import { getOrderProducts } from "@/services/selectOrderProductService";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+import {
+  showSuccessAlert,
+  showUserErrorAlert,
+} from "@/shared/services/alertService";
 
 export default function UpdateOrder() {
   const navigate = useNavigate();
@@ -29,22 +33,18 @@ export default function UpdateOrder() {
     status: "Abierta",
   });
 
-  // Obtener mesas
   useEffect(() => {
     getOrderTables().then(setTables);
   }, []);
 
-  // Obtener meseros
   useEffect(() => {
     getOrderUsers().then(setUsers);
   }, []);
 
-  // Obtener productos
   useEffect(() => {
     getOrderProducts().then(setProducts);
   }, []);
 
-  // Cambios de mesa, mesero y observaciones
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -54,7 +54,6 @@ export default function UpdateOrder() {
     }));
   };
 
-  // Cambiar producto o cantidad
   const handleDishChange = (index, field, value) => {
     setFormData((prev) => {
       const updatedDishes = [...prev.dishes];
@@ -71,7 +70,6 @@ export default function UpdateOrder() {
     });
   };
 
-  // Agregar platillo
   const addDish = () => {
     setFormData((prev) => ({
       ...prev,
@@ -85,7 +83,6 @@ export default function UpdateOrder() {
     }));
   };
 
-  // Eliminar platillo
   const removeDish = (index) => {
     setFormData((prev) => ({
       ...prev,
@@ -93,7 +90,6 @@ export default function UpdateOrder() {
     }));
   };
 
-  // Actualizar orden
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -125,21 +121,27 @@ export default function UpdateOrder() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+
+      await showUserErrorAlert({
+        title: "Error al actualizar orden",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
+
       return;
     }
 
     setErrors({});
 
-    try {
-      console.log("Orden actualizada:", formData);
+    console.log("Orden actualizada:", formData);
 
-      alert("Se actualizó la orden");
+    await showSuccessAlert({
+      title: "Orden actualizada correctamente",
+      text: "Se actualizó la orden correctamente.",
+      confirmButtonText: "Aceptar",
+      timer: 3000,
+    });
 
-      navigate("/dashboard/orderList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(error.message);
-    }
+    navigate("/dashboard/orderList");
   };
 
   return (
@@ -155,7 +157,6 @@ export default function UpdateOrder() {
 
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
 
-          {/* Botón atrás */}
           <button
             type="button"
             className="absolute top-6 left-6 bg-[var(--color-primary-950)] text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
@@ -164,7 +165,6 @@ export default function UpdateOrder() {
             <span>←</span> Atrás
           </button>
 
-          {/* Título */}
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
 
             <div className="text-2xl text-[var(--color-primary-950)]">
@@ -182,7 +182,6 @@ export default function UpdateOrder() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
 
-            {/* Mesa y mesero */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
               <Select
@@ -207,7 +206,6 @@ export default function UpdateOrder() {
 
             </div>
 
-            {/* Platillos */}
             <div className="bg-[var(--color-primary-100)] p-5 rounded-2xl border border-[var(--color-primary-200)]">
 
               <div className="flex items-center justify-between mb-5">
@@ -235,7 +233,6 @@ export default function UpdateOrder() {
                     className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_100px_40px] gap-4 items-end"
                   >
 
-                    {/* Platillo */}
                     <Select
                       label={`Platillo ${index + 1}`}
                       name={`product-${index}`}
@@ -251,7 +248,6 @@ export default function UpdateOrder() {
                       options={products}
                     />
 
-                    {/* Cantidad */}
                     <div className="w-[100px] max-w-full">
 
                       <label
@@ -279,7 +275,6 @@ export default function UpdateOrder() {
 
                     </div>
 
-                    {/* Eliminar */}
                     {formData.dishes.length > 1 && (
                       <button
                         type="button"
@@ -305,7 +300,6 @@ export default function UpdateOrder() {
 
             </div>
 
-            {/* Observaciones */}
             <div>
 
               <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -323,7 +317,6 @@ export default function UpdateOrder() {
 
             </div>
 
-            {/* Botones */}
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-end items-center gap-4">
 
               <Button
@@ -353,3 +346,4 @@ export default function UpdateOrder() {
     </div>
   );
 }
+

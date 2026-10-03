@@ -48,22 +48,11 @@ export default function ProductListPage() {
             </Link>
           </div>
         </div>
-
         {/* Tabla */}
-        <div
-          className="
-            rounded-xl
-            overflow-hidden
-            bg-white/95
-            shadow-md
-            border border-gray-200
-          "
-        >
           <DataTable
             data={products}
             columns={productColumns}
           />
-        </div>
       </div>
 
       {/* Modal de reportes */}

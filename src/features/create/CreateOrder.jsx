@@ -157,13 +157,14 @@ export default function CreateOrder() {
 
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
 
-          <button
+          <Button
+            variant="back"
+            size="back"
             type="button"
-            className="absolute top-6 left-6 bg-[var(--color-primary-950)] text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
             onClick={() => navigate("/dashboard/orderList")}
           >
             <span>←</span> Atrás
-          </button>
+          </Button>
 
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
 
@@ -320,20 +321,18 @@ export default function CreateOrder() {
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-end items-center gap-4">
 
               <Button
-                variant="secondary"
-                size="md"
+                variant="cancel"
+                size="cancel"
                 type="button"
                 onClick={() => navigate("/dashboard/orderList")}
-                className="px-6 py-2 rounded-full font-semibold border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
               >
                 Cancelar
               </Button>
 
               <Button
-                variant="primary"
-                size="md"
+                variant="finish"
+                size="finish"
                 type="submit"
-                className="px-8 py-2 rounded-full font-semibold bg-[var(--color-primary-950)] hover:bg-[var(--color-primary-900)] text-white shadow-md transition"
               >
                 Crear orden
               </Button>
@@ -346,4 +345,3 @@ export default function CreateOrder() {
     </div>
   );
 }
-

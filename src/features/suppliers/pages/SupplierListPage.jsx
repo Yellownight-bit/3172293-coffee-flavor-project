@@ -20,12 +20,12 @@ export default function SupplierListPage() {
       {/* Contenedor principal */}
       <div
         className="
-          rounded-lg
-          bg-white/90
-          backdrop-blur-sm
-          shadow-md
-          border border-gray-200
+          rounded-2xl
+          bg-white/80
+          backdrop-blur-md
+          shadow-lg
           p-6
+          border border-white/40
         "
       >
         {/* Encabezado */}
@@ -49,22 +49,11 @@ export default function SupplierListPage() {
             </Link>
           </div>
         </div>
-
-        {/* Tabla */}
-        <div
-          className="
-            rounded-lg
-            overflow-hidden
-            bg-white
-            shadow-sm
-            border border-gray-200
-          "
-        >
+        
           <DataTable
             data={suppliers}
             columns={suppliersColumns}
           />
-        </div>
       </div>
 
       {/* Modal de reporte */}

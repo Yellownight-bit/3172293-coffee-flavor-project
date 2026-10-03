@@ -54,7 +54,7 @@ export default function ReadOrder() {
           <Button 
             type="button"
             onClick={() => navigate("/UpdateOrder")}
-            variant="primary">
+            variant="finish">
                 ✏️ Editar Orden
           </Button>
         </div>

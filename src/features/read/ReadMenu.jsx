@@ -1,4 +1,4 @@
-import { Button } from "@/shared";
+import { Button } from "@/shared"
 import { DetailItem } from "@/shared";
 import { products } from "@/features/products/data/products";
 import Pizza from "@/assets/images/pizza2.png";
@@ -15,7 +15,7 @@ export default function ReadMenu() {
     menuStatus: "Activo",
   };
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -23,18 +23,15 @@ export default function ReadMenu() {
 
         <div className="w-full max-w-7xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl shadow-lg p-8 relative">
 
-          {/* Botón atrás */}
           <Button
-            variant="secondary"
-            size="sm"
+            variant="back"
+            size="back"
             type="button"
-            className="mt-2 border-2 border-[var(--color-primary-950)] rounded-full px-4 py-2 hover:bg-white transition duration-300"
             onClick={() => navigate("/")}
           >
             ← Atrás
           </Button>
 
-          {/* Encabezado */}
           <div className="flex items-center gap-3 mt-8 mb-8 border-b border-[var(--color-primary-950)] pb-3">
 
             <div className="text-4xl">
@@ -48,8 +45,6 @@ export default function ReadMenu() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-10">
-
-            {/* ================= IZQUIERDA ================= */}
 
             <div>
 
@@ -99,8 +94,6 @@ export default function ReadMenu() {
               </div>
 
             </div>
-
-            {/* ================= DERECHA ================= */}
 
             <div className="bg-white rounded-3xl shadow-lg overflow-hidden">
 
@@ -167,10 +160,9 @@ export default function ReadMenu() {
                 <div className="flex justify-center mt-8">
 
                   <Button
-                    variant="primary"
-                    size="md"
+                    variant="finish"
+                    size="finish"
                     type="button"
-                    className="mt-2 border-2 border-[var(--color-primary-950)] bg-[var(--color-primary-950)] rounded-full px-4 py-2 hover:bg-white transition duration-300"
                     onClick={() => navigate("/UpdateProduct")}
                   >
                     ✏ Editar menú
@@ -190,3 +182,4 @@ export default function ReadMenu() {
     </div>
   );
 }
+

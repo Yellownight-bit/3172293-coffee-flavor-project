@@ -22,11 +22,12 @@ export default function OrderListPage() {
       {/* Contenedor principal */}
       <div
         className="
-          bg-white/90
           rounded-2xl
+          bg-white/80
+          backdrop-blur-md
+          shadow-lg
           p-6
-          shadow-sm
-          border border-gray-200
+          border border-white/40
         "
       >
 
@@ -56,21 +57,10 @@ export default function OrderListPage() {
         </div>
 
         {/* Tabla */}
-        <div
-          className="
-            rounded-lg
-            overflow-hidden
-            bg-white
-            shadow-sm
-            border border-gray-200
-          "
-        >
           <DataTable
             data={orders}
             columns={orderColumns}
           />
-        </div>
-
       </div>
 
       {/* Modal de reporte */}

@@ -112,24 +112,29 @@ export default function CreateProductInventory() {
 
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-md min-w-0 box-border overflow-hidden">
 
-          <button
-            type="button"
-            className="mb-3 self-start sm:self-auto bg-[var(--color-primary-950)] text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
-            onClick={() => navigate("/dashboard/productList")}
-          >
-            <span>←</span> Atrás
-          </button>
+          <div>
+            <Button
+              variant="back"
+              size="backProduct"
+              type="button"
+              onClick={() => navigate("/dashboard/productList")}
+            >
+              <span>←</span> Atrás
+            </Button>
+          </div>
 
-          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-primary-950)]/30 pb-4 mb-6">
+          <div>
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-primary-950)]/30 pb-4 mb-6">
 
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🍝</span>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🍝</span>
 
-              <h2 className="text-[var(--color-text-inverse)] font-bold text-lg sm:text-xl uppercase tracking-wider">
-                Agregar Platillo / Menu
-              </h2>
+                <h2 className="text-[var(--color-text-inverse)] font-bold text-lg sm:text-xl uppercase tracking-wider">
+                  Agregar Platillo / Menu
+                </h2>
+              </div>
+
             </div>
-
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6 w-full min-w-0">
@@ -346,20 +351,18 @@ export default function CreateProductInventory() {
               <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:self-end pt-2">
 
                 <Button
-                  variant="secondary"
-                  size="md"
+                  variant="cancel"
+                  size="cancel"
                   type="button"
                   onClick={() => navigate("/dashboard/productList")}
-                  className="px-6 py-2 rounded-full font-semibold border border-gray-400 text-gray-700 hover:bg-gray-100 transition w-full sm:w-auto"
                 >
                   Cancelar
                 </Button>
 
                 <Button
-                  variant="primary"
-                  size="md"
+                  variant="finish"
+                  size="finish"
                   type="submit"
-                  className="px-8 py-2 rounded-full font-semibold bg-[var(--color-primary-950)] hover:bg-[var(--color-primary-900)] text-white shadow-md transition w-full sm:w-auto"
                 >
                   Guardar
                 </Button>
@@ -377,4 +380,3 @@ export default function CreateProductInventory() {
     </div>
   );
 }
-

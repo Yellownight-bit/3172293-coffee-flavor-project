@@ -29,19 +29,14 @@ export default function ReadUser() {
 
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl shadow-lg p-8 relative">
 
-          {/* Botón atrás */}
-
           <Button
-            variant="secondary"
-            size="sm"
+            variant="back"
+            size="back"
             type="button"
-            className="mt-2 border-2 border-[var(--color-primary-950)] rounded-full px-4 py-2 hover:bg-white transition duration-300"
             onClick={() => navigate("/dashboard/userList")}
           >
             ← Atrás
           </Button>
-
-          {/* Encabezado */}
 
           <div className="flex items-center gap-3 mb-8 mt-8 border-b border-[var(--color-primary-950)] pb-3">
 
@@ -55,11 +50,7 @@ export default function ReadUser() {
 
           </div>
 
-          {/* Contenido */}
-
           <div className="grid md:grid-cols-2 gap-10">
-
-            {/* Panel izquierdo */}
 
             <div className="flex flex-col items-center">
 
@@ -91,19 +82,20 @@ export default function ReadUser() {
 
               </div>
 
-              <Button
-                variant="primary"
-                size="md"
-                type="button"
-                className="mt-8 border-2 border-[var(--color-primary-950)] rounded-full px-8 py-2 hover:bg-white transition duration-300"
-                onClick={() => navigate("/UpdateUser")}
+              <div className="flex justify-center mt-8">
+
+                <Button
+                  variant="finish"
+                  size="finish"
+                  type="button"
+                  onClick={() => navigate("/UpdateUser")}
                 >
-                ✏ Editar
+                  ✏ Editar
                 </Button>
 
-            </div>
+              </div>
 
-            {/* Panel derecho */}
+            </div>
 
             <div className="bg-white rounded-2xl shadow-md p-8">
 

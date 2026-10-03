@@ -47,18 +47,8 @@ export default function UserListPage() {
           </div>
         </div>
 
-        {/* Tabla */}
-        <div
-          className="
-            rounded-xl
-            overflow-hidden
-            bg-white/95
-            shadow-md
-            border border-gray-200
-          "
-        >
           <DataTable data={users} columns={UserColumns} />
-        </div>
+        
       </div>
 
       {/* Modal */}

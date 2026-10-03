@@ -32,10 +32,9 @@ export default function ReadUser() {
           {/* Botón atrás */}
 
           <Button
-            variant="secondary"
-            size="sm"
+            variant="back"
+            size="back"
             type="button"
-            className="mt-2 border-2 border-[var(--color-primary-950)] rounded-full px-4 py-2 hover:bg-white transition duration-300"
             onClick={() => navigate("/dashboard/userList")}
           >
             ← Atrás
@@ -91,15 +90,18 @@ export default function ReadUser() {
 
               </div>
 
-              <Button
-                variant="primary"
-                size="md"
-                type="button"
-                className="mt-8 border-2 border-[var(--color-primary-950)] rounded-full px-8 py-2 hover:bg-white transition duration-300"
-                onClick={() => navigate("/UpdateUser")}
+              <div className="flex justify-center mt-8">
+
+                <Button
+                  variant="finish"
+                  size="finish"
+                  type="button"
+                  onClick={() => navigate("/UpdateUser")}
                 >
-                ✏ Editar
+                  ✏ Editar
                 </Button>
+
+              </div>
 
             </div>
 

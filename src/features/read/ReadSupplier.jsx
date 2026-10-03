@@ -22,18 +22,15 @@ export default function ReadSupplier() {
       <div className="flex-1 p-6 flex justify-center items-center">
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl shadow-lg p-8 relative">
 
-          {/* Botón atrás */}
           <Button
-            variant="secondary"
-            size="sm"
+            variant="back"
+            size="back"
             type="button"
-            className="mt-2 border-2 border-[var(--color-primary-950)] rounded-full px-4 py-2 hover:bg-white transition duration-300"
             onClick={() => navigate("/dashboard/supplierList")}
           >
             ← Atrás
           </Button>
 
-          {/* Encabezado */}
           <div className="flex items-center gap-3 mb-8 mt-8 border-b border-[var(--color-primary-950)] pb-3">
             <div className="text-4xl">🏢</div>
 
@@ -42,10 +39,8 @@ export default function ReadSupplier() {
             </h2>
           </div>
 
-          {/* Contenido */}
           <div className="grid md:grid-cols-2 gap-10">
 
-            {/* Panel izquierdo */}
             <div className="flex flex-col items-center">
 
               <div className="w-64 h-72 rounded-xl overflow-hidden border-4 border-white shadow-md bg-white">
@@ -70,22 +65,23 @@ export default function ReadSupplier() {
                 </span>
               </div>
 
-              <Button
-                variant="primary"
-                size="md"
-                type="button"
-                className="mt-8 border-2 border-[var(--color-primary-950)] rounded-full px-8 py-2 hover:bg-white transition duration-300"
-                onClick={() => navigate("/UpdateSupplier")}
-              >
-                ✏ Editar
-              </Button>
+              <div className="flex justify-center mt-8">
+
+                  <Button
+                    variant="finish"
+                    size="finish"
+                    type="button"
+                    onClick={() => navigate("/UpdateSupplier")}
+                  >
+                    ✏ Editar
+                  </Button>
+
+                </div>
 
             </div>
 
-            {/* Panel derecho */}
             <div className="flex flex-col gap-6">
 
-              {/* Información */}
               <div className="bg-white rounded-2xl shadow-md p-8">
 
                 <div className="grid grid-cols-[220px_1fr] gap-y-5 text-gray-900">
@@ -112,7 +108,6 @@ export default function ReadSupplier() {
 
               </div>
 
-              {/* Productos */}
               <div className="bg-white rounded-2xl shadow-md p-6 ">
 
                 <h3 className="text-center text-2xl font-medium mb-6">
@@ -143,3 +138,4 @@ export default function ReadSupplier() {
     </div>
   );
 }
+

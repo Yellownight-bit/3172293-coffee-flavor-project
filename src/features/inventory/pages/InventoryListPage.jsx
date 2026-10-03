@@ -52,21 +52,11 @@ export default function InventoryListPage() {
           </div>
         </div>
 
-        {/* Tabla */}
-        <div
-          className="
-            rounded-xl
-            overflow-hidden
-            bg-white/95
-            shadow-md
-            border border-gray-200
-          "
-        >
+        {/* Tabla */}  
           <DataTable
             data={inventory}
             columns={inventoryColumns}
           />
-        </div>
       </div>
 
       {/* Modal de reportes */}

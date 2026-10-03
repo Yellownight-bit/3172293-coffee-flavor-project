@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/shared";
 
 const VerifyCode = () => {
     const navigate = useNavigate();
@@ -33,6 +34,16 @@ const VerifyCode = () => {
             <div className="absolute inset-0 bg-black/50"></div>
 
             <div className="relative w-full max-w-md rounded-2xl border border-orange-400 bg-black/70 p-8 shadow-2xl">
+
+                <Button
+                    variant="back"
+                    size="back"
+                    type="button"
+                    onClick={() => navigate(-1)}
+                >
+                    <span>←</span> Atrás
+                </Button>
+
                 <div className="text-center mb-6">
                     <h1 className="text-2xl font-bold text-white">
                         Verificar Código
@@ -76,3 +87,6 @@ const VerifyCode = () => {
 };
 
 export default VerifyCode;
+
+
+

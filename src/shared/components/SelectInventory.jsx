@@ -46,7 +46,7 @@ export default function SelectInventory({
                     "
             >
 
-                <option value="">Seleccione un proveedor</option>
+                <option value="">Seleccione una opción</option>
 
                 {options.map((opt) => (
                     <option key ={opt.value} value={opt.value}>

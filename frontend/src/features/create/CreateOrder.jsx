@@ -3,6 +3,7 @@ import { Select, Button } from "@/shared";
 import { getOrderTables } from "@/services/selectOrderService";
 import { getOrderUsers } from "@/services/selectUserService";
 import { getOrderProducts } from "@/services/selectOrderProductService";
+import { createOrder } from "@/features/order/services/orderServices";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
@@ -132,16 +133,35 @@ export default function CreateOrder() {
 
     setErrors({});
 
-    console.log("Orden creada:", formData);
+    try {
+      const orderData = {
+        ...formData,
+        tableNumber: Number(formData.tableNumber),
+        waiter: Number(formData.waiter),
+        dishes: formData.dishes.map((dish) => ({
+          productId: Number(dish.productId),
+          quantity: Number(dish.quantity),
+        })),
+      };
 
-    await showSuccessAlert({
-      title: "Orden creada correctamente",
-      text: "La orden se registró correctamente.",
-      confirmButtonText: "Aceptar",
-      timer: 3000,
-    });
+      await createOrder(orderData);
 
-    navigate("/dashboard/orderList");
+      await showSuccessAlert({
+        title: "Orden creada correctamente",
+        text: "La orden se registró correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+
+      navigate("/dashboard/orderList");
+    } catch (error) {
+      console.error("Error al crear orden:", error);
+
+      await showUserErrorAlert({
+        title: "Error al crear orden",
+        text: error.message || "No fue posible registrar la orden.",
+      });
+    }
   };
 
   return (
@@ -154,9 +174,7 @@ export default function CreateOrder() {
       <Navbar />
 
       <div className="flex-1 p-4 flex items-center justify-center">
-
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
-
           <Button
             variant="back"
             size="back"
@@ -167,7 +185,6 @@ export default function CreateOrder() {
           </Button>
 
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
-
             <div className="text-2xl text-[var(--color-primary-950)]">
               🧾
               <span className="font-bold text-xl relative -top-2 -left-1">
@@ -178,13 +195,10 @@ export default function CreateOrder() {
             <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">
               Crear Orden
             </h2>
-
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
               <Select
                 label="Número de mesa"
                 name="tableNumber"
@@ -204,13 +218,10 @@ export default function CreateOrder() {
                 options={users}
                 error={errors.waiter}
               />
-
             </div>
 
             <div className="bg-[var(--color-primary-100)] p-5 rounded-2xl border border-[var(--color-primary-200)]">
-
               <div className="flex items-center justify-between mb-5">
-
                 <h3 className="font-bold text-gray-700 uppercase text-sm">
                   Platillos de la orden
                 </h3>
@@ -222,18 +233,14 @@ export default function CreateOrder() {
                 >
                   + Agregar platillo
                 </button>
-
               </div>
 
               <div className="space-y-4">
-
                 {formData.dishes.map((dish, index) => (
-
                   <div
                     key={index}
                     className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_100px_45px] gap-4 items-end"
                   >
-
                     <Select
                       label={`Platillo ${index + 1}`}
                       name={`product-${index}`}
@@ -275,7 +282,6 @@ export default function CreateOrder() {
                     </div>
 
                     {formData.dishes.length > 1 && (
-
                       <button
                         type="button"
                         onClick={() => removeDish(index)}
@@ -284,13 +290,9 @@ export default function CreateOrder() {
                       >
                         🗑️
                       </button>
-
                     )}
-
                   </div>
-
                 ))}
-
               </div>
 
               {errors.dishes && (
@@ -298,11 +300,9 @@ export default function CreateOrder() {
                   {errors.dishes}
                 </p>
               )}
-
             </div>
 
             <div>
-
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Observaciones especiales
               </label>
@@ -315,11 +315,9 @@ export default function CreateOrder() {
                 placeholder="Escriba observaciones especiales de la orden..."
                 className="w-full rounded-xl border border-gray-300 p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-700)]"
               />
-
             </div>
 
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-end items-center gap-4">
-
               <Button
                 variant="cancel"
                 size="cancel"
@@ -336,9 +334,7 @@ export default function CreateOrder() {
               >
                 Crear orden
               </Button>
-
             </div>
-
           </form>
         </div>
       </div>

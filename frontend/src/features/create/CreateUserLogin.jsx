@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button, FileInput } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
 import { userSchema } from "../users/schemas/userSchema";
+import { createUser } from "@/features/users/services/userServices";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
 import {
@@ -28,7 +29,6 @@ export default function UserRegisterForm() {
   });
 
   const [files, setFiles] = useState([]);
-
   const [documentTypes, setDocumentTypes] = useState([]);
 
   const navigate = useNavigate();
@@ -92,14 +92,30 @@ export default function UserRegisterForm() {
 
     setErrors({});
 
-    await showSuccessAlert({
-      title: "Usuario creado correctamente",
-      text: "El usuario se registró correctamente.",
-      confirmButtonText: "Aceptar",
-      timer: 3000,
-    });
+    try {
+      const userData = {
+        ...result.data,
+        userImage: files[0] || null,
+      };
 
-    navigate("/dashboard/userList");
+      await createUser(userData);
+
+      await showSuccessAlert({
+        title: "Usuario creado correctamente",
+        text: "El usuario se registró correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+
+      navigate("/auth");
+    } catch (error) {
+      console.error("Error al crear usuario:", error);
+
+      await showUserErrorAlert({
+        title: "Error al crear usuario",
+        text: error.message || "No fue posible registrar el usuario.",
+      });
+    }
   };
 
   return (
@@ -109,7 +125,6 @@ export default function UserRegisterForm() {
     >
       <div className="flex-1 p-4 flex items-center justify-center">
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
-
           <Button
             variant="back"
             size="back"
@@ -134,9 +149,7 @@ export default function UserRegisterForm() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
-
               <div className="space-y-4">
-
                 <Input
                   label="Nombre completo"
                   name="userName"
@@ -168,11 +181,9 @@ export default function UserRegisterForm() {
                   onChange={handleChange}
                   error={errors.userDocumentNumber}
                 />
-
               </div>
 
               <div className="space-y-5 flex flex-col items-center">
-
                 <div className="w-full flex justify-center">
                   <FileInput
                     value={files}
@@ -194,7 +205,6 @@ export default function UserRegisterForm() {
                 />
 
                 <div className="relative">
-
                   <Input
                     label="Número telefónico"
                     name="userPhone"
@@ -213,13 +223,10 @@ export default function UserRegisterForm() {
                     <span>+</span>
                     Agregar teléfono
                   </button>
-
                 </div>
-
               </div>
 
               <div className="space-y-5">
-
                 <Input
                   label="Correo electrónico"
                   name="userEmail"
@@ -232,7 +239,6 @@ export default function UserRegisterForm() {
                 />
 
                 <div className="relative">
-
                   <Input
                     label="Confirmar correo electrónico"
                     name="confirmEmail"
@@ -251,7 +257,6 @@ export default function UserRegisterForm() {
                     <span>+</span>
                     Agregar correo
                   </button>
-
                 </div>
 
                 <Input
@@ -264,21 +269,16 @@ export default function UserRegisterForm() {
                   onChange={handleChange}
                   error={errors.userPassword}
                 />
-
               </div>
-
             </div>
 
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-between items-center gap-6">
-
               <div className="flex items-center gap-6 bg-[var(--color-primary-100)] p-3 rounded-xl px-5 border border-[var(--color-primary-200)]">
-
                 <span className="font-bold text-gray-700 text-sm uppercase">
                   Estado:
                 </span>
 
                 <div className="flex gap-4">
-
                   <Checkbox
                     id="isActive"
                     name="isActive"
@@ -294,13 +294,10 @@ export default function UserRegisterForm() {
                     checked={formData.isStaff}
                     onChange={handleChange}
                   />
-
                 </div>
-
               </div>
 
               <div className="flex gap-4 self-end">
-
                 <Button
                   variant="cancel"
                   size="cancel"
@@ -317,9 +314,7 @@ export default function UserRegisterForm() {
                 >
                   Finalizar
                 </Button>
-
               </div>
-
             </div>
           </form>
         </div>

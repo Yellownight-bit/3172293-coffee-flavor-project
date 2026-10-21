@@ -3,6 +3,7 @@ import { Input, Select, Checkbox, Button, FileInput, CheckboxGroup } from "@/sha
 import { getSupplierDocumentTypes } from "@/services/selectSupplierService";
 import { getSupplierProducts } from "@/services/selectProductService";
 import { supplierSchema } from "../users/schemas/supplierSchema";
+import { createSupplier } from "@/features/suppliers/services/supplierServices";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
@@ -34,7 +35,6 @@ export default function SupplierRegisterForm() {
   const navigate = useNavigate();
 
   const [documentTypes, setDocumentTypes] = useState([]);
-
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -94,14 +94,25 @@ export default function SupplierRegisterForm() {
 
     setErrors({});
 
-    await showSuccessAlert({
-      title: "Proveedor creado correctamente",
-      text: "El proveedor se registró correctamente.",
-      confirmButtonText: "Aceptar",
-      timer: 3000,
-    });
+    try {
+      await createSupplier(result.data);
 
-    navigate("/dashboard/supplierList");
+      await showSuccessAlert({
+        title: "Proveedor creado correctamente",
+        text: "El proveedor se registró correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+
+      navigate("/dashboard/supplierList");
+    } catch (error) {
+      console.error("Error al crear el proveedor:", error);
+
+      await showUserErrorAlert({
+        title: "Error al crear proveedor",
+        text: error.message || "No fue posible registrar el proveedor.",
+      });
+    }
   };
 
   return (

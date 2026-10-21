@@ -12,6 +12,7 @@ import {
 } from "@/shared/services/alertService";
 import { getSupplierNames } from "@/services/selectService";
 import { inventorySchema } from "../users/schemas/inventorySchema";
+import { createInventory } from "@/features/inventory/services/inventoryServices";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
@@ -79,14 +80,25 @@ export default function CreateProductInventory() {
 
     setErrors({});
 
-    await showSuccessAlert({
-      title: "Producto creado correctamente",
-      text: "El producto se registró correctamente en el inventario.",
-      confirmButtonText: "Aceptar",
-      timer: 3000,
-    });
+    try {
+      await createInventory(result.data);
 
-    navigate("/dashboard/inventoryList");
+      await showSuccessAlert({
+        title: "Producto creado correctamente",
+        text: "El producto se registró correctamente en el inventario.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+
+      navigate("/dashboard/inventoryList");
+    } catch (error) {
+      console.error("Error al registrar producto:", error);
+
+      await showUserErrorAlert({
+        title: "Error al crear producto",
+        text: error.message || "No fue posible registrar el producto en el inventario.",
+      });
+    }
   };
 
   return (
@@ -94,10 +106,9 @@ export default function CreateProductInventory() {
       className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <Navbar/>
+      <Navbar />
 
       <div className="flex-1 p-4 flex items-center justify-center">
-
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
 
           <Button
@@ -118,30 +129,22 @@ export default function CreateProductInventory() {
           </button>
 
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
-
-            <div
-              className="text-2xl text-[var(--color-text-inverse)]"
-            >
+            <div className="text-2xl text-[var(--color-text-inverse)]">
               📋
               <span className="font-bold text-xl relative -top-2 -left-1">
                 +
               </span>
             </div>
 
-            <h2
-              className="text-[var(--color-text-inverse)] font-bold text-xl uppercase tracking-wider"
-            >
+            <h2 className="text-[var(--color-text-inverse)] font-bold text-xl uppercase tracking-wider">
               Registrar producto
             </h2>
-
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 
               <div className="space-y-4">
-
                 <Input
                   label="Nombre del producto"
                   name="productName"
@@ -174,20 +177,16 @@ export default function CreateProductInventory() {
                   onChange={handleChange}
                   error={errors.productSupplierNit}
                 />
-
               </div>
 
               <div className="space-y-5 flex flex-col items-center">
-
                 <div className="w-full flex justify-center">
-
                   <FileInput
                     value={files}
                     onChange={setFiles}
                     multiple={false}
                     accept="image/*"
                   />
-
                 </div>
 
                 <Input
@@ -201,7 +200,6 @@ export default function CreateProductInventory() {
                 />
 
                 <div className="relative">
-
                   <Input
                     label="Cantidad del producto"
                     name="productQuantity"
@@ -218,13 +216,10 @@ export default function CreateProductInventory() {
                     className="absolute right-0 -bottom-6 text-xs text-gray-700 flex items-center gap-1 hover:underline"
                   >
                   </button>
-
                 </div>
-
               </div>
 
               <div className="space-y-5">
-
                 <SelectInventory
                   label="Nombre del proveedor"
                   name="productSupplierNames"
@@ -236,7 +231,6 @@ export default function CreateProductInventory() {
                 />
 
                 <div className="relative">
-
                   <Input
                     label="Descripcion del producto"
                     name="productDescription"
@@ -246,7 +240,6 @@ export default function CreateProductInventory() {
                     onChange={handleChange}
                     error={errors.productDescription}
                   />
-
                 </div>
 
                 <Input
@@ -259,21 +252,16 @@ export default function CreateProductInventory() {
                   onChange={handleChange}
                   error={errors.productEntryDate}
                 />
-
               </div>
-
             </div>
 
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-between items-center gap-6">
-
               <div className="flex items-center gap-6 bg-[var(--color-primary-200)] p-3 rounded-xl px-5 border-2 border-[var(--color-primary-800)]">
-
                 <span className="font-bold text-gray-700 text-sm uppercase">
                   Estado en el inventario:
                 </span>
 
                 <div className="flex gap-4">
-
                   <Checkbox
                     id="isActive"
                     name="isActive"
@@ -289,13 +277,10 @@ export default function CreateProductInventory() {
                     checked={formData.isStaff}
                     onChange={handleChange}
                   />
-
                 </div>
-
               </div>
 
               <div className="flex gap-4 self-end">
-
                 <Button
                   variant="cancel"
                   size="cancel"
@@ -312,17 +297,11 @@ export default function CreateProductInventory() {
                 >
                   Registrar
                 </Button>
-
               </div>
-
             </div>
-
           </form>
-
         </div>
-
       </div>
-
     </div>
   );
 }

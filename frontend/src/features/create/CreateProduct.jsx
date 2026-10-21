@@ -13,6 +13,7 @@ import {
 import { getSupplierNames } from "@/services/selectService";
 import { getCategorieTypes } from "@/services/selectCategorieTypes";
 import { productSchema } from "../users/schemas/productSchema";
+import { createProduct } from "@/features/products/services/productServices";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
 import Navbar from "@/shared/layouts/Navbar";
@@ -29,7 +30,6 @@ export default function CreateProductInventory() {
     productSupplierNames: "",
     productQuantity: "",
     shippingDate: "",
-
     nuevo: false,
     incluido: false,
     agotable: false,
@@ -42,16 +42,13 @@ export default function CreateProductInventory() {
   });
 
   const navigate = useNavigate();
-
   const [files, setFiles] = useState([]);
-
   const [supplierNames, setSupplierNames] = useState([]);
+  const [CategorieTypes, setCategorieTypes] = useState([]);
 
   useEffect(() => {
     getSupplierNames().then(setSupplierNames);
   }, []);
-
-  const [CategorieTypes, setCategorieTypes] = useState([]);
 
   useEffect(() => {
     getCategorieTypes().then(setCategorieTypes);
@@ -90,14 +87,30 @@ export default function CreateProductInventory() {
 
     setErrors({});
 
-    await showSuccessAlert({
-      title: "Producto creado correctamente",
-      text: "El producto se registró correctamente.",
-      confirmButtonText: "Aceptar",
-      timer: 3000,
-    });
+    try {
+      const productData = {
+        ...result.data,
+        productImage: files[0] || null,
+      };
 
-    navigate("/dashboard/productList");
+      await createProduct(productData);
+
+      await showSuccessAlert({
+        title: "Producto creado correctamente",
+        text: "El producto se registró correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+
+      navigate("/dashboard/productList");
+    } catch (error) {
+      console.error("Error al crear producto:", error);
+
+      await showUserErrorAlert({
+        title: "Error al crear producto",
+        text: error.message || "No fue posible registrar el producto.",
+      });
+    }
   };
 
   return (
@@ -105,13 +118,10 @@ export default function CreateProductInventory() {
       className="min-h-screen flex flex-col font-sans w-full max-w-full overflow-x-hidden bg-center bg-cover bg-no-repeat"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-
       <Navbar />
 
       <div className="flex-1 px-3 py-4 sm:px-6 sm:py-8 flex items-center justify-center w-full max-w-full box-border">
-
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-md min-w-0 box-border overflow-hidden">
-
           <div>
             <Button
               variant="back"
@@ -125,7 +135,6 @@ export default function CreateProductInventory() {
 
           <div>
             <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-primary-950)]/30 pb-4 mb-6">
-
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🍝</span>
 
@@ -133,16 +142,12 @@ export default function CreateProductInventory() {
                   Agregar Platillo / Menu
                 </h2>
               </div>
-
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6 w-full min-w-0">
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-start w-full min-w-0">
-
               <div className="space-y-4 w-full min-w-0">
-
                 <Input
                   label="Nombre del platillo"
                   name="productName"
@@ -185,24 +190,19 @@ export default function CreateProductInventory() {
                   onChange={handleChange}
                   error={errors.productDescription}
                 />
-
               </div>
 
               <div className="space-y-4 flex flex-col items-center w-full min-w-0">
-
                 <div className="w-full flex justify-center min-w-0">
-
                   <FileInput
                     value={files}
                     onChange={setFiles}
                     multiple={false}
                     accept="image/*"
                   />
-
                 </div>
 
                 <div className="w-full min-w-0">
-
                   <Input
                     label="Código de la comida"
                     name="productId"
@@ -213,11 +213,9 @@ export default function CreateProductInventory() {
                     onChange={handleChange}
                     error={errors.productId}
                   />
-
                 </div>
 
                 <div className="w-full min-w-0">
-
                   <SelectInventory
                     label="Proveedor"
                     name="productSupplierNames"
@@ -227,15 +225,11 @@ export default function CreateProductInventory() {
                     options={supplierNames}
                     error={errors.productSupplierNames}
                   />
-
                 </div>
-
               </div>
 
               <div className="space-y-4 w-full min-w-0 md:col-span-2 lg:col-span-1">
-
                 <div className="w-full min-w-0">
-
                   <Input
                     label="Cantidad en Stock"
                     name="productQuantity"
@@ -245,7 +239,6 @@ export default function CreateProductInventory() {
                     onChange={handleChange}
                     error={errors.productQuantity}
                   />
-
                 </div>
 
                 <Input
@@ -257,21 +250,16 @@ export default function CreateProductInventory() {
                   onChange={handleChange}
                   error={errors.shippingDate}
                 />
-
               </div>
-
             </div>
 
             <div className="pt-6 border-t border-[var(--color-primary-950)]/20 flex flex-col lg:flex-row justify-between items-start gap-6 w-full min-w-0">
-
               <div className="space-y-3 w-full lg:w-auto min-w-0">
-
                 <span className="font-semibold text-gray-700 text-sm block">
                   Características (opcional)
                 </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
-
                   <Checkbox
                     id="nuevo"
                     name="nuevo"
@@ -343,13 +331,10 @@ export default function CreateProductInventory() {
                     checked={formData.devoluciones}
                     onChange={handleChange}
                   />
-
                 </div>
-
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:self-end pt-2">
-
                 <Button
                   variant="cancel"
                   size="cancel"
@@ -366,17 +351,11 @@ export default function CreateProductInventory() {
                 >
                   Guardar
                 </Button>
-
               </div>
-
             </div>
-
           </form>
-
         </div>
-
       </div>
-
     </div>
   );
 }

@@ -9,9 +9,20 @@ export default function Button({
 
 }) {
 
-    const variants = {
-        primary: "bg-brand text-text-inverse hover:bg-brand-hover",
-        secondary: "bg-brand-soft text-primary hover:bg-brand-soft-hover",
+        const variants = {
+        primary: `
+            bg-brand
+            text-text-inverse
+            hover:bg-brand-hover
+            dark:brightness-110
+        `,
+
+        secondary: `
+            bg-brand-soft
+            text-primary
+            hover:bg-brand-soft-hover
+            dark:brightness-110
+        `,
 
         cancel: `
             border
@@ -25,6 +36,7 @@ export default function Button({
             hover:bg-[var(--color-primary-900)]
             text-white
             shadow-md
+            dark:brightness-125
         `,
 
         back: `

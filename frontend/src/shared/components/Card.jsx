@@ -8,7 +8,7 @@ const Card = ({ product }) => {
     return (
         <div className="
           w-80
-          text-text-inverse
+          text-white
           dark:bg-neutral-950/70
           backdrop-blur-[2px]
           shadow-lg

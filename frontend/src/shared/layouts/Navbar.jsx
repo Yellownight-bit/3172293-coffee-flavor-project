@@ -26,8 +26,12 @@ import logo from "@/assets/images/1-logo.png";
 import { Link } from "react-router-dom";
 import { showOpsAlert } from "@/shared/services/alertservice";
 
+import { Sun, Moon } from "lucide-react";
+import useTheme from "@/shared/context/useTheme";
+
 export default function Navbar() {
   const [search, setSearch] = useState("");
+  const { theme, toggleTheme } = useTheme();
 
   const handleSearch = (value) => {
     console.log("Buscar:", value);
@@ -38,7 +42,13 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full bg-[var(--color-primary-950)] border-b-2">
+    <nav
+  className={`w-full border-b-2 ${
+    theme === "dark"
+      ? "bg-black border-gray-800 text-white"
+      : "bg-[var(--color-primary-950)] border-transparent"
+  }`}
+>
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between">
 
@@ -203,6 +213,26 @@ export default function Navbar() {
                   <ShieldCheck size={17} />
                   Gestión permisos
                 </Link>
+              </DropdownItem>
+
+              <DropdownItem>
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="flex items-center gap-2 w-full text-left"
+                >
+                  {theme === "light" ? (
+                    <>
+                      <Moon size={17} />
+                      Modo oscuro
+                    </>
+                  ) : (
+                    <>
+                      <Sun size={17} />
+                      Modo claro
+                    </>
+                  )}
+                </button>
               </DropdownItem>
 
               <DropdownItem>

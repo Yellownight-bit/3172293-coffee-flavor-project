@@ -32,6 +32,7 @@
     /* ========Focus========= */
 
     --semantic-focus-ring: var(--color-primary-700);
+    --semantic-focus-border: var(--color-primary-800);
 
     /* ========State========= */
 
@@ -61,4 +62,48 @@
     /*Ya no dependemos de nombres de color, dependemos es de intención*/
 
     /* ============================================ */
+}
+
+/* ================Dark theme================== */
+
+.dark {
+    color-scheme: dark;
+
+    /* ========Brand========= */
+
+    --semantic-brand: var(--color-primary-800);
+    --semantic-brand-hover: var(--color-primary-600);
+    --semantic-brand-soft: #63351f;
+    --semantic-brand-soft-hover: #79452b;
+
+    /* ================Background=============== */
+
+    --semantic-background: #111827;
+    --semantic-surface: #1f2937;
+    --semantic-surface-alt: #292524;
+    --semantic-surface-muted: #374151;
+    --semantic-background-inverse: #f3f4f6;
+
+    /* ========Text========= */
+
+    --semantic-text-primary: #f9fafb;
+    --semantic-text-secondary: #e5e7eb;
+    --semantic-text-muted: #9ca3af;
+    --semantic-text-inverse: #111827;
+
+    /* ========Border========= */
+
+    --semantic-border: #4b5563;
+    --semantic-border-strong: #6b7280;
+
+    /* ========Focus========= */
+
+    --semantic-focus-ring: #fb923c;
+    --semantic-focus-border: #fb923c;
+
+    /* ========State========= */
+
+    --semantic-success: #86efac;
+    --semantic-warning: #fde047;
+    --semantic-error: #fca5a5;
 }

@@ -1,3 +1,4 @@
+
 import bcrypt from "bcrypt";
 import { supplierRepository } from "./supplier.repository.js";
 
@@ -16,5 +17,10 @@ export const supplierService = {
   async getAllSuppliers() {
     const suppliers = await supplierRepository.findAll();
     return suppliers;
+  },
+
+  async updateSupplierStatus(id, is_active) {
+    const updated = await supplierRepository.updateStatus(id, is_active);
+    return updated;
   },
 };

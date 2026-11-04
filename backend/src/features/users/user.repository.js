@@ -72,4 +72,18 @@ export const userRepository = {
         return result.rows;
     },
 
+    async updateStatus(id, is_active) { // Declara la funcion que recibe los parametros que el service le mando
+        // Se ejecuta la sentencia sql para actualizar solo el estado
+        const query = `
+            UPDATE users
+            SET is_active = $1
+            WHERE id = $2
+            RETURNING *;
+        `; // En el arreglo iria en orden, values 1 el estado y 2 el id
+
+        const values = [is_active, id] // Guarda el nuevo estado y el id del usuario
+        const result = await pool.query(query, values); // Se le entrega la consulta y los valores a la BD y una vez los entrega de vuelta se guardan en result
+
+        return result.rows[0]; // Para leer el objeto
+    },
 };

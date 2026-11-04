@@ -21,6 +21,11 @@ router.get(
   "/",
   authenticateToken,
   userController.getAll,
-)
+);
+
+router.patch(
+    "/:id",
+    userController.updateStatus,
+);
 
 export default router;

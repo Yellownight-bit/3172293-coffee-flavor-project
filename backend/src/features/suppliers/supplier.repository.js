@@ -1,3 +1,4 @@
+
 import { pool } from "../../config/db.js";
 
 export const supplierRepository = {
@@ -63,5 +64,20 @@ export const supplierRepository = {
     const result = await pool.query(query);
 
     return result.rows;
+  },
+
+  async updateStatus(id, is_active) {
+    const query = `
+      UPDATE suppliers
+      SET is_active = $1
+      WHERE id = $2
+      RETURNING *;
+    `;
+
+    const values = [is_active, id];
+
+    const result = await pool.query(query, values);
+
+    return result.rows[0];
   },
 };

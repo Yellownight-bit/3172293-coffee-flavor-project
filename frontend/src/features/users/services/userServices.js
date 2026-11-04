@@ -60,3 +60,25 @@ export async function getAllUsers() {
     // Retornamos los usuarios en formato JSON
     return response.json();
 }
+
+export async function updateStatusSwitch(id, is_active) {
+    const token = sessionStorage.getItem("token");
+
+    const response = await fetch(`${USERS_URL}/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ is_active }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        console.error("Detalle del error del backend:", data);
+        throw new Error(data.error || "Error al cambiar el estado");
+    }
+
+    return data;
+}

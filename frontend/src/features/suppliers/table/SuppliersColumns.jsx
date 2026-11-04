@@ -1,5 +1,7 @@
+
 import { StatusSwitch } from "@/shared";
 import SupplierRowActions from "../components/SupplierRowActions";
+import { updateSupplierStatus } from "../services/supplierServices";
 
 export const suppliersColumns = [
   {
@@ -32,8 +34,13 @@ export const suppliersColumns = [
     cell: ({ row }) => {
       const supplier = row.original;
 
-      const handleChange = (value) => {
-        console.log("Actualizar estado proveedor:", supplier.id, value);
+      const handleChange = async (value) => {
+        try {
+          await updateSupplierStatus(supplier.id, value);
+          supplier.is_active = value;
+        } catch (error) {
+          console.error("Error al actualizar estado:", error);
+        }
       };
 
       return (

@@ -58,5 +58,21 @@ export const userController ={
             console.error(err);
             return res.status(500).json({ error: err.message });
         }
+    },
+
+    async updateStatus(req, res) {
+        try {
+            const { id } = req.params; //  Trae la id que hay en el url del userService
+            const { is_active } = req.body; // Trae el valor true o false para ponerlo en la bd
+
+            const updatedUser = await userService.updateUserStatus(id, is_active); // Aqui lae ejecucion salta a lo que ya vimos en userService.js
+
+            return res.status(200).json({
+                message: "Estado actualizado",
+                user: updatedUser
+            }); // El user service hace su return del data y lo entrega al controlador, se guarda en updateUser y se guarda dentro de res enviandolos al navegador
+        } catch (error) {
+            return res.status(500).json({ error: error.message }) // Si hay un error lo atrapa, frena la ejecucion y le manda al navegador la respuesta 500 error interno del servidor
+        }
     }
 };

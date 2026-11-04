@@ -36,3 +36,24 @@ export async function getAllSuppliers() {
 
   return response.json();
 }
+
+export async function updateSupplierStatus(id, is_active) {
+    const token = sessionStorage.getItem("token");
+
+    const response = await fetch(`${SUPPLIERS_URL}/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ is_active }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Error al cambiar el estado del proveedor");
+    }
+
+    return data;
+}

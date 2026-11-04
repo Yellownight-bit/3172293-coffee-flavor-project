@@ -1,3 +1,4 @@
+
 import { Router } from "express";
 import { supplierController } from "./supplier.controller.js";
 import { authenticateToken } from "../../middlewares/auth.middleware.js";
@@ -10,6 +11,12 @@ router.get(
   "/",
   authenticateToken,
   supplierController.getAll
+);
+
+router.patch(
+  "/:id",
+  authenticateToken,
+  supplierController.updateStatus
 );
 
 export default router;

@@ -35,8 +35,14 @@ export const userService = {
         return await userRepository.create(userData);
     },    
 
-    async getAllUsers() {
-    const users = await userRepository.findAll();
-    return users;
-}
+        async getAllUsers() {
+        const users = await userRepository.findAll();
+        return users;
+    },
+
+    async updateUserStatus(id, is_active) { // Se declara la funcion que recibe dos parametros, id y el estado
+        // Se llama a la bd para actualizar el estado
+        const updated = await userRepository.updateStatus(id, is_active); // Le pasa los datos al repository
+        return updated; // Aqui regresa con los datos y se guardan en updated para entregarselos al controller
+    },
 };

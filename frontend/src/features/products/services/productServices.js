@@ -18,3 +18,22 @@ export async function createProduct(productData) {
 
   return response.json();
 }
+
+export async function getAllProducts() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(PRODUCTS_URL, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error al obtener los productos");
+  }
+
+  return data;
+}

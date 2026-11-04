@@ -57,4 +57,19 @@ export const userRepository = {
 
         return result.rows[0];
     },
+
+    // Método encargado de consultar todos los usuarios
+    async findAll() {
+
+        const query = `
+            SELECT *
+            FROM users
+            ORDER BY id ASC;
+        `;
+
+        const result = await pool.query(query);
+
+        return result.rows;
+    },
+
 };

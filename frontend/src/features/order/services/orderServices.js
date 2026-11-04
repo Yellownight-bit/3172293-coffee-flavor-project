@@ -1,3 +1,4 @@
+
 import { API_URL } from "@/features/config";
 
 const ORDERS_URL = `${API_URL}/orders`;
@@ -11,10 +12,30 @@ export async function createOrder(orderData) {
     body: JSON.stringify(orderData),
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Error al crear la orden");
+    throw new Error(data.error || "Error al crear la orden");
   }
 
-  return response.json();
+  return data;
+}
+
+export async function getAllOrders() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(ORDERS_URL, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error al consultar las órdenes");
+  }
+
+  return data;
 }

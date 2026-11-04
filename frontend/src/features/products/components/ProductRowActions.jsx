@@ -1,5 +1,3 @@
-// src/features/products/components/ProductRowActions.jsx
-
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -7,7 +5,7 @@ import {
   showConfirmDeleteAlert,
   showCancelDeleteAlert,
   showSuccessAlert,
-} from "@/shared/services/alertservice";
+} from "@/shared/services/alertService";
 
 export default function ProductRowActions({ product }) {
   const navigate = useNavigate();
@@ -19,7 +17,7 @@ export default function ProductRowActions({ product }) {
   const handleDelete = async () => {
     const result = await showConfirmDeleteAlert({
       title: "¿Eliminar producto?",
-      text: `¿Estás seguro de eliminar el producto ${product.title}?`,
+      text: `¿Estás seguro de eliminar el producto ${product.product_name}?`,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "No, cancelar",
     });
@@ -44,15 +42,7 @@ export default function ProductRowActions({ product }) {
   };
 
   const handleView = () => {
-    if (product.id === 1) {
-      navigate("/dashboard/readMenu1");
-    } else if (product.id === 3) {
-      navigate("/dashboard/readMenu2");
-    } else if (product.id === 4) {
-      navigate("/dashboard/readMenu3");
-    } else if (product.id === 2) {
-      navigate("/dashboard/readMenu4");
-    }
+    navigate(`/dashboard/productRead/${product.id}`);
   };
 
   return (
@@ -80,4 +70,3 @@ export default function ProductRowActions({ product }) {
     </div>
   );
 }
-

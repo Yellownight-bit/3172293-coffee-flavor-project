@@ -1,3 +1,4 @@
+
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared";
@@ -12,19 +13,19 @@ export default function OrderRowActions({ order }) {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate("/UpdateOrder");
+    navigate(`/UpdateOrder`);
   };
 
   const handleDelete = async () => {
     const result = await showConfirmDeleteAlert({
       title: "¿Eliminar orden?",
-      text: `¿Estás seguro de eliminar la orden ${order?.id}?`,
+      text: `¿Estás seguro de eliminar la orden ${order.id}?`,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "No, cancelar",
     });
 
     if (result.isConfirmed) {
-      console.log("Eliminar orden", order?.id);
+      console.log("Eliminar orden", order.id);
 
       await showSuccessAlert({
         title: "Orden eliminada",
@@ -43,16 +44,8 @@ export default function OrderRowActions({ order }) {
   };
 
   const handleView = () => {
-    if (order?.id === "ORD-00001" || order?.id === 1) {
-      navigate("/dashboard/ReadOrder");
-    } else if (order?.id === "ORD-00002" || order?.id === 2) {
-      navigate("/dashboard/ReadOrder2");
-    } else if (order?.id === "ORD-00003" || order?.id === 3) {
-      navigate("/dashboard/ReadOrder3");
-    } else {
-      navigate("/dashboard/ReadOrder");
-    }
-  };
+  navigate(`/dashboard/orderRead/${order.id}`);
+};
 
   return (
     <div className="flex items-center gap-2">
@@ -85,4 +78,3 @@ export default function OrderRowActions({ order }) {
     </div>
   );
 }
-

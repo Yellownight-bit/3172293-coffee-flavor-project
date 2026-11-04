@@ -1,25 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTable, Button, ListReportModal } from "@/shared";
 import { inventoryColumns } from "../table/InventoryColumns";
-import { inventory } from "../data/inventory";
+import { getAllInventory } from "../services/inventoryServices";
 import { Link } from "react-router-dom";
 
 const inventoryReportFields = [
-  { key: "productName", label: "Producto", default: true },
-  { key: "productCategory", label: "Categoría", default: true },
-  { key: "currentStock", label: "Stock actual", default: true },
-  { key: "minStock", label: "Stock mínimo", default: true },
-  { key: "maxStock", label: "Stock máximo", default: true },
-  { key: "supplier", label: "Proveedor", default: true },
-  { key: "lastUpdated", label: "Última actualización", default: false },
+  { key: "product_name", label: "Producto", default: true },
+  { key: "product_id", label: "ID del producto", default: true },
+  { key: "product_quantity", label: "Stock actual", default: true },
+  { key: "product_price", label: "Precio", default: true },
+  { key: "product_supplier_names", label: "Proveedor", default: true },
+  { key: "product_entry_date", label: "Fecha de ingreso", default: true },
 ];
 
 export default function InventoryListPage() {
+  const [inventory, setInventory] = useState([]);
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadInventory = async () => {
+      try {
+        const data = await getAllInventory();
+        setInventory(data);
+      } catch (error) {
+        console.error("Error al cargar el inventario:", error);
+        setError(error.message || "Error al cargar el inventario");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInventory();
+  }, []);
 
   return (
     <div className="p-6">
-      {/* Contenedor principal */}
       <div
         className="
           rounded-2xl
@@ -30,7 +47,6 @@ export default function InventoryListPage() {
           border border-white/40
         "
       >
-        {/* Encabezado */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-semibold text-gray-900">
             Listado de inventario
@@ -40,6 +56,7 @@ export default function InventoryListPage() {
             <Button
               variant="secondary"
               onClick={() => setIsReportOpen(true)}
+              disabled={loading || inventory.length === 0}
             >
               Generar reporte
             </Button>
@@ -52,14 +69,22 @@ export default function InventoryListPage() {
           </div>
         </div>
 
-        {/* Tabla */}  
+        {loading ? (
+          <p className="text-center py-6 text-gray-600">
+            Cargando inventario...
+          </p>
+        ) : error ? (
+          <p className="text-center py-6 text-red-600">
+            {error}
+          </p>
+        ) : (
           <DataTable
             data={inventory}
             columns={inventoryColumns}
           />
+        )}
       </div>
 
-      {/* Modal de reportes */}
       <ListReportModal
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}

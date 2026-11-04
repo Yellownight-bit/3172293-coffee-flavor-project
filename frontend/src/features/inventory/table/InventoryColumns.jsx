@@ -6,43 +6,63 @@ export const inventoryColumns = [
     header: "Id",
   },
   {
-    accessorKey: "productName",
+    accessorKey: "product_name",
     header: "Producto",
   },
   {
-    accessorKey: "productCategory",
-    header: "Categoría",
+    accessorKey: "product_id",
+    header: "ID del producto",
   },
   {
-    accessorKey: "currentStock",
+    accessorKey: "product_quantity",
     header: "Stock actual",
     cell: ({ row }) => {
-      const item = row.original;
-      const isLow = item.currentStock <= item.minStock;
+      const quantity = Number(row.original.product_quantity || 0);
+
       return (
-        <span className={isLow ? "text-red-600 font-semibold" : ""}>
-          {item.currentStock}
-          {isLow && " (bajo)"}
+        <span className={quantity <= 5 ? "text-red-600 font-semibold" : ""}>
+          {quantity}
+          {quantity <= 5 && " (bajo)"}
         </span>
       );
     },
   },
   {
-    accessorKey: "minStock",
-    header: "Stock mín.",
+    accessorKey: "product_price",
+    header: "Precio",
+    cell: ({ row }) => {
+      return new Intl.NumberFormat("es-CO", {
+        style: "currency",
+        currency: "COP",
+        maximumFractionDigits: 0,
+      }).format(Number(row.original.product_price || 0));
+    },
   },
   {
-    accessorKey: "maxStock",
-    header: "Stock máx.",
-  },
-  {
-    accessorKey: "supplier",
+    accessorKey: "product_supplier_names",
     header: "Proveedor",
+    cell: ({ row }) => row.original.product_supplier_names || "Sin proveedor",
   },
   {
-    accessorKey: "lastUpdated",
-    header: "Última actualización",
+  accessorKey: "product_entry_date",
+  header: "Fecha de entrada",
+  cell: ({ row }) => {
+    const date = row.original.product_entry_date;
+
+    if (!date) return "Sin fecha";
+
+    const parsedDate = new Date(date);
+
+    if (isNaN(parsedDate.getTime())) return "Sin fecha";
+
+    return parsedDate.toLocaleDateString("es-CO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "UTC",
+    });
   },
+},
   {
     id: "actions",
     cell: ({ row }) => <InventoryRowActions item={row.original} />,

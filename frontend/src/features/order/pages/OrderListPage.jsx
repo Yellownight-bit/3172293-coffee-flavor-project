@@ -1,25 +1,39 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { DataTable, Button, ListReportModal } from "@/shared";
 import { orderColumns } from "../table/OrderColumns";
-import { orders } from "../data/order";
 import { Link } from "react-router-dom";
+import { getAllOrders } from "../services/orderServices.js";
 
 const orderReportFields = [
   { key: "id", label: "ID", default: true },
-  { key: "tableNumber", label: "Mesa", default: true },
-  { key: "waiter", label: "Mesero", default: true },
+  { key: "table_number", label: "Mesa", default: true },
+  { key: "waiter_id", label: "Mesero", default: true },
   { key: "status", label: "Estado", default: true },
-  { key: "date", label: "Fecha", default: true },
-  { key: "total", label: "Valor total", default: true },
+  { key: "observations", label: "Observaciones", default: true },
+  { key: "dishes", label: "Productos", default: true },
 ];
 
 export default function OrderListPage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        const data = await getAllOrders();
+        setOrders(data);
+      } catch (error) {
+        console.error("Error al cargar las órdenes:", error);
+      }
+    };
+
+    loadOrders();
+  }, []);
 
   return (
     <div className="p-6">
 
-      {/* Contenedor principal */}
       <div
         className="
           rounded-2xl
@@ -31,7 +45,6 @@ export default function OrderListPage() {
         "
       >
 
-        {/* Encabezado */}
         <div className="flex items-center justify-between mb-6">
 
           <h1 className="text-xl font-semibold text-gray-900">
@@ -56,14 +69,13 @@ export default function OrderListPage() {
           </div>
         </div>
 
-        {/* Tabla */}
-          <DataTable
-            data={orders}
-            columns={orderColumns}
-          />
+        <DataTable
+          data={orders}
+          columns={orderColumns}
+        />
+
       </div>
 
-      {/* Modal de reporte */}
       <ListReportModal
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}

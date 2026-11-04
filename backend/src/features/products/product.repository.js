@@ -76,4 +76,16 @@ export const productRepository = {
 
     return result.rows[0];
   },
+
+  async findAll() {
+    const query = `
+      SELECT *
+      FROM products
+      ORDER BY id DESC;
+    `;
+
+    const result = await pool.query(query);
+
+    return result.rows;
+  },
 };

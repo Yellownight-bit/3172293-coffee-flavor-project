@@ -52,4 +52,16 @@ export const supplierRepository = {
 
     return result.rows[0];
   },
+
+  async findAll() {
+    const query = `
+      SELECT *
+      FROM suppliers
+      ORDER BY id ASC;
+    `;
+
+    const result = await pool.query(query);
+
+    return result.rows;
+  },
 };

@@ -12,4 +12,9 @@ export const supplierService = {
 
     return await supplierRepository.create(supplierData);
   },
+
+  async getAllSuppliers() {
+    const suppliers = await supplierRepository.findAll();
+    return suppliers;
+  },
 };

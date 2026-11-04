@@ -1,4 +1,5 @@
-import { Pencil, Trash2 } from "lucide-react";
+
+import { Pencil, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
@@ -12,6 +13,10 @@ export default function InventoryRowActions({ item }) {
 
   const handleEdit = () => {
     navigate("/UpdateInventory");
+  };
+
+  const handleRead = () => {
+    navigate(`/dashboard/inventoryRead/${item.id}`);
   };
 
   const handleDelete = async () => {
@@ -44,6 +49,13 @@ export default function InventoryRowActions({ item }) {
   return (
     <div className="flex gap-2">
       <button
+        onClick={handleRead}
+        className="p-1 rounded hover:bg-gray-100"
+      >
+        <Eye size={16} />
+      </button>
+
+      <button
         onClick={handleEdit}
         className="btn btn-primary"
       >
@@ -59,4 +71,3 @@ export default function InventoryRowActions({ item }) {
     </div>
   );
 }
-

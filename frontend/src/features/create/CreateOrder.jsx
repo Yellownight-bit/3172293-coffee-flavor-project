@@ -43,8 +43,18 @@ export default function CreateOrder() {
   }, []);
 
   useEffect(() => {
-    getOrderProducts().then(setProducts);
-  }, []);
+  const loadProducts = async () => {
+    try {
+      const data = await getOrderProducts();
+      console.log("Productos recibidos:", data);
+      setProducts(data);
+    } catch (error) {
+      console.error("Error cargando productos:", error);
+    }
+  };
+
+  loadProducts();
+}, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -18,3 +18,21 @@ export async function createSupplier(supplierData) {
 
   return response.json();
 }
+
+export async function getAllSuppliers() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(SUPPLIERS_URL, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Error al consultar los proveedores");
+  }
+
+  return response.json();
+}

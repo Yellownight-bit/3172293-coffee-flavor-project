@@ -1,3 +1,4 @@
+
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -17,7 +18,7 @@ export default function SupplierRowActions({ supplier }) {
   const handleDelete = async () => {
     const result = await showConfirmDeleteAlert({
       title: "¿Eliminar proveedor?",
-      text: `¿Estás seguro de eliminar el proveedor ${supplier.companyName}?`,
+      text: `¿Estás seguro de eliminar el proveedor ${supplier.supplier_name}?`,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "No, cancelar",
     });
@@ -42,22 +43,11 @@ export default function SupplierRowActions({ supplier }) {
   };
 
   const handleView = () => {
-    if (supplier.id === 800123456) {
-      navigate("/dashboard/readSupplier2");
-    } else if (supplier.id === 860002130) {
-      navigate("/dashboard/readSupplier");
-    } else if (supplier.id === 860025900) {
-      navigate("/dashboard/readSupplier3");
-    } else if (supplier.id === 860002503) {
-      navigate("/dashboard/readSupplier1");
-    } else if (supplier.id === 890300186) {
-      navigate("/dashboard/readSupplier4");
-    }
+    navigate(`/dashboard/supplierRead/${supplier.id}`);
   };
 
   return (
     <div className="flex gap-2">
-
       <button
         onClick={handleEdit}
         className="p-1 rounded hover:bg-gray-100"
@@ -78,7 +68,6 @@ export default function SupplierRowActions({ supplier }) {
       >
         <Eye size={16} />
       </button>
-
     </div>
   );
 }

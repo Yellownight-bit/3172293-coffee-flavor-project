@@ -29,9 +29,19 @@ import { showOpsAlert } from "@/shared/services/alertservice";
 import { Sun, Moon } from "lucide-react";
 import useTheme from "@/shared/context/useTheme";
 
+import { useNavigate } from "react-router-dom";
+import { logout } from "@/features/auth/services/logoutService";
+
 export default function Navbar() {
   const [search, setSearch] = useState("");
   const { theme, toggleTheme } = useTheme();
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+  logout();
+  navigate("/auth", { replace: true });
+  };
 
   const handleSearch = (value) => {
     console.log("Buscar:", value);
@@ -54,7 +64,7 @@ export default function Navbar() {
 
           {/* Logo de marca */}
           <div className="hidden sm:block items-center">
-            <Link to={"/"} className="text-h1 font-heading">
+            <Link to={"/HomePage"} className="text-h1 font-heading">
               <img src={logo} alt="logo" className="h-12" />
             </Link>
           </div>
@@ -64,7 +74,7 @@ export default function Navbar() {
 
             <li>
               <Link
-                to={"/"}
+                to={"/HomePage"}
                 className="hover:text-primary transition flex items-center gap-1.5"
               >
                 <House size={17} />
@@ -84,7 +94,7 @@ export default function Navbar() {
 
             <li>
               <Link
-                to={"/Permissions"}
+                to="/dashboard/access"
                 className="hover:text-primary transition flex items-center gap-1.5"
               >
                 <KeyRound size={17} />
@@ -206,14 +216,11 @@ export default function Navbar() {
               </DropdownItem>
 
               <DropdownItem>
-                <Link
-                  to="/Permissions"
-                  className="flex items-center gap-2 w-full"
-                >
-                  <ShieldCheck size={17} />
-                  Gestión permisos
-                </Link>
-              </DropdownItem>
+                    <Link to="/dashboard/access" className="flex items-center gap-2 w-full">
+                    <ShieldCheck size={17} />
+                      Gestión permisos
+                    </Link>
+               </DropdownItem>
 
               <DropdownItem>
                 <button
@@ -236,13 +243,14 @@ export default function Navbar() {
               </DropdownItem>
 
               <DropdownItem>
-                <Link
-                  to="/auth"
-                  className="flex items-center gap-2 w-full"
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 w-full text-left"
                 >
                   <LogOut size={17} />
                   Cerrar sesión
-                </Link>
+                </button>
               </DropdownItem>
 
             </DropdownContent>

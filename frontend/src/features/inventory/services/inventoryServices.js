@@ -18,3 +18,22 @@ export async function createInventory(inventoryData) {
 
   return response.json();
 }
+
+export async function getAllInventory() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(INVENTORY_URL, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error al obtener el inventario");
+  }
+
+  return data;
+}

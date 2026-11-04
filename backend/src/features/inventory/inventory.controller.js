@@ -19,4 +19,18 @@ export const inventoryController = {
       });
     }
   },
+
+  async getAll(req, res) {
+    try {
+      const inventory = await inventoryService.getAllInventory();
+
+      return res.status(200).json(inventory);
+    } catch (err) {
+      console.error("ERROR AL OBTENER INVENTARIO:", err);
+
+      return res.status(500).json({
+        error: err.message,
+      });
+    }
+  },
 };

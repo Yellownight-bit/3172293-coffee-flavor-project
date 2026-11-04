@@ -19,4 +19,18 @@ export const productController = {
       });
     }
   },
+
+  async getAll(req, res) {
+    try {
+      const products = await productService.getAllProducts();
+
+      return res.status(200).json(products);
+    } catch (err) {
+      console.error("ERROR AL OBTENER PRODUCTOS:", err);
+
+      return res.status(500).json({
+        error: err.message,
+      });
+    }
+  },
 };

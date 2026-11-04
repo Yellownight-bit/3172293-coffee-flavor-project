@@ -19,4 +19,15 @@ export const supplierController = {
       });
     }
   },
+
+  async getAll(req, res) {
+    try {
+      const suppliers = await supplierService.getAllSuppliers();
+
+      return res.status(200).json(suppliers);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: err.message });
+    }
+  },
 };

@@ -20,6 +20,8 @@ export { default as Card } from "./components/Card";
 export { default as ListReportModal } from "./components/ListReportModal";
 export { default as DetailItem } from "./components/DetailItem";
 export { default as CheckboxGroup } from "./components/CheckboxGroup";
+export { default as ProtectedRoute } from "./components/auth/ProtectedRoute";
+export { default as AccessSidebar } from "./components/AccessSidebar";
 
 // Layout components
 export {default as Navbar } from "./layouts/Navbar";

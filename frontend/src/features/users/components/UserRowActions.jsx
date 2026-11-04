@@ -1,5 +1,3 @@
-// src/features/users/components/UserRowActions.jsx
-
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -23,7 +21,7 @@ export default function UserRowActions({ user }) {
 
     const result = await showConfirmDeleteAlert({
       title: "¿Eliminar usuario?",
-      text: `¿Estás seguro de eliminar al usuario ${user.userName}?`,
+      text: `¿Estás seguro de eliminar al usuario ${user.user_name}?`,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "No, cancelar",
     });
@@ -51,23 +49,7 @@ export default function UserRowActions({ user }) {
 
   // Ver usuario
   const handleView = () => {
-
-    if (user.id === 1) {
-      navigate("/dashboard/readUser");
-    }
-    else if (user.id === 3) {
-      navigate("/dashboard/readUser3");
-    }
-    else if (user.id === 2) {
-      navigate("/dashboard/readUser2");
-    }
-    else if (user.id === 4) {
-      navigate("/dashboard/readUser4");
-    }
-    else if (user.id === 5) {
-      navigate("/dashboard/readUser5");
-    }
-
+    navigate(`/dashboard/userRead/${user.id}`);
   };
 
   return (
@@ -100,4 +82,3 @@ export default function UserRowActions({ user }) {
     </div>
   );
 }
-

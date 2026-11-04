@@ -27,7 +27,7 @@ export default function ReadMenu() {
             variant="back"
             size="back"
             type="button"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/HomePage")}
           >
             ← Atrás
           </Button>

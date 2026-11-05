@@ -142,7 +142,7 @@ export default function ReadSupplier() {
                                 <Button
                                     size="sm"
                                     variant="primary"
-                                    onClick={() => navigate(`/UpdateSupplier`)}
+                                    onClick={() => navigate(`/UpdateSupplier/${supplier.id}`)}
                                 >
                                     Editar
                                 </Button>

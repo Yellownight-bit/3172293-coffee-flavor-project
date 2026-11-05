@@ -1,4 +1,3 @@
-
 import { supplierService } from "./supplier.service.js";
 
 export const supplierController = {
@@ -32,12 +31,43 @@ export const supplierController = {
     }
   },
 
+  async update(req, res) {
+    try {
+      const { id } = req.params;
+
+      const updatedSupplier = await supplierService.updateSupplier(
+        id,
+        req.body
+      );
+
+      if (!updatedSupplier) {
+        return res.status(404).json({
+          error: "Proveedor no encontrado",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Proveedor actualizado correctamente",
+        supplier: updatedSupplier,
+      });
+    } catch (error) {
+      console.error("ERROR AL ACTUALIZAR PROVEEDOR:", error);
+
+      return res.status(500).json({
+        error: error.message,
+      });
+    }
+  },
+
   async updateStatus(req, res) {
     try {
       const { id } = req.params;
       const { is_active } = req.body;
 
-      const updatedSupplier = await supplierService.updateSupplierStatus(id, is_active);
+      const updatedSupplier = await supplierService.updateSupplierStatus(
+        id,
+        is_active
+      );
 
       if (!updatedSupplier) {
         return res.status(404).json({

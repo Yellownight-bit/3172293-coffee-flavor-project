@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { fileSchema } from "@/shared/schemas/fileSchema";
 
-export const inventorySchema = z.object({
+const inventoryFields = {
   productName: z
     .string()
     .min(2, "El nombre del producto debe tener mínimo 2 caracteres")
@@ -9,18 +9,14 @@ export const inventorySchema = z.object({
 
   productId: z
     .string()
-    .min(1, "Debe ingresar el ID del producto"),
+    .min(1, "Debe seleccionar un producto"),
 
   productQuantity: z
     .string()
-    .regex(
-      /^[0-9]+$/,
-      "La cantidad debe contener únicamente números"
-    )
-    .refine(
-      (value) => Number(value) > 0,
-      "La cantidad debe ser mayor a 0"
-    ),
+    .regex(/^[0-9]+$/, "La cantidad debe contener solo números")
+    .refine((value) => Number(value) > 0, {
+      message: "La cantidad debe ser mayor que cero",
+    }),
 
   productSupplierNames: z
     .string()
@@ -28,8 +24,8 @@ export const inventorySchema = z.object({
 
   productSupplierNit: z
     .string()
-    .min(5, "El NIT del proveedor es inválido")
-    .max(20, "El NIT del proveedor es demasiado largo"),
+    .min(5, "El NIT debe tener mínimo 5 caracteres")
+    .max(20, "El NIT es demasiado largo"),
 
   productDescription: z
     .string()
@@ -38,22 +34,24 @@ export const inventorySchema = z.object({
 
   productPrice: z
     .string()
-    .regex(
-      /^[0-9]+$/,
-      "El precio debe contener únicamente números"
-    )
-    .refine(
-      (value) => Number(value) > 0,
-      "El precio debe ser mayor a 0"
-    ),
+    .regex(/^[0-9]+$/, "El precio debe contener solo números")
+    .refine((value) => Number(value) > 0, {
+      message: "El precio debe ser mayor que cero",
+    }),
 
   productEntryDate: z
     .string()
-    .min(1, "Debe ingresar la fecha de ingreso"),
+    .min(1, "Debe ingresar la fecha de entrada"),
 
   productImage: fileSchema.shape.files.optional(),
 
   isStaff: z.boolean(),
 
   isActive: z.boolean(),
-});
+};
+
+// Esquema para crear inventario
+export const inventorySchema = z.object(inventoryFields);
+
+// Esquema para actualizar inventario
+export const inventoryUpdateSchema = z.object(inventoryFields);

@@ -12,7 +12,7 @@ export default function SupplierRowActions({ supplier }) {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate(`/UpdateSupplier`);
+  navigate(`/UpdateSupplier/${supplier.id}`);
   };
 
   const handleDelete = async () => {

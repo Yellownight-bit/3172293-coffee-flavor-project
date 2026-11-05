@@ -106,7 +106,7 @@ export default function StatusSwitch({
             ✕ inactivo
         */}
         {isActive ? (
-            <Check size={12} className="text-green-600" />
+            <Check size={12} className="text-orange-600" />
         ) : (
             <X size={12} className="text-gray-500" />
         )}

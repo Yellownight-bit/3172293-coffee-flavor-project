@@ -1,7 +1,8 @@
+
 import { pool } from "../../config/db.js";
 
 export const userRepository = {
-    
+
     async create(userData) {
 
         const {
@@ -58,7 +59,6 @@ export const userRepository = {
         return result.rows[0];
     },
 
-    // Método encargado de consultar todos los usuarios
     async findAll() {
 
         const query = `
@@ -72,18 +72,84 @@ export const userRepository = {
         return result.rows;
     },
 
-    async updateStatus(id, is_active) { // Declara la funcion que recibe los parametros que el service le mando
-        // Se ejecuta la sentencia sql para actualizar solo el estado
+    async update(id, userData) {
+
+        const {
+            userName,
+            userEmail,
+            confirmEmail,
+            userPhone,
+            userAddress,
+            userDocumentTypes,
+            userDocumentNumber,
+            userPassword,
+            isStaff,
+            isActive,
+            isSuperUser,
+        } = userData;
+
+        const query = `
+            UPDATE users
+            SET
+                user_name = $1,
+                user_email = $2,
+                confirm_email = $3,
+                user_phone = $4,
+                user_address = $5,
+                user_document_types = $6,
+                user_document_number = $7,
+                user_password = COALESCE($8, user_password),
+                is_staff = $9,
+                is_active = $10,
+                is_superuser = $11
+            WHERE id = $12
+            RETURNING
+                id,
+                user_name,
+                user_email,
+                confirm_email,
+                user_phone,
+                user_address,
+                user_document_types,
+                user_document_number,
+                is_staff,
+                is_active,
+                is_superuser;
+        `;
+
+        const values = [
+            userName,
+            userEmail,
+            confirmEmail,
+            userPhone,
+            userAddress,
+            userDocumentTypes,
+            userDocumentNumber,
+            userPassword,
+            isStaff,
+            isActive,
+            isSuperUser,
+            id,
+        ];
+
+        const result = await pool.query(query, values);
+
+        return result.rows[0];
+    },
+
+    async updateStatus(id, is_active) {
+
         const query = `
             UPDATE users
             SET is_active = $1
             WHERE id = $2
             RETURNING *;
-        `; // En el arreglo iria en orden, values 1 el estado y 2 el id
+        `;
 
-        const values = [is_active, id] // Guarda el nuevo estado y el id del usuario
-        const result = await pool.query(query, values); // Se le entrega la consulta y los valores a la BD y una vez los entrega de vuelta se guardan en result
+        const values = [is_active, id];
 
-        return result.rows[0]; // Para leer el objeto
+        const result = await pool.query(query, values);
+
+        return result.rows[0];
     },
 };

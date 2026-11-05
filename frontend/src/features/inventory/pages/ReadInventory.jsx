@@ -177,7 +177,7 @@ export default function ReadInventory() {
                                 <Button
                                     size="sm"
                                     variant="primary"
-                                    onClick={() => navigate("/UpdateInventory")}
+                                    onClick={() => navigate(`/UpdateInventory/${id}`)}
                                 >
                                     Editar
                                 </Button>

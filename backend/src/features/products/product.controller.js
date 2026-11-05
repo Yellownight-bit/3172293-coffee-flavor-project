@@ -33,4 +33,29 @@ export const productController = {
       });
     }
   },
+
+  async update(req, res) {
+    try {
+      const { id } = req.params;
+
+      const product = await productService.updateProduct(id, req.body);
+
+      if (!product) {
+        return res.status(404).json({
+          error: "Producto no encontrado",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Producto actualizado correctamente",
+        product,
+      });
+    } catch (err) {
+      console.error("ERROR AL ACTUALIZAR PRODUCTO:", err);
+
+      return res.status(500).json({
+        error: err.message,
+      });
+    }
+  },
 };

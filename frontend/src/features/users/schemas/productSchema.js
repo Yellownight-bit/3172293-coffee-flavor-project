@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const productSchema = z.object({
+const productFields = {
   productName: z
     .string()
     .min(3, "El nombre debe tener mínimo 3 caracteres")
@@ -51,4 +51,8 @@ export const productSchema = z.object({
   destacado: z.boolean(),
   importado: z.boolean(),
   devoluciones: z.boolean(),
-});
+};
+
+export const productSchema = z.object(productFields);
+
+export const productUpdateSchema = z.object(productFields);

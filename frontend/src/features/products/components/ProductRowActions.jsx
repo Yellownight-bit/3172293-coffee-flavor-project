@@ -11,7 +11,7 @@ export default function ProductRowActions({ product }) {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate(`/UpdateProduct`);
+    navigate(`/UpdateProduct/${product.id}`);
   };
 
   const handleDelete = async () => {

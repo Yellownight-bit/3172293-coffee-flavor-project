@@ -45,4 +45,24 @@ export const userService = {
         const updated = await userRepository.updateStatus(id, is_active); // Le pasa los datos al repository
         return updated; // Aqui regresa con los datos y se guardan en updated para entregarselos al controller
     },
+
+
+    async updateUser(id, data) {
+
+        let hashedPassword = null;
+
+        if (
+            data.userPassword &&
+            data.userPassword.trim() !== ""
+        ) {
+            hashedPassword = await bcrypt.hash(data.userPassword, 10);
+        }
+
+        const userData = {
+            ...data,
+            userPassword: hashedPassword,
+        };
+
+        return await userRepository.update(id, userData);
+    },
 };

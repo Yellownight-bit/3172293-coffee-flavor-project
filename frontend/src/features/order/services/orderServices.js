@@ -39,3 +39,24 @@ export async function getAllOrders() {
 
   return data;
 }
+
+export async function updateOrder(id, orderData) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(`${ORDERS_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error al actualizar la orden");
+  }
+
+  return data;
+}

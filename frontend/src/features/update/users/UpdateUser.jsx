@@ -1,17 +1,22 @@
 import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button, FileInput } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
-import { userSchema } from "../../users/schemas/userSchema";
+import { userUpdateSchema } from "../../users/schemas/userSchema";
+import {
+  getAllUsers,
+  updateUser,
+} from "../../users/services/userServices.js";
 import Navbar from "@/shared/layouts/Navbar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
 import {
   showSuccessAlert,
   showUserErrorAlert,
 } from "@/shared/services/alertservice";
 
-export default function UserRegisterForm() {
+export default function UpdateUser() {
   const [errors, setErrors] = useState({});
+
   const [formData, setFormData] = useState({
     userName: "",
     userEmail: "",
@@ -28,14 +33,75 @@ export default function UserRegisterForm() {
   });
 
   const [files, setFiles] = useState([]);
+  const [documentTypes, setDocumentTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const navigate = useNavigate();
-
-  const [documentTypes, setDocumentTypes] = useState([]);
+  const { id } = useParams();
 
   useEffect(() => {
-    getDocumentTypes().then(setDocumentTypes);
+    getDocumentTypes()
+      .then(setDocumentTypes)
+      .catch((error) => {
+        console.error("Error al cargar tipos de documento:", error);
+      });
   }, []);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        setLoading(true);
+
+        const users = await getAllUsers();
+
+        const userData = users.find(
+          (user) => Number(user.id) === Number(id)
+        );
+
+        if (!userData) {
+          await showUserErrorAlert({
+            title: "Usuario no encontrado",
+            text: "No se encontró el usuario seleccionado.",
+          });
+
+          navigate("/dashboard/userList");
+          return;
+        }
+
+        setFormData({
+          userName: userData.user_name || "",
+          userEmail: userData.user_email || "",
+          confirmEmail:
+            userData.confirm_email || userData.user_email || "",
+          userPhone: userData.user_phone || "",
+          userAddress: userData.user_address || "",
+          userDocumentTypes: userData.user_document_types || "",
+          userDocumentNumber: userData.user_document_number || "",
+          userPassword: "",
+          userImage: [],
+          isStaff: userData.is_staff ?? false,
+          isActive: userData.is_active ?? true,
+          isSuperUser: userData.is_superuser ?? false,
+        });
+      } catch (error) {
+        console.error("Error al cargar el usuario:", error);
+
+        await showUserErrorAlert({
+          title: "Error al cargar usuario",
+          text: "No fue posible obtener la información del usuario.",
+        });
+
+        navigate("/dashboard/userList");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      loadUser();
+    }
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -49,7 +115,9 @@ export default function UserRegisterForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = userSchema.safeParse(formData);
+    if (saving) return;
+
+    const result = userUpdateSchema.safeParse(formData);
 
     if (!result.success) {
       const fieldErrors = {};
@@ -69,16 +137,60 @@ export default function UserRegisterForm() {
     }
 
     setErrors({});
+    setSaving(true);
 
-    await showSuccessAlert({
-      title: "Usuario actualizado correctamente",
-      text: "La información del usuario se actualizó correctamente.",
-      confirmButtonText: "Aceptar",
-      timer: 3000,
-    });
+    try {
+      const userData = {
+        userName: formData.userName,
+        userEmail: formData.userEmail,
+        confirmEmail: formData.confirmEmail,
+        userPhone: formData.userPhone,
+        userAddress: formData.userAddress,
+        userDocumentTypes: formData.userDocumentTypes,
+        userDocumentNumber: formData.userDocumentNumber,
+        userPassword: formData.userPassword.trim() || null,
+        isStaff: formData.isStaff,
+        isActive: formData.isActive,
+        isSuperUser: formData.isSuperUser,
+      };
 
-    navigate("/dashboard/userList");
+      await updateUser(id, userData);
+
+      await showSuccessAlert({
+        title: "Usuario actualizado",
+        text: "La información del usuario se actualizó correctamente.",
+        confirmButtonText: "Aceptar",
+      });
+
+      navigate("/dashboard/userList");
+
+    } catch (error) {
+      console.error("Error al actualizar usuario:", error);
+
+      await showUserErrorAlert({
+        title: "Error al actualizar usuario",
+        text: error.message || "No fue posible actualizar el usuario.",
+      });
+
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center bg-center bg-cover bg-no-repeat"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className="bg-white p-6 rounded-xl shadow-md">
+          <p className="text-gray-800 font-semibold">
+            Cargando información del usuario...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -237,13 +349,12 @@ export default function UserRegisterForm() {
                   name="userPassword"
                   type="password"
                   value={formData.userPassword}
-                  placeholder="Escribe tu contraseña"
+                  placeholder="Deja vacío para conservar la contraseña actual"
                   htmlFor="user-password"
                   onChange={handleChange}
                   error={errors.userPassword}
                 />
               </div>
-
             </div>
 
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-between items-center gap-6">
@@ -263,11 +374,16 @@ export default function UserRegisterForm() {
                   />
 
                   <Checkbox
-                    id="isStaff"
-                    name="isStaff"
+                    id="isInactive"
+                    name="isInactive"
                     label="Inactivo"
-                    checked={formData.isStaff}
-                    onChange={handleChange}
+                    checked={!formData.isActive}
+                    onChange={(e) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        isActive: !e.target.checked,
+                      }));
+                    }}
                   />
                 </div>
               </div>
@@ -286,8 +402,9 @@ export default function UserRegisterForm() {
                   variant="finish"
                   size="finish"
                   type="submit"
+                  disabled={saving}
                 >
-                  Finalizar
+                  {saving ? "Guardando..." : "Finalizar"}
                 </Button>
               </div>
 

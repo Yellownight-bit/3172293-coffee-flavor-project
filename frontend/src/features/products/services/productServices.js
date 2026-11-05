@@ -37,3 +37,24 @@ export async function getAllProducts() {
 
   return data;
 }
+
+export async function updateProduct(id, productData) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(`${PRODUCTS_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(productData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error al actualizar el producto");
+  }
+
+  return data;
+}

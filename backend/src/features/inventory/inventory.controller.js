@@ -1,3 +1,4 @@
+
 import { inventoryService } from "./inventory.service.js";
 
 export const inventoryController = {
@@ -30,6 +31,34 @@ export const inventoryController = {
 
       return res.status(500).json({
         error: err.message,
+      });
+    }
+  },
+
+  async update(req, res) {
+    try {
+      const { id } = req.params;
+
+      const updatedInventory = await inventoryService.updateInventory(
+        id,
+        req.body
+      );
+
+      if (!updatedInventory) {
+        return res.status(404).json({
+          error: "Registro de inventario no encontrado",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Inventario actualizado correctamente",
+        inventory: updatedInventory,
+      });
+    } catch (error) {
+      console.error("ERROR AL ACTUALIZAR INVENTARIO:", error);
+
+      return res.status(500).json({
+        error: error.message,
       });
     }
   },

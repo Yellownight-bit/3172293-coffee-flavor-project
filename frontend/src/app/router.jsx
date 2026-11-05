@@ -155,8 +155,8 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/UpdateUser",
-    element: (
+  path: "/UpdateUser/:id",
+  element: (
       <ProtectedRoute>
         <UpdateUser />
       </ProtectedRoute>
@@ -171,7 +171,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/UpdateSupplier",
+    path: "/UpdateSupplier/:id",
     element: (
       <ProtectedRoute>
         <UpdateSupplier />
@@ -179,28 +179,28 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/UpdateInventory",
-    element: (
-      <ProtectedRoute>
-        <UpdateInventory />
-      </ProtectedRoute>
-    ),
+  path: "/UpdateInventory/:id",
+  element: (
+    <ProtectedRoute>
+      <UpdateInventory />
+    </ProtectedRoute>
+  ),
   },
   {
-    path: "/UpdateProduct",
-    element: (
-      <ProtectedRoute>
-        <UpdateProduct />
-      </ProtectedRoute>
-    ),
+  path: "/UpdateProduct/:id",
+  element: (
+    <ProtectedRoute>
+      <UpdateProduct />
+    </ProtectedRoute>
+  ),
   },
   {
-    path: "/UpdateOrder",
-    element: (
-      <ProtectedRoute>
-        <UpdateOrder />
-      </ProtectedRoute>
-    ),
+  path: "/UpdateOrder/:id",
+  element: (
+    <ProtectedRoute>
+      <UpdateOrder />
+    </ProtectedRoute>
+  ),
   },
 ]);
 

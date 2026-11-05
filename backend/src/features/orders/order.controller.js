@@ -1,4 +1,3 @@
-
 import { orderService } from "./order.service.js";
 
 export const orderController = {
@@ -28,6 +27,31 @@ export const orderController = {
       return res.status(200).json(orders);
     } catch (err) {
       console.error("ERROR BACKEND:", err);
+
+      return res.status(500).json({
+        error: err.message,
+      });
+    }
+  },
+
+  async update(req, res) {
+    try {
+      const { id } = req.params;
+
+      const order = await orderService.updateOrder(id, req.body);
+
+      if (!order) {
+        return res.status(404).json({
+          error: "Orden no encontrada",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Orden actualizada correctamente",
+        order,
+      });
+    } catch (err) {
+      console.error("ERROR AL ACTUALIZAR ORDEN:", err);
 
       return res.status(500).json({
         error: err.message,

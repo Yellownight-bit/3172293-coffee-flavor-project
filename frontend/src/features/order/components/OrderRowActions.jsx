@@ -13,8 +13,8 @@ export default function OrderRowActions({ order }) {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate(`/UpdateOrder`);
-  };
+    navigate(`/UpdateOrder/${order.id}`);
+};
 
   const handleDelete = async () => {
     const result = await showConfirmDeleteAlert({

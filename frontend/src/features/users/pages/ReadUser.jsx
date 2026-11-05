@@ -150,7 +150,7 @@ export default function ReadUser() {
                                 <Button
                                     size="sm"
                                     variant="primary"
-                                    onClick={() => navigate("/UpdateUser")}
+                                    onClick={() => navigate(`/UpdateUser/${id}`)}
                                 >
                                     Editar
                                 </Button>

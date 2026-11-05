@@ -4,21 +4,30 @@ import {
   SelectInventory,
   Checkbox,
   Button,
-  FileInput
+  FileInput,
 } from "@/shared";
 import {
   showSuccessAlert,
   showUserErrorAlert,
 } from "@/shared/services/alertService";
 import { getSupplierNames } from "@/services/selectService";
-import { productSchema } from "../../users/schemas/productSchema";
-import Navbar from "@/shared/layouts/Navbar";
 import { getCategorieTypes } from "@/services/selectCategorieTypes";
-import { useNavigate } from "react-router-dom";
+import {
+  getAllProducts,
+  updateProduct,
+} from "@/features/products/services/productServices";
+import { productUpdateSchema } from "../../users/schemas/productSchema";
+import Navbar from "@/shared/layouts/Navbar";
+import { useNavigate, useParams } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
 
 export default function UpdateProduct() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     productName: "",
@@ -27,10 +36,8 @@ export default function UpdateProduct() {
     productPrice: "",
     productQuantity: "",
     productSupplierNames: "",
-    productSupplierNit: "",
     productDescription: "",
     shippingDate: "",
-    userImage: [],
     nuevo: false,
     incluido: false,
     agotable: false,
@@ -43,20 +50,81 @@ export default function UpdateProduct() {
   });
 
   const [files, setFiles] = useState([]);
-
-  const navigate = useNavigate();
-
   const [supplierNames, setSupplierNames] = useState([]);
+  const [categorieTypes, setCategorieTypes] = useState([]);
 
   useEffect(() => {
-    getSupplierNames().then(setSupplierNames);
-  }, []);
+    const loadOptions = async () => {
+      try {
+        const [suppliers, categories] = await Promise.all([
+          getSupplierNames(),
+          getCategorieTypes(),
+        ]);
 
-  const [CategorieTypes, setCategorieTypes] = useState([]);
+        setSupplierNames(suppliers);
+        setCategorieTypes(categories);
+      } catch (error) {
+        console.error("Error al cargar las opciones:", error);
+      }
+    };
+
+    loadOptions();
+  }, []);
 
   useEffect(() => {
-    getCategorieTypes().then(setCategorieTypes);
-  }, []);
+    const loadProduct = async () => {
+      try {
+        const products = await getAllProducts();
+
+        const foundProduct = products.find(
+          (product) => Number(product.id) === Number(id)
+        );
+
+        if (!foundProduct) {
+          await showUserErrorAlert({
+            title: "Producto no encontrado",
+            text: "No se encontró el producto que deseas actualizar.",
+          });
+
+          navigate("/dashboard/productList");
+          return;
+        }
+
+        setFormData({
+          productName: foundProduct.product_name || "",
+          productId: foundProduct.product_code || "",
+          productCategory: String(foundProduct.product_category ?? ""),
+          productPrice: String(foundProduct.product_price ?? ""),
+          productQuantity: String(foundProduct.product_quantity ?? ""),
+          productSupplierNames: foundProduct.product_supplier_names || "",
+          productDescription: foundProduct.product_description || "",
+          shippingDate: foundProduct.shipping_date
+            ? String(foundProduct.shipping_date).slice(0, 10)
+            : "",
+          nuevo: Boolean(foundProduct.nuevo),
+          incluido: Boolean(foundProduct.incluido),
+          agotable: Boolean(foundProduct.agotable),
+          oferta: Boolean(foundProduct.oferta),
+          envio: Boolean(foundProduct.envio),
+          activo: Boolean(foundProduct.activo),
+          destacado: Boolean(foundProduct.destacado),
+          importado: Boolean(foundProduct.importado),
+          devoluciones: Boolean(foundProduct.devoluciones),
+        });
+      } catch (error) {
+        console.error("Error al cargar el producto:", error);
+
+        await showUserErrorAlert({
+          title: "Error al cargar producto",
+          text: error.message || "No fue posible cargar la información.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProduct();
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -70,14 +138,9 @@ export default function UpdateProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = productSchema.safeParse(formData);
-
-    console.log("FORM DATA:", formData);
-    console.log("RESULTADO:", result);
+    const result = productUpdateSchema.safeParse(formData);
 
     if (!result.success) {
-      console.log("ERRORES:", result.error.issues);
-
       const fieldErrors = {};
 
       result.error.issues.forEach((issue) => {
@@ -94,17 +157,44 @@ export default function UpdateProduct() {
       return;
     }
 
-    setErrors({});
+    try {
+      setErrors({});
+      setSaving(true);
 
-    await showSuccessAlert({
-      title: "Producto actualizado correctamente",
-      text: "La información del producto se actualizó correctamente.",
-      confirmButtonText: "Aceptar",
-      timer: 3000,
-    });
+      await updateProduct(id, {
+        ...result.data,
+      });
 
-    navigate("/dashboard/productList");
+      await showSuccessAlert({
+        title: "Producto actualizado correctamente",
+        text: "La información del producto se actualizó correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+
+      navigate("/dashboard/productList");
+    } catch (error) {
+      console.error("Error al actualizar producto:", error);
+
+      await showUserErrorAlert({
+        title: "Error al actualizar producto",
+        text: error.message || "No fue posible actualizar el producto.",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex justify-center items-center">
+          <p>Cargando información del producto...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -126,26 +216,22 @@ export default function UpdateProduct() {
           </Button>
 
           <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-primary-950)]/30 pb-4 mb-6">
-
             <div className="flex items-center gap-2">
               <span className="text-2xl">🍝</span>
 
               <h2 className="text-[var(--color-text-inverse)] font-bold text-lg sm:text-xl uppercase tracking-wider">
-                Actualizar Platillo / Menu
+                Actualizar Platillo / Menú
               </h2>
             </div>
-
           </div>
 
           <form
             onSubmit={handleSubmit}
             className="space-y-6 w-full min-w-0"
           >
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-start w-full min-w-0">
 
               <div className="space-y-4 w-full min-w-0">
-
                 <Input
                   label="Nombre del platillo"
                   name="productName"
@@ -163,7 +249,7 @@ export default function UpdateProduct() {
                   value={formData.productCategory}
                   htmlFor="CategorieTypes"
                   onChange={handleChange}
-                  options={CategorieTypes}
+                  options={categorieTypes}
                   error={errors.productCategory}
                 />
 
@@ -188,29 +274,19 @@ export default function UpdateProduct() {
                   onChange={handleChange}
                   error={errors.productDescription}
                 />
-
               </div>
 
               <div className="space-y-4 flex flex-col items-center w-full min-w-0">
-
                 <div className="w-full flex justify-center min-w-0">
                   <FileInput
                     value={files}
-                    onChange={(newFiles) => {
-                      setFiles(newFiles);
-
-                      setFormData((prev) => ({
-                        ...prev,
-                        userImage: newFiles,
-                      }));
-                    }}
+                    onChange={setFiles}
                     multiple={false}
                     accept="image/*"
                   />
                 </div>
 
                 <div className="w-full min-w-0">
-
                   <Input
                     label="Código de la comida"
                     name="productId"
@@ -221,11 +297,9 @@ export default function UpdateProduct() {
                     onChange={handleChange}
                     error={errors.productId}
                   />
-
                 </div>
 
                 <div className="w-full min-w-0">
-
                   <SelectInventory
                     label="Proveedor"
                     name="productSupplierNames"
@@ -235,15 +309,11 @@ export default function UpdateProduct() {
                     options={supplierNames}
                     error={errors.productSupplierNames}
                   />
-
                 </div>
-
               </div>
 
               <div className="space-y-4 w-full min-w-0 md:col-span-2 lg:col-span-1">
-
                 <div className="w-full min-w-0">
-
                   <Input
                     label="Cantidad en Stock"
                     name="productQuantity"
@@ -253,7 +323,6 @@ export default function UpdateProduct() {
                     onChange={handleChange}
                     error={errors.productQuantity}
                   />
-
                 </div>
 
                 <Input
@@ -265,21 +334,16 @@ export default function UpdateProduct() {
                   onChange={handleChange}
                   error={errors.shippingDate}
                 />
-
               </div>
-
             </div>
 
             <div className="pt-6 border-t border-[var(--color-primary-950)]/20 flex flex-col lg:flex-row justify-between items-start gap-6 w-full min-w-0">
-
               <div className="space-y-3 w-full lg:w-auto min-w-0">
-
                 <span className="font-semibold text-gray-700 text-sm block">
                   Características (opcional)
                 </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
-
                   <Checkbox
                     id="nuevo"
                     name="nuevo"
@@ -292,7 +356,7 @@ export default function UpdateProduct() {
                     id="incluido"
                     name="incluido"
                     label="Bebida incluida"
-                    checked={formData.garantia}
+                    checked={formData.incluido}
                     onChange={handleChange}
                   />
 
@@ -351,13 +415,10 @@ export default function UpdateProduct() {
                     checked={formData.devoluciones}
                     onChange={handleChange}
                   />
-
                 </div>
-
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:self-end pt-2">
-
                 <Button
                   variant="cancel"
                   size="cancel"
@@ -371,16 +432,13 @@ export default function UpdateProduct() {
                   variant="finish"
                   size="finish"
                   type="submit"
+                  disabled={saving}
                 >
-                  Actualizar
+                  {saving ? "Actualizando..." : "Actualizar"}
                 </Button>
-
               </div>
-
             </div>
-
           </form>
-
         </div>
       </div>
     </div>

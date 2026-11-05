@@ -6,5 +6,6 @@ const router = Router();
 
 router.post("/", productController.create);
 router.get("/", authenticateToken, productController.getAll);
+router.put("/:id", authenticateToken, productController.update);
 
 export default router;

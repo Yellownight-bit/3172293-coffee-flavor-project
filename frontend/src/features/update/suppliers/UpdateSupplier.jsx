@@ -1,18 +1,42 @@
+
 import { useState, useEffect } from "react";
-import { Input, Select, Checkbox, Button, FileInput, CheckboxGroup } from "@/shared";
+import {
+  Input,
+  Select,
+  Checkbox,
+  Button,
+  FileInput,
+  CheckboxGroup,
+} from "@/shared";
+
 import { getSupplierDocumentTypes } from "@/services/selectSupplierService";
 import { getSupplierProducts } from "@/services/selectProductService";
-import { supplierSchema } from "../../users/schemas/supplierSchema";
+
+import {
+  supplierUpdateSchema,
+} from "../../users/schemas/supplierSchema";
+
+import {
+  getAllSuppliers,
+  updateSupplier,
+} from "../../suppliers/services/supplierServices.js";
+
 import Navbar from "@/shared/layouts/Navbar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+
 import {
   showSuccessAlert,
   showUserErrorAlert,
 } from "@/shared/services/alertService";
 
 export default function UpdateSupplier() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     supplierName: "",
@@ -30,20 +54,98 @@ export default function UpdateSupplier() {
   });
 
   const [files, setFiles] = useState([]);
-
-  const navigate = useNavigate();
-
   const [documentTypes, setDocumentTypes] = useState([]);
-
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    getSupplierProducts().then(setProducts);
+    const loadOptions = async () => {
+      try {
+        const [types, availableProducts] = await Promise.all([
+          getSupplierDocumentTypes(),
+          getSupplierProducts(),
+        ]);
+
+        setDocumentTypes(types);
+        setProducts(availableProducts);
+      } catch (error) {
+        console.error("Error al cargar opciones:", error);
+
+        await showUserErrorAlert({
+          title: "Error",
+          text: "No fue posible cargar los tipos de documento o productos.",
+        });
+      }
+    };
+
+    loadOptions();
   }, []);
 
   useEffect(() => {
-    getSupplierDocumentTypes().then(setDocumentTypes);
-  }, []);
+    const loadSupplier = async () => {
+      try {
+        const suppliers = await getAllSuppliers();
+
+        const supplier = suppliers.find(
+          (item) => Number(item.id) === Number(id)
+        );
+
+        if (!supplier) {
+          await showUserErrorAlert({
+            title: "Proveedor no encontrado",
+            text: "No se encontró el proveedor solicitado.",
+          });
+
+          navigate("/dashboard/supplierList");
+          return;
+        }
+
+        let suppliedProducts = supplier.supplied_products || [];
+
+        if (typeof suppliedProducts === "string") {
+          try {
+            suppliedProducts = JSON.parse(suppliedProducts);
+          } catch {
+            suppliedProducts = [];
+          }
+        }
+
+        if (!Array.isArray(suppliedProducts)) {
+          suppliedProducts = [];
+        }
+
+        suppliedProducts = suppliedProducts.map(String);
+
+        setFormData({
+          supplierName: supplier.supplier_name || "",
+          supplierEmail: supplier.supplier_email || "",
+          confirmSupplierEmail: supplier.supplier_email || "",
+          supplierPhone: supplier.supplier_phone || "",
+          supplierDocumentType: supplier.supplier_document_type || "",
+          supplierDocumentNumber:
+            supplier.supplier_document_number || "",
+          supplierPassword: "",
+          supplierAddress: supplier.supplier_address || "",
+          suppliedProducts,
+          observations: supplier.observations || "",
+          supplierImage: [],
+          isActive: supplier.is_active,
+        });
+      } catch (error) {
+        console.error("Error al consultar proveedor:", error);
+
+        await showUserErrorAlert({
+          title: "Error al cargar proveedor",
+          text: error.message || "No fue posible consultar el proveedor.",
+        });
+
+        navigate("/dashboard/supplierList");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSupplier();
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -52,8 +154,10 @@ export default function UpdateSupplier() {
       setFormData((prev) => ({
         ...prev,
         suppliedProducts: checked
-          ? [...prev.suppliedProducts, value]
-          : prev.suppliedProducts.filter((item) => item !== value),
+          ? [...prev.suppliedProducts, String(value)]
+          : prev.suppliedProducts.filter(
+              (item) => item !== String(value)
+            ),
       }));
 
       return;
@@ -68,12 +172,14 @@ export default function UpdateSupplier() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (saving) return;
+
     const dataToValidate = {
       ...formData,
       supplierImage: files,
     };
 
-    const result = supplierSchema.safeParse(dataToValidate);
+    const result = supplierUpdateSchema.safeParse(dataToValidate);
 
     if (!result.success) {
       const fieldErrors = {};
@@ -93,16 +199,54 @@ export default function UpdateSupplier() {
     }
 
     setErrors({});
+    setSaving(true);
 
-    await showSuccessAlert({
-      title: "Proveedor actualizado correctamente",
-      text: "La información del proveedor se actualizó correctamente.",
-      confirmButtonText: "Aceptar",
-      timer: 3000,
-    });
+    try {
+      const supplierData = {
+        supplierName: formData.supplierName,
+        supplierEmail: formData.supplierEmail,
+        confirmSupplierEmail: formData.confirmSupplierEmail,
+        supplierPhone: formData.supplierPhone,
+        supplierDocumentType: formData.supplierDocumentType,
+        supplierDocumentNumber: formData.supplierDocumentNumber,
+        supplierPassword: formData.supplierPassword.trim() || null,
+        supplierAddress: formData.supplierAddress,
+        suppliedProducts: formData.suppliedProducts,
+        observations: formData.observations,
+        isActive: formData.isActive,
+      };
 
-    navigate("/dashboard/supplierList");
+      await updateSupplier(id, supplierData);
+
+      await showSuccessAlert({
+        title: "Proveedor actualizado correctamente",
+        text: "La información del proveedor se actualizó correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+
+      navigate("/dashboard/supplierList");
+    } catch (error) {
+      console.error("Error al actualizar proveedor:", error);
+
+      await showUserErrorAlert({
+        title: "Error al actualizar proveedor",
+        text: error.message || "No fue posible actualizar el proveedor.",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg font-semibold">
+          Cargando información del proveedor...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -112,7 +256,6 @@ export default function UpdateSupplier() {
       <Navbar />
 
       <div className="flex-1 p-4 flex items-center justify-center">
-
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
 
           <Button
@@ -125,7 +268,6 @@ export default function UpdateSupplier() {
           </Button>
 
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
-
             <div className="text-2xl text-[var(--color-primary-950)]">
               👤
               <span className="font-bold text-xl relative -top-2 -left-1">
@@ -136,15 +278,12 @@ export default function UpdateSupplier() {
             <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">
               Actualizar Proveedor
             </h2>
-
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
 
               <div className="space-y-4">
-
                 <Input
                   label="Actualizar - Nombre de la Empresa"
                   name="supplierName"
@@ -176,20 +315,16 @@ export default function UpdateSupplier() {
                   onChange={handleChange}
                   error={errors.supplierDocumentNumber}
                 />
-
               </div>
 
               <div className="space-y-5 flex flex-col items-center">
-
                 <div className="w-full flex justify-center">
-
                   <FileInput
                     value={files}
                     onChange={setFiles}
                     multiple={false}
                     accept="image/*"
                   />
-
                 </div>
 
                 <Input
@@ -204,7 +339,6 @@ export default function UpdateSupplier() {
                 />
 
                 <div className="relative">
-
                   <Input
                     label="Actualizar - Número de contacto"
                     name="supplierPhone"
@@ -222,13 +356,10 @@ export default function UpdateSupplier() {
                   >
                     <span>+</span> Agregar teléfono
                   </button>
-
                 </div>
-
               </div>
 
               <div className="space-y-5">
-
                 <Input
                   label="Actualizar - Correo electrónico Empresa"
                   name="supplierEmail"
@@ -241,7 +372,6 @@ export default function UpdateSupplier() {
                 />
 
                 <div className="relative">
-
                   <Input
                     label="Confirmar correo electrónico"
                     name="confirmSupplierEmail"
@@ -260,7 +390,6 @@ export default function UpdateSupplier() {
                     <span>+</span>
                     Agregar correo
                   </button>
-
                 </div>
 
                 <Input
@@ -268,16 +397,14 @@ export default function UpdateSupplier() {
                   name="supplierPassword"
                   type="password"
                   value={formData.supplierPassword}
-                  placeholder="Escribe tu contraseña"
+                  placeholder="Deja vacío para conservar la contraseña actual"
                   htmlFor="supplier-password"
                   onChange={handleChange}
                   error={errors.supplierPassword}
                 />
-
               </div>
 
               <div>
-
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Observaciones
                 </label>
@@ -296,40 +423,35 @@ export default function UpdateSupplier() {
                     {errors.observations}
                   </p>
                 )}
-
               </div>
 
               <div className="flex justify-center">
+                <div>
+                  <CheckboxGroup
+                    label="Productos que suministra"
+                    className=""
+                    name="suppliedProducts"
+                    options={products}
+                    value={formData.suppliedProducts}
+                    onChange={handleChange}
+                  />
 
-                <CheckboxGroup
-                  label="Productos que suministra"
-                  className=""
-                  name="suppliedProducts"
-                  options={products}
-                  value={formData.suppliedProducts}
-                  onChange={handleChange}
-                />
-
-                {errors.suppliedProducts && (
-                  <p className="text-red-500 text-sm">
-                    {errors.suppliedProducts}
-                  </p>
-                )}
-
+                  {errors.suppliedProducts && (
+                    <p className="text-red-500 text-sm">
+                      {errors.suppliedProducts}
+                    </p>
+                  )}
+                </div>
               </div>
-
             </div>
 
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-between items-center gap-6">
-
               <div className="flex items-center gap-6 bg-[var(--color-primary-100)] p-3 rounded-xl px-5 border border-[var(--color-primary-200)]">
-
                 <span className="font-bold text-gray-700 text-sm uppercase">
                   Estado:
                 </span>
 
                 <div className="flex gap-4">
-
                   <Checkbox
                     id="isActive"
                     name="isActive"
@@ -350,13 +472,10 @@ export default function UpdateSupplier() {
                       }))
                     }
                   />
-
                 </div>
-
               </div>
 
               <div className="flex gap-4 self-end">
-
                 <Button
                   variant="cancel"
                   size="cancel"
@@ -370,20 +489,15 @@ export default function UpdateSupplier() {
                   variant="finish"
                   size="finish"
                   type="submit"
+                  disabled={saving}
                 >
-                  Finalizar
+                  {saving ? "Guardando..." : "Finalizar"}
                 </Button>
-
               </div>
-
             </div>
-
           </form>
-
         </div>
-
       </div>
-
     </div>
   );
 }

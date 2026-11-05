@@ -23,6 +23,12 @@ router.get(
   userController.getAll,
 );
 
+router.put(
+  "/:id",
+  authenticateToken,
+  userController.update,
+);
+
 router.patch(
     "/:id",
     userController.updateStatus,

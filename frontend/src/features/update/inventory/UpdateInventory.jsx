@@ -1,23 +1,39 @@
+
 import { useState, useEffect } from "react";
 import {
   Input,
   SelectInventory,
   Checkbox,
   Button,
-  FileInput
+  FileInput,
 } from "@/shared";
+
 import { getSupplierNames } from "@/services/selectService";
-import { inventorySchema } from "../../users/schemas/inventorySchema";
+import {
+  inventoryUpdateSchema,
+} from "../../users/schemas/inventorySchema";
+
+import {
+  getAllInventory,
+  updateInventory,
+} from "@/features/inventory/services/inventoryServices.js";
+
 import Navbar from "@/shared/layouts/Navbar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
+
 import {
   showSuccessAlert,
   showUserErrorAlert,
 } from "@/shared/services/alertService";
 
-export default function CreateProductInventory() {
+export default function UpdateInventory() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     productName: "",
@@ -34,14 +50,71 @@ export default function CreateProductInventory() {
   });
 
   const [files, setFiles] = useState([]);
-
-  const navigate = useNavigate();
-
   const [supplierNames, setSupplierNames] = useState([]);
 
   useEffect(() => {
-    getSupplierNames().then(setSupplierNames);
+    const loadSuppliers = async () => {
+      try {
+        const suppliers = await getSupplierNames();
+        setSupplierNames(suppliers);
+      } catch (error) {
+        console.error("Error al cargar proveedores:", error);
+      }
+    };
+
+    loadSuppliers();
   }, []);
+
+  useEffect(() => {
+    const loadInventory = async () => {
+      try {
+        const inventoryList = await getAllInventory();
+
+        const inventory = inventoryList.find(
+          (item) => Number(item.id) === Number(id)
+        );
+
+        if (!inventory) {
+          await showUserErrorAlert({
+            title: "Registro no encontrado",
+            text: "No se encontró el registro de inventario solicitado.",
+          });
+
+          navigate("/dashboard/inventoryList");
+          return;
+        }
+
+        setFormData({
+          productName: inventory.product_name || "",
+          productId: String(inventory.product_id ?? ""),
+          productQuantity: String(inventory.product_quantity ?? ""),
+          productSupplierNames: inventory.product_supplier_names || "",
+          productSupplierNit: inventory.product_supplier_nit || "",
+          productDescription: inventory.product_description || "",
+          productPrice: String(inventory.product_price ?? ""),
+          productEntryDate: inventory.product_entry_date
+            ? String(inventory.product_entry_date).slice(0, 10)
+            : "",
+          productImage: [],
+          isStaff: Boolean(inventory.is_staff),
+          isActive: Boolean(inventory.is_active),
+        });
+      } catch (error) {
+        console.error("Error al cargar inventario:", error);
+
+        await showUserErrorAlert({
+          title: "Error al cargar inventario",
+          text: error.message || "No fue posible consultar el registro.",
+        });
+
+        navigate("/dashboard/inventoryList");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInventory();
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -55,7 +128,9 @@ export default function CreateProductInventory() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = inventorySchema.safeParse({
+    if (saving) return;
+
+    const result = inventoryUpdateSchema.safeParse({
       ...formData,
       productImage: files,
     });
@@ -78,16 +153,51 @@ export default function CreateProductInventory() {
     }
 
     setErrors({});
+    setSaving(true);
 
-    await showSuccessAlert({
-      title: "Inventario actualizado correctamente",
-      text: "La información del inventario se actualizó correctamente.",
-      confirmButtonText: "Aceptar",
-      timer: 3000,
-    });
+    try {
+      const inventoryData = {
+        productName: formData.productName,
+        productId: formData.productId,
+        productQuantity: formData.productQuantity,
+        productSupplierNames: formData.productSupplierNames,
+        productSupplierNit: formData.productSupplierNit,
+        productDescription: formData.productDescription,
+        productPrice: formData.productPrice,
+        productEntryDate: formData.productEntryDate,
+        isActive: formData.isActive,
+        isStaff: formData.isStaff,
+      };
 
-    navigate("/dashboard/inventoryList");
+      await updateInventory(id, inventoryData);
+
+      await showSuccessAlert({
+        title: "Inventario actualizado correctamente",
+        text: "La información del inventario se actualizó correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
+
+      navigate("/dashboard/inventoryList");
+    } catch (error) {
+      console.error("Error al actualizar inventario:", error);
+
+      await showUserErrorAlert({
+        title: "Error al actualizar inventario",
+        text: error.message || "No fue posible actualizar el inventario.",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Cargando información del inventario...
+      </div>
+    );
+  }
 
   return (
     <div
@@ -97,7 +207,6 @@ export default function CreateProductInventory() {
       <Navbar />
 
       <div className="flex-1 p-4 flex items-center justify-center">
-
         <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
 
           <Button
@@ -111,14 +220,13 @@ export default function CreateProductInventory() {
 
           <button
             type="button"
-            className="absolute top-6 left-240 bg-[var(--color-primary-950)] text-white px-4 py-2 rounded-lg text-md font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
+            className="absolute top-6 right-8 bg-[var(--color-primary-950)] text-white px-4 py-2 rounded-lg text-md font-semibold flex items-center gap-1 hover:bg-[var(--color-primary-900)] transition"
             onClick={() => navigate("/dashboard/inventoryList")}
           >
             <span>👁️‍🗨️</span> Ver inventario
           </button>
 
           <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
-
             <div className="text-2xl text-[var(--color-text-inverse)]">
               📋
               <span className="font-bold text-xl relative -top-2 -left-1">
@@ -129,15 +237,12 @@ export default function CreateProductInventory() {
             <h2 className="text-[var(--color-text-inverse)] font-bold text-xl uppercase tracking-wider">
               Actualizar inventario
             </h2>
-
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 
               <div className="space-y-4">
-
                 <Input
                   label="Nombre del producto"
                   name="productName"
@@ -161,29 +266,25 @@ export default function CreateProductInventory() {
                 />
 
                 <Input
-                  label="Nit del proveedor"
+                  label="NIT del proveedor"
                   name="productSupplierNit"
                   type="text"
                   value={formData.productSupplierNit}
-                  placeholder="Nit del proveedor"
+                  placeholder="NIT del proveedor"
                   htmlFor="user-document-number"
                   onChange={handleChange}
                   error={errors.productSupplierNit}
                 />
-
               </div>
 
               <div className="space-y-5 flex flex-col items-center">
-
                 <div className="w-full flex justify-center">
-
                   <FileInput
                     value={files}
                     onChange={setFiles}
                     multiple={false}
                     accept="image/*"
                   />
-
                 </div>
 
                 <Input
@@ -196,31 +297,19 @@ export default function CreateProductInventory() {
                   error={errors.productPrice}
                 />
 
-                <div className="relative">
-
-                  <Input
-                    label="Cantidad del producto"
-                    name="productQuantity"
-                    type="text"
-                    value={formData.productQuantity}
-                    placeholder="Cantidad del producto"
-                    htmlFor="user-phone"
-                    onChange={handleChange}
-                    error={errors.productQuantity}
-                  />
-
-                  <button
-                    type="button"
-                    className="absolute right-0 -bottom-6 text-xs text-gray-700 flex items-center gap-1 hover:underline"
-                  >
-                  </button>
-
-                </div>
-
+                <Input
+                  label="Cantidad del producto"
+                  name="productQuantity"
+                  type="text"
+                  value={formData.productQuantity}
+                  placeholder="Cantidad del producto"
+                  htmlFor="user-phone"
+                  onChange={handleChange}
+                  error={errors.productQuantity}
+                />
               </div>
 
               <div className="space-y-5">
-
                 <SelectInventory
                   label="Nombre del proveedor"
                   name="productSupplierNames"
@@ -231,45 +320,34 @@ export default function CreateProductInventory() {
                   error={errors.productSupplierNames}
                 />
 
-                <div className="relative">
-
-                  <Input
-                    label="Descripcion del producto"
-                    name="productDescription"
-                    value={formData.productDescription}
-                    type="text"
-                    placeholder="Descripcion del producto"
-                    onChange={handleChange}
-                    error={errors.productDescription}
-                  />
-
-                </div>
+                <Input
+                  label="Descripción del producto"
+                  name="productDescription"
+                  value={formData.productDescription}
+                  type="text"
+                  placeholder="Descripción del producto"
+                  onChange={handleChange}
+                  error={errors.productDescription}
+                />
 
                 <Input
-                  label="fecha ingreso"
+                  label="Fecha de ingreso"
                   name="productEntryDate"
                   type="date"
                   value={formData.productEntryDate}
-                  placeholder="Fecha de ingreso"
-                  htmlFor="user-password"
                   onChange={handleChange}
                   error={errors.productEntryDate}
                 />
-
               </div>
-
             </div>
 
             <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-between items-center gap-6">
-
               <div className="flex items-center gap-6 bg-[var(--color-primary-200)] p-3 rounded-xl px-5 border-2 border-[var(--color-primary-800)]">
-
                 <span className="font-bold text-gray-700 text-sm uppercase">
                   Estado en el inventario:
                 </span>
 
                 <div className="flex gap-4">
-
                   <Checkbox
                     id="isActive"
                     name="isActive"
@@ -285,13 +363,10 @@ export default function CreateProductInventory() {
                     checked={formData.isStaff}
                     onChange={handleChange}
                   />
-
                 </div>
-
               </div>
 
               <div className="flex gap-4 self-end">
-
                 <Button
                   variant="cancel"
                   size="cancel"
@@ -305,20 +380,15 @@ export default function CreateProductInventory() {
                   variant="finish"
                   size="finish"
                   type="submit"
+                  disabled={saving}
                 >
-                  Actualizar
+                  {saving ? "Guardando..." : "Actualizar"}
                 </Button>
-
               </div>
-
             </div>
-
           </form>
-
         </div>
-
       </div>
-
     </div>
   );
 }

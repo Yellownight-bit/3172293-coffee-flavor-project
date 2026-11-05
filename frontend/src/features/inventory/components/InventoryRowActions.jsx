@@ -12,7 +12,7 @@ export default function InventoryRowActions({ item }) {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate("/UpdateInventory");
+  navigate(`/UpdateInventory/${item.id}`);
   };
 
   const handleRead = () => {

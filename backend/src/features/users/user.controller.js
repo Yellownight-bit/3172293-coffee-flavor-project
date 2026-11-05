@@ -74,5 +74,32 @@ export const userController ={
         } catch (error) {
             return res.status(500).json({ error: error.message }) // Si hay un error lo atrapa, frena la ejecucion y le manda al navegador la respuesta 500 error interno del servidor
         }
-    }
+    },
+
+
+    async update(req, res) {
+        try {
+            const { id } = req.params;
+
+            const updatedUser = await userService.updateUser(id, req.body);
+
+            if (!updatedUser) {
+                return res.status(404).json({
+                    error: "Usuario no encontrado",
+                });
+            }
+
+            return res.status(200).json({
+                message: "Usuario actualizado correctamente",
+                user: updatedUser,
+            });
+
+        } catch (error) {
+            console.error("ERROR AL ACTUALIZAR USUARIO:", error);
+
+            return res.status(500).json({
+                error: error.message,
+            });
+        }
+    },
 };

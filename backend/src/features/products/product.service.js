@@ -8,4 +8,8 @@ export const productService = {
   async getAllProducts() {
     return await productRepository.findAll();
   },
+
+  async updateProduct(id, data) {
+    return await productRepository.update(id, data);
+  },
 };

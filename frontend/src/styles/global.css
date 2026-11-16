@@ -13,6 +13,15 @@
     }
 }
 
+/* Fondos con imagen: en tema oscuro la foto se oscurece para que no deslumbre ni compita con el contenido.
+   Se usa agregando la clase bg-image-themed al elemento que tiene el backgroundImage */
+@layer components {
+    .dark .bg-image-themed {
+        background-color: color-mix(in srgb, var(--semantic-overlay) 60%, transparent);
+        background-blend-mode: multiply;
+    }
+}
+
 @theme {
     /* ========Brand========= */
 
@@ -22,7 +31,8 @@
     --color-brand-soft: var(--semantic-brand-soft);
     --color-brand-soft-hover: var(--semantic-brand-soft-hover);
     --color-brand-subtle: var(--semantic-brand-subtle);
-    --color-brand-fade: var(--semantic-brand-fade);
+    --color-gradient-start: var(--semantic-gradient-start);
+    --color-gradient-end: var(--semantic-gradient-end);
     --color-on-brand: var(--semantic-on-brand);
 
     /* ========Accent========= */

@@ -120,11 +120,11 @@ export default function UserRegisterForm() {
 
   return (
     <div
-      className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
+      className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat bg-image-themed"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className="flex-1 p-4 flex items-center justify-center">
-        <div className="w-full max-w-6xl bg-gradient-to-b from-brand to-brand-fade rounded-3xl p-8 shadow-md relative">
+        <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-3xl p-8 shadow-md relative">
           <Button
             variant="back"
             size="back"

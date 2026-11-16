@@ -9,7 +9,8 @@
     --semantic-brand-soft: var(--color-primary-200);
     --semantic-brand-soft-hover: var(--color-primary-300);
     --semantic-brand-subtle: var(--color-primary-100); /*Fondo de marca muy suave para cajas destacadas*/
-    --semantic-brand-fade: var(--color-cream); /*Final del degradado de las tarjetas*/
+    --semantic-gradient-start: var(--color-primary-800); /*Inicio del degradado de las tarjetas*/
+    --semantic-gradient-end: var(--color-cream); /*Final del degradado de las tarjetas*/
     --semantic-on-brand: var(--color-white); /*Texto sobre fondos de color solido u overlays (siempre claro)*/
 
     /* ========Accent========= */
@@ -99,7 +100,8 @@
     --semantic-brand-soft: var(--color-brown-800);
     --semantic-brand-soft-hover: var(--color-brown-700);
     --semantic-brand-subtle: var(--color-brown-900);
-    --semantic-brand-fade: var(--color-brown-800);
+    --semantic-gradient-start: var(--color-brown-700);
+    --semantic-gradient-end: var(--color-brown-900);
     --semantic-on-brand: var(--color-white);
 
     /* ========Accent========= */

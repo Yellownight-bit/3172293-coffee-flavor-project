@@ -11,7 +11,7 @@ export default function AuthLayout() {
           <img
             src= {authBg}
             alt="Restaurante"
-            className="w-full h-screen object-cover"
+            className="w-full h-screen object-cover dark:brightness-50"
           />
         </div>
 

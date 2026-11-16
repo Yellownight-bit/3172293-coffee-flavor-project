@@ -75,7 +75,7 @@ export default function PermissionManagement() {
 
  return (
   <div 
-    className="min-h-screen flex flex-col font-sans bg-cover bg-center bg-no-repeat"
+    className="min-h-screen flex flex-col font-sans bg-cover bg-center bg-no-repeat bg-image-themed"
     style={{ backgroundImage: `url(${backgroundImage})` }}
   >
     <Navbar />

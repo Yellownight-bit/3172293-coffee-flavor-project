@@ -115,13 +115,13 @@ export default function CreateProductInventory() {
 
   return (
     <div
-      className="min-h-screen flex flex-col font-sans w-full max-w-full overflow-x-hidden bg-center bg-cover bg-no-repeat"
+      className="min-h-screen flex flex-col font-sans w-full max-w-full overflow-x-hidden bg-center bg-cover bg-no-repeat bg-image-themed"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <Navbar />
 
       <div className="flex-1 px-3 py-4 sm:px-6 sm:py-8 flex items-center justify-center w-full max-w-full box-border">
-        <div className="w-full max-w-6xl bg-gradient-to-b from-brand to-brand-fade rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-md min-w-0 box-border overflow-hidden">
+        <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-md min-w-0 box-border overflow-hidden">
           <div>
             <Button
               variant="back"

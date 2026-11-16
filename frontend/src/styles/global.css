@@ -5,6 +5,14 @@
 /* Hace que las clases dark: de Tailwind sigan la clase .dark de <html> y no la preferencia del sistema operativo */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Base de toda la app: el fondo y el texto salen de los tokens, asi cambian solos con el tema */
+@layer base {
+    body {
+        background-color: var(--semantic-background);
+        color: var(--semantic-text-primary);
+    }
+}
+
 @theme {
     /* ========Brand========= */
 

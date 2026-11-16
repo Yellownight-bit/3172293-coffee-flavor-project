@@ -5,6 +5,16 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>react-3172293</title>
+    <!-- Aplica el tema guardado antes de que cargue React, para que no parpadee en claro al recargar en oscuro -->
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("coffee-flavor-theme") === "dark" ? "dark" : "light";
+          document.documentElement.classList.toggle("dark", theme === "dark");
+          document.documentElement.style.colorScheme = theme;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

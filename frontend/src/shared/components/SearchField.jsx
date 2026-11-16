@@ -90,7 +90,7 @@ const SearchField = forwardRef(
                 aria-label={ariaLabel}
                 autoComplete={autoComplete}
                 onChange={(e) => onChange(e.target.value)}
-                className="search__input flex-1 bg-transparent px-2 text-text-primary placeholder:text-text-primary outline-none"
+                className="search__input flex-1 bg-transparent px-2 text-text-primary placeholder:text-text-muted outline-none"
                 />
 
                 {!!value && !disabled && (

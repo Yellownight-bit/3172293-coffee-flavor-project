@@ -93,7 +93,7 @@ export function DropdownContent({ children, className = "" }) {
         border
         text-on-brand
         p-1
-        dark:bg-overlay/80
+        bg-overlay/80
         backdrop-blur-[1px]
         shadow-lg
         rounded-2xl
@@ -127,7 +127,7 @@ export function DropdownItem({
       onClick={handleClick}
       className={`
         w-full text-left px-3 py-2 rounded-lg
-        hover:bg-neutral focus:bg-panel-muted
+        hover:bg-neutral focus:bg-neutral
         transition-colors
         ${className}
       `}

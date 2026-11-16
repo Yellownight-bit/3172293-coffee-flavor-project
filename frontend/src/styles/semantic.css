@@ -1,4 +1,3 @@
-
 :root {
 
     /* ================Light theme================== */
@@ -6,16 +5,32 @@
 
     --semantic-brand: var(--color-primary-800);
     --semantic-brand-hover: var(--color-primary-950); /*Generalmente es de un tono mas alto que el brand */
+    --semantic-brand-strong: var(--color-primary-950); /*Acento fuerte: titulos, lineas divisorias, botones principales*/
     --semantic-brand-soft: var(--color-primary-200);
     --semantic-brand-soft-hover: var(--color-primary-300);
+    --semantic-brand-subtle: var(--color-primary-100); /*Fondo de marca muy suave para cajas destacadas*/
+    --semantic-brand-fade: var(--color-cream); /*Final del degradado de las tarjetas*/
+    --semantic-on-brand: var(--color-white); /*Texto sobre fondos de color solido u overlays (siempre claro)*/
+
+    /* ========Accent========= */
+
+    --semantic-accent: var(--color-tertiary-950); /*Botones de accion sobre fondos oscuros*/
+    --semantic-accent-hover: var(--color-tertiary-800);
+    --semantic-accent-soft: var(--color-tertiary-200); /*Etiquetas tipo pildora*/
+    --semantic-on-accent: var(--color-gray-900); /*Texto sobre el acento (siempre oscuro)*/
 
     /* ================Background=============== */
 
     --semantic-background: var(--color-white); /*Fondo de toda la aplicación*/
+    --semantic-panel: var(--color-white); /*Fondo de tarjetas, tablas, inputs y modales*/
+    --semantic-panel-muted: var(--color-gray-100); /*Encabezados de tabla, hover de filas, placeholders de imagen*/
     --semantic-surface: var(--color-gray-200); /*Fondo de modales, cards y containers*/
     --semantic-surface-alt: var(--color-primary-950); /*Fondo de modales, cards y containers*/
     --semantic-surface-muted: var(--color-gray-400); /*Zonas secundarias, con menos importancia*/
     --semantic-background-inverse: var(--color-gray-800);
+    --semantic-overlay: var(--color-black); /*Capa oscura detras de modales y sobre imagenes (se usa con opacidad)*/
+    --semantic-neutral: var(--color-gray-500); /*Botones neutros (cancelar)*/
+    --semantic-neutral-hover: var(--color-gray-600);
 
     /* ========Text========= */
 
@@ -26,6 +41,7 @@
 
     /* ========Border========= */
 
+    --semantic-border-soft: var(--color-gray-200); /*Bordes sutiles: inputs, separadores*/
     --semantic-border: var(--color-gray-400); /*Borde principal de todos los componentes*/
     --semantic-border-strong: var(--color-gray-700); /*Bordes mas fuertes*/
 
@@ -36,9 +52,15 @@
 
     /* ========State========= */
 
-    --semantic-success: var(--color-primary-950);
+    --semantic-success: var(--color-green-600);
+    --semantic-success-hover: var(--color-green-700);
+    --semantic-info: var(--color-blue-600);
+    --semantic-info-hover: var(--color-blue-700);
     --semantic-warning: var(--color-tertiary-950);
     --semantic-error: var(--color-secondary-950);
+    --semantic-error-hover: var(--color-secondary-800);
+    --semantic-error-soft: var(--color-secondary-100);
+    --semantic-error-soft-hover: var(--color-secondary-200);
 
     /* ========Typography========= */
 
@@ -73,37 +95,60 @@
 
     --semantic-brand: var(--color-primary-800);
     --semantic-brand-hover: var(--color-primary-600);
-    --semantic-brand-soft: #63351f;
-    --semantic-brand-soft-hover: #79452b;
+    --semantic-brand-strong: var(--color-primary-700);
+    --semantic-brand-soft: var(--color-brown-800);
+    --semantic-brand-soft-hover: var(--color-brown-700);
+    --semantic-brand-subtle: var(--color-brown-900);
+    --semantic-brand-fade: var(--color-brown-800);
+    --semantic-on-brand: var(--color-white);
+
+    /* ========Accent========= */
+
+    --semantic-accent: var(--color-tertiary-950);
+    --semantic-accent-hover: var(--color-tertiary-700);
+    --semantic-accent-soft: var(--color-brown-700);
+    --semantic-on-accent: var(--color-gray-900);
 
     /* ================Background=============== */
 
-    --semantic-background: #111827;
-    --semantic-surface: #1f2937;
-    --semantic-surface-alt: #292524;
-    --semantic-surface-muted: #374151;
-    --semantic-background-inverse: #f3f4f6;
+    --semantic-background: var(--color-dark-900);
+    --semantic-panel: var(--color-dark-800);
+    --semantic-panel-muted: var(--color-dark-700);
+    --semantic-surface: var(--color-dark-800);
+    --semantic-surface-alt: var(--color-brown-900);
+    --semantic-surface-muted: var(--color-dark-700);
+    --semantic-background-inverse: var(--color-dark-100);
+    --semantic-overlay: var(--color-black);
+    --semantic-neutral: var(--color-dark-600);
+    --semantic-neutral-hover: var(--color-dark-500);
 
     /* ========Text========= */
 
-    --semantic-text-primary: #f9fafb;
-    --semantic-text-secondary: #e5e7eb;
-    --semantic-text-muted: #9ca3af;
-    --semantic-text-inverse: #111827;
+    --semantic-text-primary: var(--color-dark-50);
+    --semantic-text-secondary: var(--color-dark-200);
+    --semantic-text-muted: var(--color-dark-400);
+    --semantic-text-inverse: var(--color-dark-900);
 
     /* ========Border========= */
 
-    --semantic-border: #4b5563;
-    --semantic-border-strong: #6b7280;
+    --semantic-border-soft: var(--color-dark-700);
+    --semantic-border: var(--color-dark-600);
+    --semantic-border-strong: var(--color-dark-500);
 
     /* ========Focus========= */
 
-    --semantic-focus-ring: #fb923c;
-    --semantic-focus-border: #fb923c;
+    --semantic-focus-ring: var(--color-primary-700);
+    --semantic-focus-border: var(--color-primary-700);
 
     /* ========State========= */
 
-    --semantic-success: #86efac;
-    --semantic-warning: #fde047;
-    --semantic-error: #fca5a5;
+    --semantic-success: var(--color-green-500);
+    --semantic-success-hover: var(--color-green-600);
+    --semantic-info: var(--color-blue-500);
+    --semantic-info-hover: var(--color-blue-600);
+    --semantic-warning: var(--color-tertiary-700);
+    --semantic-error: var(--color-secondary-700);
+    --semantic-error-hover: var(--color-secondary-600);
+    --semantic-error-soft: var(--color-wine-900);
+    --semantic-error-soft-hover: var(--color-wine-800);
 }

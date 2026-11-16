@@ -55,6 +55,40 @@
     --color-gray-100: #D4D4D4;
     --color-gray-50:  #E9E9E9;
 
+    /* Green color (estados de éxito) */
+    --color-green-700: #008236;
+    --color-green-600: #00A63E;
+    --color-green-500: #00C950;
+    --color-green-300: #7BF1A8;
+
+    /* Blue color (estados informativos) */
+    --color-blue-700: #1447E6;
+    --color-blue-600: #155DFC;
+    --color-blue-500: #2B7FFF;
+
+    /* Cream color (final del degradado de las tarjetas) */
+    --color-cream: #FCDFA6;
+
+    /* Dark color (neutros del tema oscuro) */
+    --color-dark-900: #111827;
+    --color-dark-800: #1F2937;
+    --color-dark-700: #374151;
+    --color-dark-600: #4B5563;
+    --color-dark-500: #6B7280;
+    --color-dark-400: #9CA3AF;
+    --color-dark-200: #E5E7EB;
+    --color-dark-100: #F3F4F6;
+    --color-dark-50:  #F9FAFB;
+
+    /* Brown color (tonos de marca suaves del tema oscuro) */
+    --color-brown-900: #292524;
+    --color-brown-800: #63351F;
+    --color-brown-700: #79452B;
+
+    /* Wine color (tonos de error suaves del tema oscuro) */
+    --color-wine-900: #451A1A;
+    --color-wine-800: #5C2323;
+
     /* Font Family */
     --main-font: helvetica, Arial, sans-serif;
     --secundary-font: Helvetica, Arial;

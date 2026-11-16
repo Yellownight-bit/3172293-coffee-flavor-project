@@ -37,12 +37,12 @@ export default function SelectInventory({
                     h-10
                     rounded-md
                     border-1
-                    border-[var(--gary-500)]
+                    border-border
                     px-4
-                    bg-[var(--color-primary-950)]
+                    bg-brand-strong
 
                     hover:border-1
-                    hover:bg-[var(--color-primary-300)]
+                    hover:bg-brand-soft-hover
                     "
             >
 
@@ -56,7 +56,7 @@ export default function SelectInventory({
             </select>
             {/*feedback*/}
             {error && (
-                <p className="text-caption text-red-800 place-self-start mt-1">{error}</p>
+                <p className="text-caption text-error place-self-start mt-1">{error}</p>
             )}
         </div>
     )

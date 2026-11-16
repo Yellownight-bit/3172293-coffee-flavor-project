@@ -15,7 +15,7 @@ export default function AuthLayout() {
           />
         </div>
 
-        <div className="bg-orange-50 flex justify-center items-center">
+        <div className="bg-brand-subtle flex justify-center items-center">
           <main>
 
             <UserRegisterLogin />

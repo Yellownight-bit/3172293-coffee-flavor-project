@@ -12,7 +12,7 @@
 //     return(
 //         <div>
 //             <p>Contador: {count}</p>
-//             <button onClick={increment} className="border p-6 rounded-md bg-yellow-500">Incrementar</button>
+//             <button onClick={increment} className="border p-6 rounded-md bg-accent">Incrementar</button>
 //         </div>
 //     )
 // }

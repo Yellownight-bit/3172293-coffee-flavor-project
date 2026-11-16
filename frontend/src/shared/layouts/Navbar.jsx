@@ -55,8 +55,8 @@ export default function Navbar() {
     <nav
   className={`w-full border-b-2 ${
     theme === "dark"
-      ? "bg-black border-gray-800 text-white"
-      : "bg-[var(--color-primary-950)] border-transparent"
+      ? "bg-overlay border-border-strong text-on-brand"
+      : "bg-brand-strong border-transparent"
   }`}
 >
       <div className="mx-auto max-w-7xl px-4">
@@ -163,7 +163,7 @@ export default function Navbar() {
             </DropdownTrigger>
 
             {/* Contenido */}
-            <DropdownContent className="border-2 border-orange-400">
+            <DropdownContent className="border-2 border-brand">
 
               <DropdownItem>
                 <Link

@@ -184,7 +184,7 @@ export default function CreateOrder() {
       <Navbar />
 
       <div className="flex-1 p-4 flex items-center justify-center">
-        <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
+        <div className="w-full max-w-6xl bg-gradient-to-b from-brand to-brand-fade rounded-3xl p-8 shadow-md relative">
           <Button
             variant="back"
             size="back"
@@ -194,15 +194,15 @@ export default function CreateOrder() {
             <span>←</span> Atrás
           </Button>
 
-          <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
-            <div className="text-2xl text-[var(--color-primary-950)]">
+          <div className="flex items-center gap-2 mt-8 mb-6 border-b border-brand-strong/30 pb-3">
+            <div className="text-2xl text-brand-strong">
               🧾
               <span className="font-bold text-xl relative -top-2 -left-1">
                 +
               </span>
             </div>
 
-            <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">
+            <h2 className="text-brand-strong font-bold text-xl uppercase tracking-wider">
               Crear Orden
             </h2>
           </div>
@@ -230,16 +230,16 @@ export default function CreateOrder() {
               />
             </div>
 
-            <div className="bg-[var(--color-primary-100)] p-5 rounded-2xl border border-[var(--color-primary-200)]">
+            <div className="bg-brand-subtle p-5 rounded-2xl border border-brand-soft">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="font-bold text-gray-700 uppercase text-sm">
+                <h3 className="font-bold text-text-secondary uppercase text-sm">
                   Platillos de la orden
                 </h3>
 
                 <button
                   type="button"
                   onClick={addDish}
-                  className="text-sm font-semibold text-[var(--color-primary-950)] hover:underline"
+                  className="text-sm font-semibold text-brand-strong hover:underline"
                 >
                   + Agregar platillo
                 </button>
@@ -269,7 +269,7 @@ export default function CreateOrder() {
                     <div className="w-[100px] max-w-full">
                       <label
                         htmlFor={`quantity-${index}`}
-                        className="block text-sm font-semibold text-gray-700 mb-2"
+                        className="block text-sm font-semibold text-text-secondary mb-2"
                       >
                         Cantidad
                       </label>
@@ -287,7 +287,7 @@ export default function CreateOrder() {
                             Number(e.target.value)
                           )
                         }
-                        className="w-full h-10 rounded-xl border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-700)]"
+                        className="w-full h-10 rounded-xl border border-border-soft px-3 focus:outline-none focus:ring-2 focus:ring-focus-ring"
                       />
                     </div>
 
@@ -295,7 +295,7 @@ export default function CreateOrder() {
                       <button
                         type="button"
                         onClick={() => removeDish(index)}
-                        className="h-10 w-10 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition font-bold"
+                        className="h-10 w-10 rounded-full bg-error-soft text-error hover:bg-error-soft-hover transition font-bold"
                         title="Eliminar platillo"
                       >
                         🗑️
@@ -306,14 +306,14 @@ export default function CreateOrder() {
               </div>
 
               {errors.dishes && (
-                <p className="text-red-600 text-sm mt-3">
+                <p className="text-error text-sm mt-3">
                   {errors.dishes}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-text-secondary mb-2">
                 Observaciones especiales
               </label>
 
@@ -323,11 +323,11 @@ export default function CreateOrder() {
                 value={formData.observations}
                 onChange={handleChange}
                 placeholder="Escriba observaciones especiales de la orden..."
-                className="w-full rounded-xl border border-gray-300 p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-700)]"
+                className="w-full rounded-xl border border-border-soft p-3 resize-none focus:outline-none focus:ring-2 focus:ring-focus-ring"
               />
             </div>
 
-            <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-end items-center gap-4">
+            <div className="pt-6 border-brand-strong/20 flex flex-col sm:flex-row justify-end items-center gap-4">
               <Button
                 variant="cancel"
                 size="cancel"

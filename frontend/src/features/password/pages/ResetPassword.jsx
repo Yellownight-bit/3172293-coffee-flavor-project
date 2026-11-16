@@ -36,15 +36,15 @@ const ResetPassword = () => {
                 backgroundImage: "url('/src/assets/images/restaurant.jpg')",
             }}
         >
-            <div className="absolute inset-0 bg-black/50"></div>
+            <div className="absolute inset-0 bg-overlay/50"></div>
 
-            <div className="relative w-full max-w-md rounded-2xl border border-orange-400 bg-black/70 p-8 shadow-2xl">
+            <div className="relative w-full max-w-md rounded-2xl border border-brand bg-overlay/70 p-8 shadow-2xl">
                 <div className="text-center mb-6">
-                    <h1 className="text-2xl font-bold text-white">
+                    <h1 className="text-2xl font-bold text-on-brand">
                         Restablecer Contraseña
                     </h1>
 
-                    <p className="mt-2 text-sm text-gray-200">
+                    <p className="mt-2 text-sm text-on-brand/80">
                         Ingresa tu nueva contraseña para recuperar el acceso a
                         tu cuenta
                     </p>
@@ -54,7 +54,7 @@ const ResetPassword = () => {
                     <div>
                         <label
                             htmlFor="password"
-                            className="mb-2 block text-sm font-medium text-white"
+                            className="mb-2 block text-sm font-medium text-on-brand"
                         >
                             Nueva contraseña
                         </label>
@@ -65,14 +65,14 @@ const ResetPassword = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Ingresa tu nueva contraseña"
-                            className="w-full rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400"
+                            className="w-full rounded-md border border-border-soft bg-panel px-4 py-2.5 text-sm text-text-primary outline-none focus:border-focus-border focus:ring-2 focus:ring-focus-ring"
                         />
                     </div>
 
                     <div>
                         <label
                             htmlFor="confirmPassword"
-                            className="mb-2 block text-sm font-medium text-white"
+                            className="mb-2 block text-sm font-medium text-on-brand"
                         >
                             Confirmar contraseña
                         </label>
@@ -85,13 +85,13 @@ const ResetPassword = () => {
                                 setConfirmPassword(e.target.value)
                             }
                             placeholder="Confirma tu nueva contraseña"
-                            className="w-full rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400"
+                            className="w-full rounded-md border border-border-soft bg-panel px-4 py-2.5 text-sm text-text-primary outline-none focus:border-focus-border focus:ring-2 focus:ring-focus-ring"
                         />
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full rounded-md bg-yellow-400 px-4 py-2.5 font-semibold text-gray-900 transition hover:bg-yellow-300"
+                        className="w-full rounded-md bg-accent px-4 py-2.5 font-semibold text-text-primary transition hover:bg-accent-hover"
                     >
                         Restablecer contraseña
                     </button>

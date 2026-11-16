@@ -55,7 +55,7 @@ export default function Select({
             </select>
             {/*feedback*/}
             {error && (
-                <p className="text-caption text-red-800 place-self-start mt-1">{error}</p>
+                <p className="text-caption text-error place-self-start mt-1">{error}</p>
             )}
         </div>
     )

@@ -16,10 +16,10 @@ export function showSuccessAlert({
 
     customClass: {
       popup: "rounded-2xl",
-      title: "text-green-600",
+      title: "text-success",
       confirmButton:
-        "bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-text-inverse",
-      timerProgressBar: "!bg-green-600",
+        "bg-success hover:bg-success-hover px-4 py-2 rounded-lg text-on-brand",
+      timerProgressBar: "!bg-success",
     },
 
     buttonsStyling: false,
@@ -43,10 +43,10 @@ export function showCancelDeleteAlert({
 
     customClass: {
       popup: "rounded-2xl",
-      title: "!text-blue-600",
+      title: "!text-info",
       confirmButton:
-        "bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg",
-      timerProgressBar: "!bg-blue-600",
+        "bg-info text-on-brand hover:bg-info-hover px-4 py-2 rounded-lg",
+      timerProgressBar: "!bg-info",
     },
 
     buttonsStyling: false,
@@ -70,11 +70,11 @@ export function showConfirmDeleteAlert({
 
     customClass: {
       popup: "rounded-2xl",
-      title: "!text-amber-600 font-bold",
+      title: "!text-brand-strong font-bold",
       confirmButton:
-        "!bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded-lg ml-2 font-medium",
+        "!bg-error text-on-brand hover:bg-error-hover px-4 py-2 rounded-lg ml-2 font-medium",
       cancelButton:
-        "!bg-gray-500 text-white hover:bg-gray-600 px-4 py-2 rounded-lg font-medium",
+        "!bg-neutral text-on-brand hover:bg-neutral-hover px-4 py-2 rounded-lg font-medium",
     },
 
     buttonsStyling: false,
@@ -94,9 +94,9 @@ export function showOpsAlert({
 
     customClass: {
       popup: "rounded-2xl",
-      title: "!text-red-600 font-bold",
+      title: "!text-error font-bold",
       confirmButton:
-        "bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded-lg font-medium",
+        "bg-error text-on-brand hover:bg-error-hover px-4 py-2 rounded-lg font-medium",
     },
 
     buttonsStyling: false,
@@ -116,9 +116,9 @@ export function showUserErrorAlert({
 
     customClass: {
       popup: "rounded-2xl",
-      title: "!text-red-600 font-bold",
+      title: "!text-error font-bold",
       confirmButton:
-        "bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded-lg font-medium transition",
+        "bg-error text-on-brand hover:bg-error-hover px-4 py-2 rounded-lg font-medium transition",
     },
 
     buttonsStyling: false,

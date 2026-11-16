@@ -11,14 +11,14 @@ export default function Input({
         // Estos valroes deben ser cin variables
         primary: `
             border-brand
-            bg-white
+            bg-panel
         `,
         secondary: `
-            border-red-950
-            bg-gray-300
+            border-error
+            bg-surface-muted
         `,
         tertiary: `
-            border-green-950
+            border-success
         `,
     };
 
@@ -52,7 +52,7 @@ export default function Input({
                             ? "mb-0"
                             : "mb-1"
                     }
-                    ${error ? "border-red-800" : "text-caption"}
+                    ${error ? "border-error" : "text-caption"}
                 `}
             >
             {label}
@@ -104,7 +104,7 @@ export default function Input({
                     focus:ring-brand
                     ${variants[variant]}
                     ${sizes[size]}
-                    ${error ? "border-red-800" : "border border-border"}
+                    ${error ? "border-error" : "border border-border"}
                 `}
                 {...props}
             />
@@ -113,7 +113,7 @@ export default function Input({
 
             {/*feedback*/}
             {error && (
-                <p className="text-caption text-red-800 place-self-start">{error}</p>
+                <p className="text-caption text-error place-self-start">{error}</p>
             )}
         </div>
     )

@@ -19,7 +19,7 @@ export default function SelectInventory({
                  className="
                     block
                     text-caption
-                    text-secondary
+                    text-text-secondary
                     "
                 >
                  {label}

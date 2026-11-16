@@ -44,7 +44,7 @@ export default function Input({
                 className={`
                     block
                     text-caption
-                    text-secondary
+                    text-text-secondary
                     ${
                       size === "sm"
                         ? "-mb-2"
@@ -100,7 +100,6 @@ export default function Input({
 
                     focus:outline-none
                     focus:ring-2
-                    focus:ring-ring
                     focus:ring-brand
                     ${variants[variant]}
                     ${sizes[size]}

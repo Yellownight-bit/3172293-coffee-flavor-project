@@ -14,14 +14,12 @@ export default function Button({
             bg-brand
             text-on-brand
             hover:bg-brand-hover
-            dark:brightness-110
         `,
 
         secondary: `
             bg-brand-soft
             text-text-primary
             hover:bg-brand-soft-hover
-            dark:brightness-110
         `,
 
         cancel: `
@@ -36,7 +34,6 @@ export default function Button({
             hover:bg-brand
             text-on-brand
             shadow-md
-            dark:brightness-125
         `,
 
         back: `

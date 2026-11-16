@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import "@/styles/alerts.css";
 
 export function showSuccessAlert({
   title = "Éxito",

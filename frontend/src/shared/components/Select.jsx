@@ -19,7 +19,7 @@ export default function Select({
                  className="
                     block
                     text-caption
-                    text-secondary
+                    text-text-secondary
                     "
                 >
                  {label}
@@ -37,6 +37,9 @@ export default function Select({
                     h-12
                     rounded-md
                     border
+                    border-border
+                    bg-panel
+                    text-text-primary
                     px-4
 
                     hover:border

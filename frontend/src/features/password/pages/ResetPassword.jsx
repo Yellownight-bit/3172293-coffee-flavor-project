@@ -91,7 +91,7 @@ const ResetPassword = () => {
 
                     <button
                         type="submit"
-                        className="w-full rounded-md bg-accent px-4 py-2.5 font-semibold text-text-primary transition hover:bg-accent-hover"
+                        className="w-full rounded-md bg-accent px-4 py-2.5 font-semibold text-on-accent transition hover:bg-accent-hover"
                     >
                         Restablecer contraseña
                     </button>

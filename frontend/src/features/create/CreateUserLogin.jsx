@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button, FileInput } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
@@ -26,6 +27,7 @@ export default function UserRegisterForm() {
     isStaff: false,
     isActive: true,
     isSuperUser: false,
+    rol: "invitado",
   });
 
   const [files, setFiles] = useState([]);
@@ -159,6 +161,22 @@ export default function UserRegisterForm() {
                   htmlFor="user-name"
                   onChange={handleChange}
                   error={errors.userName}
+                />
+
+                <Select
+                  label="Rol"
+                  name="rol"
+                  value={formData.rol}
+                  htmlFor="rol"
+                  onChange={handleChange}
+                  options={[
+                    { value: "administrador", label: "Administrador" },
+                    { value: "cajero", label: "Cajero" },
+                    { value: "mesero", label: "Mesero" },
+                    { value: "cocinero", label: "Cocinero" },
+                    { value: "invitado", label: "Invitado" },
+                  ]}
+                  error={errors.rol}
                 />
 
                 <Select

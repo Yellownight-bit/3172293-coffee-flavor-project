@@ -1,3 +1,4 @@
+
 import { StatusSwitch } from "@/shared";
 import UserRowActions from "../components/UserRowActions";
 import { updateStatusSwitch } from "../services/userServices";
@@ -10,6 +11,10 @@ export const UserColumns = [
   {
     accessorKey: "user_name",
     header: "Nombre",
+  },
+  {
+    accessorKey: "rol",
+    header: "Rol",
   },
   {
     accessorKey: "user_email",
@@ -28,17 +33,17 @@ export const UserColumns = [
     header: "Número de documento",
   },
   {
-    accessorKey: "is_active", // Busca el valor de cada usuario en la bd
+    accessorKey: "is_active",
     header: "Estado",
     cell: ({ row }) => {
       return (
         <StatusSwitch
-        checked={row.original.is_active} // Define como debe verse el icono segun su valor
-        onChange={async (value) => {
-          await updateStatusSwitch(row.original.id, value) // Cuando se hace click atrapa el nuevo valor junto a la id, llama a la funcion guarda todo y actualiza la bd
-        }}  // Función que maneja el cambio
+          checked={row.original.is_active}
+          onChange={async (value) => {
+            await updateStatusSwitch(row.original.id, value);
+          }}
         />
-      )
+      );
     },
   },
   {

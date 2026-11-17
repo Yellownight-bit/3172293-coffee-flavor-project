@@ -26,6 +26,7 @@ import ReadSupplier from "../features/suppliers/pages/ReadSupplier";
 import ReadOrder  from "../features/order/pages/ReadOrder";
 import ReadProduct from "../features/products/pages/ReadProduct";
 import ReadInventory from "../features/inventory/pages/ReadInventory";
+import ReadMenu from "../features/read/ReadMenu";
 
 import UpdateUser from "@/features/update/users/UpdateUser";
 import UpdateSupplier from "@/features/update/suppliers/UpdateSupplier";
@@ -109,6 +110,7 @@ const router = createBrowserRouter([
       { path: "/dashboard/orderRead/:id", element: <ReadOrder /> },
       { path: "/dashboard/productRead/:id", element: <ReadProduct /> },
       { path: "/dashboard/inventoryRead/:id", element: <ReadInventory /> },
+      { path: "/dashboard/readMenu", element: <ReadMenu /> },
       { path: "UpdateUser", element: <UpdateUser /> },
       
     ],

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button, FileInput } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
@@ -30,6 +31,7 @@ export default function UpdateUser() {
     isStaff: false,
     isActive: true,
     isSuperUser: false,
+    rol: "invitado",
   });
 
   const [files, setFiles] = useState([]);
@@ -83,6 +85,7 @@ export default function UpdateUser() {
           isStaff: userData.is_staff ?? false,
           isActive: userData.is_active ?? true,
           isSuperUser: userData.is_superuser ?? false,
+          rol: userData.rol || "invitado",
         });
       } catch (error) {
         console.error("Error al cargar el usuario:", error);
@@ -152,6 +155,7 @@ export default function UpdateUser() {
         isStaff: formData.isStaff,
         isActive: formData.isActive,
         isSuperUser: formData.isSuperUser,
+        rol: formData.rol,
       };
 
       await updateUser(id, userData);
@@ -237,6 +241,22 @@ export default function UpdateUser() {
                   htmlFor="user-name"
                   onChange={handleChange}
                   error={errors.userName}
+                />
+
+                <Select
+                  label="Actualizar - Rol del usuario"
+                  name="rol"
+                  value={formData.rol}
+                  htmlFor="rol"
+                  onChange={handleChange}
+                  options={[
+                    { value: "administrador", label: "Administrador" },
+                    { value: "cajero", label: "Cajero" },
+                    { value: "mesero", label: "Mesero" },
+                    { value: "cocinero", label: "Cocinero" },
+                    { value: "invitado", label: "Invitado" },
+                  ]}
+                  error={errors.rol}
                 />
 
                 <Select

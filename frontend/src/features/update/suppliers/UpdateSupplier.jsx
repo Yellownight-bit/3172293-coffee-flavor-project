@@ -250,13 +250,13 @@ export default function UpdateSupplier() {
 
   return (
     <div
-      className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat"
+      className="min-h-screen flex flex-col font-sans bg-center bg-cover bg-no-repeat bg-image-themed"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <Navbar />
 
       <div className="flex-1 p-4 flex items-center justify-center">
-        <div className="w-full max-w-6xl bg-gradient-to-b from-[var(--color-primary-800)] to-[#fcdfa6] rounded-3xl p-8 shadow-md relative">
+        <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-3xl p-8 shadow-md relative">
 
           <Button
             variant="back"
@@ -267,15 +267,15 @@ export default function UpdateSupplier() {
             <span>←</span> Atrás
           </Button>
 
-          <div className="flex items-center gap-2 mt-8 mb-6 border-b border-[var(--color-primary-950)]/30 pb-3">
-            <div className="text-2xl text-[var(--color-primary-950)]">
+          <div className="flex items-center gap-2 mt-8 mb-6 border-b border-brand-strong/30 pb-3">
+            <div className="text-2xl text-brand-strong">
               👤
               <span className="font-bold text-xl relative -top-2 -left-1">
                 +
               </span>
             </div>
 
-            <h2 className="text-[var(--color-primary-950)] font-bold text-xl uppercase tracking-wider">
+            <h2 className="text-brand-strong font-bold text-xl uppercase tracking-wider">
               Actualizar Proveedor
             </h2>
           </div>
@@ -352,7 +352,7 @@ export default function UpdateSupplier() {
 
                   <button
                     type="button"
-                    className="absolute right-0 -bottom-6 text-xs text-gray-700 flex items-center gap-1 hover:underline"
+                    className="absolute right-0 -bottom-6 text-xs text-text-secondary flex items-center gap-1 hover:underline"
                   >
                     <span>+</span> Agregar teléfono
                   </button>
@@ -385,7 +385,7 @@ export default function UpdateSupplier() {
 
                   <button
                     type="button"
-                    className="absolute right-0 -bottom-6 text-xs text-gray-700 flex items-center gap-1 hover:underline"
+                    className="absolute right-0 -bottom-6 text-xs text-text-secondary flex items-center gap-1 hover:underline"
                   >
                     <span>+</span>
                     Agregar correo
@@ -405,7 +405,7 @@ export default function UpdateSupplier() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text-secondary mb-2">
                   Observaciones
                 </label>
 
@@ -415,11 +415,11 @@ export default function UpdateSupplier() {
                   value={formData.observations}
                   onChange={handleChange}
                   placeholder="Escriba observaciones del proveedor..."
-                  className="w-full rounded-xl border border-gray-300 p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-700)]"
+                  className="w-full rounded-xl border border-border-soft p-3 resize-none focus:outline-none focus:ring-2 focus:ring-focus-ring"
                 />
 
                 {errors.observations && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-error text-sm mt-1">
                     {errors.observations}
                   </p>
                 )}
@@ -437,7 +437,7 @@ export default function UpdateSupplier() {
                   />
 
                   {errors.suppliedProducts && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-error text-sm">
                       {errors.suppliedProducts}
                     </p>
                   )}
@@ -445,9 +445,9 @@ export default function UpdateSupplier() {
               </div>
             </div>
 
-            <div className="pt-6 border-[var(--color-primary-950)]/20 flex flex-col sm:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-6 bg-[var(--color-primary-100)] p-3 rounded-xl px-5 border border-[var(--color-primary-200)]">
-                <span className="font-bold text-gray-700 text-sm uppercase">
+            <div className="pt-6 border-brand-strong/20 flex flex-col sm:flex-row justify-between items-center gap-6">
+              <div className="flex items-center gap-6 bg-brand-subtle p-3 rounded-xl px-5 border border-brand-soft">
+                <span className="font-bold text-text-secondary text-sm uppercase">
                   Estado:
                 </span>
 

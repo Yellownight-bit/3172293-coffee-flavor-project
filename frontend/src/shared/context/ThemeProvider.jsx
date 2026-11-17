@@ -4,7 +4,8 @@ import ThemeContext from "./ThemeContext";
 
 export default function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("coffee-flavor-theme") || "light";
+    // El tema claro es el predeterminado; solo se usa el oscuro si quedo guardado
+    return localStorage.getItem("coffee-flavor-theme") === "dark" ? "dark" : "light";
   });
 
   useEffect(() => {

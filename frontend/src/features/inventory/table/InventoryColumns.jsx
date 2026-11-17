@@ -20,7 +20,7 @@ export const inventoryColumns = [
       const quantity = Number(row.original.product_quantity || 0);
 
       return (
-        <span className={quantity <= 5 ? "text-red-600 font-semibold" : ""}>
+        <span className={quantity <= 5 ? "text-error font-semibold" : ""}>
           {quantity}
           {quantity <= 5 && " (bajo)"}
         </span>

@@ -8,7 +8,7 @@ export default function DashboardLayout() {
   return (
     <>
       <div
-        className="min-h-screen w-full"
+        className="min-h-screen w-full bg-image-themed"
         style={{
           backgroundImage: `url(${restaurant})`,
           backgroundSize: "cover",

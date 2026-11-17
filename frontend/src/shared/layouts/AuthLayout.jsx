@@ -11,11 +11,11 @@ export default function AuthLayout() {
           <img
             src= {authBg}
             alt="Restaurante"
-            className="w-full h-screen object-cover"
+            className="w-full h-screen object-cover dark:brightness-50"
           />
         </div>
 
-        <div className="bg-orange-50 flex justify-center items-center">
+        <div className="bg-brand-subtle flex justify-center items-center">
           <main>
 
             <UserRegisterLogin />

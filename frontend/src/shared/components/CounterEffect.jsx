@@ -25,7 +25,7 @@ export default function CounterEffect(){
             <h2>{count}</h2>
             <p>{message}</p>
 
-            <button onClick={() => setCount(count + 1)} className="border p-6 bg-green-300">Incrementar Efecto</button>
+            <button onClick={() => setCount(count + 1)} className="border p-6 bg-success">Incrementar Efecto</button>
 
         </div>
     )

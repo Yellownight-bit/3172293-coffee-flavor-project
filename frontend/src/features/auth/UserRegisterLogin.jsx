@@ -119,7 +119,7 @@ export default function UserRegisterForm() {
   // ========================================================
 
   return (
-    <div className="grid items-center justify-center bg-orange-100 border border-orange-500 rounded p-16">
+    <div className="grid items-center justify-center bg-brand-subtle border border-brand rounded p-16">
 
       {/* Título */}
       <h1 className="mx-auto my-2 text-title font-bold">
@@ -182,7 +182,7 @@ export default function UserRegisterForm() {
             <Link to="/recover-password">
             <button
               type="button"
-              className="text-sm text-orange-500 hover:underline"
+              className="text-sm text-brand-strong hover:underline"
             >
               ¿Olvidaste tu contraseña?
             </button>
@@ -194,7 +194,7 @@ export default function UserRegisterForm() {
           <Link to="/CreateUserLogin">
           <button
             type="button"
-            className="text-sm text-orange-500 hover:underline mb-4"
+            className="text-sm text-brand-strong hover:underline mb-4"
           >
             ¿No tienes cuenta?
           </button>

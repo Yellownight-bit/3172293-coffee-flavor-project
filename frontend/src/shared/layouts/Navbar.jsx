@@ -52,13 +52,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav
-  className={`w-full border-b-2 ${
-    theme === "dark"
-      ? "bg-black border-gray-800 text-white"
-      : "bg-[var(--color-primary-950)] border-transparent"
-  }`}
->
+    <nav className="w-full border-b-2 border-transparent bg-surface-alt text-text-primary dark:border-border">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between">
 
@@ -75,7 +69,7 @@ export default function Navbar() {
             <li>
               <Link
                 to={"/HomePage"}
-                className="hover:text-primary transition flex items-center gap-1.5"
+                className="hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
               >
                 <House size={17} />
                 Inicio
@@ -85,7 +79,7 @@ export default function Navbar() {
             <li>
               <Link
                 to={"/dashboard/userList"}
-                className="hover:text-primary transition flex items-center gap-1.5"
+                className="hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
               >
                 <Users size={17} />
                 Usuarios
@@ -95,7 +89,7 @@ export default function Navbar() {
             <li>
               <Link
                 to="/dashboard/access"
-                className="hover:text-primary transition flex items-center gap-1.5"
+                className="hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
               >
                 <KeyRound size={17} />
                 Permisos
@@ -105,7 +99,7 @@ export default function Navbar() {
             <li>
               <Link
                 to={"/dashboard/readMenu"}
-                className="hover:text-primary transition flex items-center gap-1.5"
+                className="hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
               >
                 <Utensils size={17} />
                 Menu
@@ -119,7 +113,7 @@ export default function Navbar() {
                   text: "Esta opción no está disponible en este momento.",
                 })
               }
-              className="cursor-pointer flex items-center gap-1.5"
+              className="cursor-pointer hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
             >
               <GraduationCap size={17} />
               Cursos
@@ -132,7 +126,7 @@ export default function Navbar() {
                   text: "Esta opción no está disponible en este momento.",
                 })
               }
-              className="cursor-pointer flex items-center gap-1.5"
+              className="cursor-pointer hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
             >
               <Image size={17} />
               Multimedia
@@ -163,7 +157,7 @@ export default function Navbar() {
             </DropdownTrigger>
 
             {/* Contenido */}
-            <DropdownContent className="border-2 border-orange-400">
+            <DropdownContent className="border-2 border-brand">
 
               <DropdownItem>
                 <Link
@@ -222,24 +216,22 @@ export default function Navbar() {
                     </Link>
                </DropdownItem>
 
-              <DropdownItem>
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="flex items-center gap-2 w-full text-left"
-                >
-                  {theme === "light" ? (
-                    <>
-                      <Moon size={17} />
-                      Modo oscuro
-                    </>
-                  ) : (
-                    <>
-                      <Sun size={17} />
-                      Modo claro
-                    </>
-                  )}
-                </button>
+              {/* El DropdownItem ya es un boton: recibe el onClick directo para no anidar un boton dentro de otro */}
+              <DropdownItem
+                onClick={toggleTheme}
+                className="flex items-center gap-2"
+              >
+                {theme === "light" ? (
+                  <>
+                    <Moon size={17} />
+                    Modo oscuro
+                  </>
+                ) : (
+                  <>
+                    <Sun size={17} />
+                    Modo claro
+                  </>
+                )}
               </DropdownItem>
 
               <DropdownItem>

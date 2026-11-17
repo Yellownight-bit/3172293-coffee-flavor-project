@@ -1,0 +1,14 @@
+/* Alertas de SweetAlert2: toman el fondo y el texto de los tokens para seguir el tema claro u oscuro */
+
+.swal2-popup {
+    background: var(--semantic-panel);
+    color: var(--semantic-text-primary);
+}
+
+.swal2-html-container {
+    color: var(--semantic-text-secondary);
+}
+
+.swal2-timer-progress-bar-container {
+    background: var(--semantic-panel-muted);
+}

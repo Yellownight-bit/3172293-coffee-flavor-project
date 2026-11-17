@@ -12,39 +12,36 @@ export default function Button({
         const variants = {
         primary: `
             bg-brand
-            text-text-inverse
+            text-on-brand
             hover:bg-brand-hover
-            dark:brightness-110
         `,
 
         secondary: `
             bg-brand-soft
-            text-primary
+            text-text-primary
             hover:bg-brand-soft-hover
-            dark:brightness-110
         `,
 
         cancel: `
             border
-            border-gray-400
-            text-gray-700
-            hover:bg-gray-100
+            border-border
+            text-text-secondary
+            hover:bg-panel-muted
         `,
 
         finish: `
-            bg-[var(--color-primary-950)]
-            hover:bg-[var(--color-primary-900)]
-            text-white
+            bg-brand-strong
+            hover:bg-brand
+            text-on-brand
             shadow-md
-            dark:brightness-125
         `,
 
         back: `
             absolute
             top-2
-            bg-[var(--color-primary-950)]
-            text-white
-            hover:bg-[var(--color-primary-900)]
+            bg-brand-strong
+            text-on-brand
+            hover:bg-brand
         `,
     };
 

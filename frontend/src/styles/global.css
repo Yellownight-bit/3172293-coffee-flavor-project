@@ -2,20 +2,58 @@
 @import url(semantic.css);
 @import "tailwindcss"; /*Esta linea debe quedar al final para que funcione*/
 
+/* Hace que las clases dark: de Tailwind sigan la clase .dark de <html> y no la preferencia del sistema operativo */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Base de toda la app: el fondo y el texto salen de los tokens, asi cambian solos con el tema */
+@layer base {
+    body {
+        background-color: var(--semantic-background);
+        color: var(--semantic-text-primary);
+    }
+}
+
+/* Fondos con imagen: en tema oscuro la foto se oscurece para que no deslumbre ni compita con el contenido.
+   Se usa agregando la clase bg-image-themed al elemento que tiene el backgroundImage */
+@layer components {
+    .dark .bg-image-themed {
+        background-color: color-mix(in srgb, var(--semantic-overlay) 60%, transparent);
+        background-blend-mode: multiply;
+    }
+}
+
 @theme {
     /* ========Brand========= */
 
     --color-brand: var(--semantic-brand);
     --color-brand-hover: var(--semantic-brand-hover);
+    --color-brand-strong: var(--semantic-brand-strong);
     --color-brand-soft: var(--semantic-brand-soft);
     --color-brand-soft-hover: var(--semantic-brand-soft-hover);
+    --color-brand-subtle: var(--semantic-brand-subtle);
+    --color-gradient-start: var(--semantic-gradient-start);
+    --color-gradient-end: var(--semantic-gradient-end);
+    --color-on-brand: var(--semantic-on-brand);
+
+    /* ========Accent========= */
+
+    --color-accent: var(--semantic-accent);
+    --color-accent-hover: var(--semantic-accent-hover);
+    --color-accent-soft: var(--semantic-accent-soft);
+    --color-on-accent: var(--semantic-on-accent);
 
     /* ========Background========= */
 
     --color-background: var(--semantic-background);
+    --color-panel: var(--semantic-panel);
+    --color-panel-muted: var(--semantic-panel-muted);
     --color-surface: var(--semantic-surface);
+    --color-surface-alt: var(--semantic-surface-alt);
     --color-surface-muted: var(--semantic-surface-muted);
     --color-background-inverse: var(--semantic-background-inverse);
+    --color-overlay: var(--semantic-overlay);
+    --color-neutral: var(--semantic-neutral);
+    --color-neutral-hover: var(--semantic-neutral-hover);
 
     /* ========Text========= */
 
@@ -26,6 +64,7 @@
 
     /* ========Border========= */
 
+    --color-border-soft: var(--semantic-border-soft);
     --color-border: var(--semantic-border);
     --color-border-strong: var(--semantic-border-strong);
 
@@ -37,8 +76,14 @@
     /* ========State========= */
 
     --color-success: var(--semantic-success);
+    --color-success-hover: var(--semantic-success-hover);
+    --color-info: var(--semantic-info);
+    --color-info-hover: var(--semantic-info-hover);
     --color-warning: var(--semantic-warning);
     --color-error: var(--semantic-error);
+    --color-error-hover: var(--semantic-error-hover);
+    --color-error-soft: var(--semantic-error-soft);
+    --color-error-soft-hover: var(--semantic-error-soft-hover);
 
     /* ========Typography========= */
 
@@ -54,8 +99,7 @@
     /* ========Font weight========= */
 
     --font-weight-heading: var(--semantic-font-weight-heading);
-    --font-body: var(--semantic-font-weight-body);
-    --font-label: var(--semantic-font-weigh-label);
+    --font-weight-body: var(--semantic-font-weight-body);
+    --font-weight-label: var(--semantic-font-weight-label);
 
 }
-

@@ -19,7 +19,7 @@ export default function Select({
                  className="
                     block
                     text-caption
-                    text-secondary
+                    text-text-secondary
                     "
                 >
                  {label}
@@ -37,6 +37,9 @@ export default function Select({
                     h-12
                     rounded-md
                     border
+                    border-border
+                    bg-panel
+                    text-text-primary
                     px-4
 
                     hover:border
@@ -55,7 +58,7 @@ export default function Select({
             </select>
             {/*feedback*/}
             {error && (
-                <p className="text-caption text-red-800 place-self-start mt-1">{error}</p>
+                <p className="text-caption text-error place-self-start mt-1">{error}</p>
             )}
         </div>
     )

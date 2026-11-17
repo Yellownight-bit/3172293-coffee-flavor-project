@@ -73,7 +73,7 @@ export default function StatusSwitch({
             ${sizes[size]}
             
             // Color dependiendo del estado
-            ${isActive ? "bg-[var(--color-primary-950)]" : "bg-gray-300"}
+            ${isActive ? "bg-brand-strong" : "bg-surface-muted"}
             
             // Estilo cuando está deshabilitado
             ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
@@ -87,7 +87,7 @@ export default function StatusSwitch({
             absolute left-0.5 flex items-center justify-center
             
             // Forma del knob
-            rounded-full bg-white shadow
+            rounded-full bg-panel shadow
 
             // Animación de movimiento
             transition-transform
@@ -106,9 +106,9 @@ export default function StatusSwitch({
             ✕ inactivo
         */}
         {isActive ? (
-            <Check size={12} className="text-orange-600" />
+            <Check size={12} className="text-brand-strong" />
         ) : (
-            <X size={12} className="text-gray-500" />
+            <X size={12} className="text-text-muted" />
         )}
         </span>
 

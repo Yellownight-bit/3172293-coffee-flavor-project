@@ -8,8 +8,8 @@ const Card = ({ product }) => {
     return (
         <div className="
           w-80
-          text-white
-          dark:bg-neutral-950/70
+          text-on-brand
+          bg-overlay/70
           backdrop-blur-[2px]
           shadow-lg
           rounded-2xl
@@ -17,13 +17,13 @@ const Card = ({ product }) => {
           hover:shadow-black
           transition-shadow
           duration-700
-          border-3 border-[var(--color-primary-950)]
+          border-3 border-brand-strong
         ">
             {image && (
             <img 
               src={image}
               alt={displayTitle}
-              className="w-full h-48 object-contain bg-gray-100"
+              className="w-full h-48 object-contain bg-panel-muted"
             />
             )}
 
@@ -38,7 +38,7 @@ const Card = ({ product }) => {
                 </p>
                 )}
 
-                <p className="text-lg font-bold text-cyan-200">
+                <p className="text-lg font-bold text-accent">
                     {displayPrice?.toLocaleString()}
                 </p>
             </div>

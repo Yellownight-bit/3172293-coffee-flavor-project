@@ -11,7 +11,7 @@ export default function CheckboxGroup({
   return (
     <div className="flex flex-col gap-3">
 
-      <label className="font-semibold text-gray-700">
+      <label className="font-semibold text-text-secondary">
         {label}
       </label>
 
@@ -32,7 +32,7 @@ export default function CheckboxGroup({
       </div>
 
       {error && (
-        <span className="text-red-500 text-xs">
+        <span className="text-error text-xs">
           {error}
         </span>
       )}

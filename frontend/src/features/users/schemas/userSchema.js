@@ -48,6 +48,13 @@ const userFields = {
   isActive: z.boolean(),
   isSuperUser: z.boolean(),
 
+  rol: z.enum(
+    ["administrador", "cajero", "mesero", "cocinero", "invitado"],
+    {
+      errorMap: () => ({ message: "Debe seleccionar un rol válido" }),
+    }
+  ),
+
   userImage: fileSchema.shape.files.optional(),
 };
 

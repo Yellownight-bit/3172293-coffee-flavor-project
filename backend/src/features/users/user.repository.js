@@ -18,6 +18,7 @@ export const userRepository = {
             isStaff,
             isActive,
             isSuperUser,
+            rol,
         } = userData;
 
         const query = `
@@ -33,9 +34,10 @@ export const userRepository = {
                 user_image,
                 is_staff,
                 is_active,
-                is_superuser
+                is_superuser,
+                rol
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             RETURNING id;
         `;
 
@@ -52,6 +54,7 @@ export const userRepository = {
             isStaff,
             isActive,
             isSuperUser,
+            rol,
         ];
 
         const result = await pool.query(query, values);
@@ -86,6 +89,7 @@ export const userRepository = {
             isStaff,
             isActive,
             isSuperUser,
+            rol,
         } = userData;
 
         const query = `
@@ -101,8 +105,9 @@ export const userRepository = {
                 user_password = COALESCE($8, user_password),
                 is_staff = $9,
                 is_active = $10,
-                is_superuser = $11
-            WHERE id = $12
+                is_superuser = $11,
+                rol = $12
+            WHERE id = $13
             RETURNING
                 id,
                 user_name,
@@ -114,7 +119,8 @@ export const userRepository = {
                 user_document_number,
                 is_staff,
                 is_active,
-                is_superuser;
+                is_superuser,
+                rol;
         `;
 
         const values = [
@@ -129,6 +135,7 @@ export const userRepository = {
             isStaff,
             isActive,
             isSuperUser,
+            rol,
             id,
         ];
 

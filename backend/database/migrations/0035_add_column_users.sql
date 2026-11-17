@@ -1,0 +1,2 @@
+ALTER TABLE users
+ADD COLUMN rol VARCHAR(20);

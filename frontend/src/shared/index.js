@@ -22,6 +22,8 @@ export { default as DetailItem } from "./components/DetailItem";
 export { default as CheckboxGroup } from "./components/CheckboxGroup";
 export { default as ProtectedRoute } from "./components/auth/ProtectedRoute";
 export { default as AccessSidebar } from "./components/AccessSidebar";
+export { default as LoginInput } from "./components/LoginInput";
+export { default as LoginButton } from "./components/LoginButton";
 
 // Layout components
 export {default as Navbar } from "./layouts/Navbar";

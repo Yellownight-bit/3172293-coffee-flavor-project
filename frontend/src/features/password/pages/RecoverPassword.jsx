@@ -1,22 +1,38 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { recoverPassword } from "@/features/auth/services/authService.js";
 
 const RecoverPassword = () => {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleSubmit = (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (!email.trim()) {
-        alert("Ingresa tu correo electrónico");
-        return;
-    }
+        if (!email.trim()) {
+            setError("Ingresa tu correo electrónico");
+            return;
+        }
 
-    alert("Enlace de recuperación enviado correctamente");
-    navigate("/verify-code");
-};
+        try {
+            setLoading(true);
+            setError("");
+
+            await recoverPassword(email.trim());
+
+            sessionStorage.setItem("recoveryEmail", email.trim());
+
+            navigate("/verify-code");
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div
@@ -34,7 +50,7 @@ const RecoverPassword = () => {
                     </h1>
 
                     <p className="mt-2 text-sm text-on-brand/80">
-                        Ingresa tu correo registrado para recibir el enlace de
+                        Ingresa tu correo registrado para recibir el código de
                         recuperación
                     </p>
                 </div>
@@ -54,15 +70,23 @@ const RecoverPassword = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Ingresa tu correo"
+                            disabled={loading}
                             className="w-full rounded-md border border-border-soft bg-panel px-4 py-2.5 text-sm text-text-primary outline-none focus:border-focus-border focus:ring-2 focus:ring-focus-ring"
                         />
                     </div>
 
+                    {error && (
+                        <p className="text-sm text-red-500 text-center">
+                            {error}
+                        </p>
+                    )}
+
                     <button
                         type="submit"
-                        className="w-full rounded-md bg-accent px-4 py-2.5 font-semibold text-on-accent transition hover:bg-accent-hover"
+                        disabled={loading}
+                        className="w-full rounded-md bg-accent px-4 py-2.5 font-semibold text-on-accent transition hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Enviar enlace de recuperación
+                        {loading ? "Enviando código..." : "Enviar código de recuperación"}
                     </button>
 
                     <button

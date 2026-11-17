@@ -1,27 +1,45 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared";
+import { verifyResetCode } from "@/features/auth/services/authService.js";
 
 const VerifyCode = () => {
     const navigate = useNavigate();
 
     const [code, setCode] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!code.trim()) {
-            alert("Ingresa el código de verificación");
+        if (!/^\d{6}$/.test(code)) {
+            setError("Ingresa un código válido de seis dígitos");
             return;
         }
 
-        if (code !== "123456") {
-            alert("El código ingresado es incorrecto");
+        const email = sessionStorage.getItem("recoveryEmail");
+
+        if (!email) {
+            setError("No encontramos una solicitud de recuperación");
             return;
         }
 
-        alert("Código verificado correctamente");
-        navigate("/reset-password");
+        try {
+            setLoading(true);
+            setError("");
+
+            const data = await verifyResetCode(email, code);
+
+            sessionStorage.setItem("resetToken", data.resetToken);
+
+            navigate("/reset-password");
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -66,19 +84,30 @@ const VerifyCode = () => {
                         <input
                             id="code"
                             type="text"
+                            inputMode="numeric"
                             value={code}
-                            onChange={(e) => setCode(e.target.value)}
+                            onChange={(e) =>
+                                setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                            }
                             placeholder="123456"
                             maxLength={6}
+                            disabled={loading}
                             className="w-full rounded-md border border-border-soft bg-panel px-4 py-2.5 text-sm text-text-primary outline-none focus:border-focus-border focus:ring-2 focus:ring-focus-ring"
                         />
                     </div>
 
+                    {error && (
+                        <p className="text-sm text-red-500 text-center">
+                            {error}
+                        </p>
+                    )}
+
                     <button
                         type="submit"
-                        className="w-full rounded-md bg-accent px-4 py-2.5 font-semibold text-on-accent transition hover:bg-accent-hover"
+                        disabled={loading}
+                        className="w-full rounded-md bg-accent px-4 py-2.5 font-semibold text-on-accent transition hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Verificar
+                        {loading ? "Verificando..." : "Verificar"}
                     </button>
                 </form>
             </div>
@@ -87,6 +116,3 @@ const VerifyCode = () => {
 };
 
 export default VerifyCode;
-
-
-

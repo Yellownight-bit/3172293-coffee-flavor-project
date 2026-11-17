@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button, FileInput } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
@@ -27,6 +28,7 @@ export default function UserRegisterForm() {
     isStaff: false,
     isActive: true,
     isSuperUser: false,
+    rol: "invitado",
   });
 
   const [files, setFiles] = useState([]);
@@ -54,48 +56,48 @@ export default function UserRegisterForm() {
     const result = userSchema.safeParse(formData);
 
     if (!result.success) {
-        console.log(result.error.issues);
+      console.log(result.error.issues);
 
-        const fieldErrors = {};
+      const fieldErrors = {};
 
-        result.error.issues.forEach((issue) => {
-            fieldErrors[issue.path[0]] = issue.message;
-        });
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
 
-        setErrors(fieldErrors);
+      setErrors(fieldErrors);
 
-        await showUserErrorAlert({
-            title: "Error al crear usuario",
-            text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
-        });
+      await showUserErrorAlert({
+        title: "Error al crear usuario",
+        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+      });
 
-        return;
+      return;
     }
 
     setErrors({});
 
     try {
-        const response = await createUser(result.data);
+      const response = await createUser(result.data);
 
-        console.log("Usuario creado:", response);
+      console.log("Usuario creado:", response);
 
-        await showSuccessAlert({
-            title: "Usuario creado correctamente",
-            text: "El usuario se registró correctamente.",
-            confirmButtonText: "Aceptar",
-            timer: 3000,
-        });
+      await showSuccessAlert({
+        title: "Usuario creado correctamente",
+        text: "El usuario se registró correctamente.",
+        confirmButtonText: "Aceptar",
+        timer: 3000,
+      });
 
-        navigate("/dashboard/userList");
+      navigate("/dashboard/userList");
     } catch (error) {
-        console.error("Error al crear usuario:", error);
+      console.error("Error al crear usuario:", error);
 
-        await showUserErrorAlert({
-            title: "Error al crear usuario",
-            text: error.message || "No se pudo crear el usuario.",
-        });
+      await showUserErrorAlert({
+        title: "Error al crear usuario",
+        text: error.message || "No se pudo crear el usuario.",
+      });
     }
-};
+  };
 
   return (
     <div
@@ -142,6 +144,22 @@ export default function UserRegisterForm() {
                   htmlFor="user-name"
                   onChange={handleChange}
                   error={errors.userName}
+                />
+
+                <Select
+                  label="Rol del usuario"
+                  name="rol"
+                  value={formData.rol}
+                  htmlFor="rol"
+                  onChange={handleChange}
+                  options={[
+                    { value: "administrador", label: "Administrador" },
+                    { value: "cajero", label: "Cajero" },
+                    { value: "mesero", label: "Mesero" },
+                    { value: "cocinero", label: "Cocinero" },
+                    { value: "invitado", label: "Invitado" },
+                  ]}
+                  error={errors.rol}
                 />
 
                 <Select
@@ -315,4 +333,3 @@ export default function UserRegisterForm() {
     </div>
   );
 }
-

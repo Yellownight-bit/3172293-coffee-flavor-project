@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input, Checkbox, Button } from "@/shared";
 import { loginSchema } from "../users/schemas/loginSchema";
@@ -5,25 +6,19 @@ import { login } from "@/features/auth/services/authService";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function UserRegisterForm() {
-
-  // Permite navegar entre las diferentes rutas
   const navigate = useNavigate();
 
-  // Estado de los errores
   const [errors, setErrors] = useState({});
+  const [failedAttempts, setFailedAttempts] = useState(0);
 
-  // Estado del formulario
+  const isLocked = failedAttempts >= 3;
+
   const [formData, setFormData] = useState({
     userEmail: "",
     userPassword: "",
     isSuperUser: false,
   });
 
-  // ========================================================
-  //                    HANDLE CHANGE
-  // ========================================================
-
-  // Se ejecuta cada vez que cambia un campo del formulario
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -32,101 +27,70 @@ export default function UserRegisterForm() {
       [name]: type === "checkbox" ? checked : value,
     }));
 
-    // Limpia el error del campo mientras el usuario escribe
     setErrors((prev) => ({
       ...prev,
       [name]: "",
     }));
   };
 
-  // ========================================================
-  //                    HANDLE SUBMIT
-  // ========================================================
-
   const handleSubmit = async (e) => {
-    // Evita que el formulario recargue la página
     e.preventDefault();
 
-    // Validamos únicamente los campos necesarios para iniciar sesión
+    if (isLocked) return;
+
     const result = loginSchema.safeParse({
       userEmail: formData.userEmail,
       userPassword: formData.userPassword,
     });
 
-    // Si la validación falla
     if (!result.success) {
-
-      // Objeto donde almacenaremos los errores
       const fieldErrors = {};
 
-      // Recorremos los errores generados por Zod
       result.error.issues.forEach((issue) => {
-
-        // issue.path[0] corresponde al nombre del campo
-        // issue.message contiene el mensaje definido en el schema
         fieldErrors[issue.path[0]] = issue.message;
       });
 
-      // Mostramos los errores en la interfaz
       setErrors(fieldErrors);
-
-      // Detenemos el envío
       return;
     }
 
-    // Si la validación pasa, limpiamos los errores
     setErrors({});
 
     try {
-
-      // Enviamos el correo y contraseña al backend
       const data = await login(result.data);
 
-      // Mostramos la respuesta del backend en consola
-      console.log("LOGIN RESPONSE:", data);
-
-      // Guardamos el token recibido por el backend
       sessionStorage.setItem("token", data.token);
 
-      /*
-       * Limpiamos los datos del formulario.
-       *
-       * La contraseña NO se guarda en localStorage
-       * ni en sessionStorage.
-       */
       setFormData({
         userEmail: "",
         userPassword: "",
         isSuperUser: false,
       });
 
-      // Solo llegamos aquí si el backend aceptó las credenciales
       navigate("/dashboard/userList");
-
     } catch (error) {
+      const nextAttempt = failedAttempts + 1;
 
-      console.error("Error:", error.message);
+      setFailedAttempts(nextAttempt);
 
-      // Mostramos el error del backend en el campo de correo
-      setErrors({
-        userEmail: error.message || "Correo o contraseña incorrectos",
-      });
+      if (nextAttempt >= 3) {
+        setErrors({
+          userEmail: "Has agotado los 3 intentos. Recarga la página.",
+        });
+      } else {
+        setErrors({
+          userEmail: `${error.message || "Correo o contraseña incorrectos"}. Intentos restantes: ${3 - nextAttempt}.`,
+        });
+      }
     }
   };
 
-  // ========================================================
-  //                       RETURN
-  // ========================================================
-
   return (
     <div className="grid items-center justify-center bg-brand-subtle border border-brand rounded p-16">
-
-      {/* Título */}
       <h1 className="mx-auto my-2 text-title font-bold">
         Inicio de sesión
       </h1>
 
-      {/* Imagen */}
       <div className="flex justify-center">
         <img
           className="flex w-16 h-16 align-center justify-center"
@@ -135,100 +99,111 @@ export default function UserRegisterForm() {
         />
       </div>
 
-      {/* Formulario */}
-      <form
-        action=""
-        onSubmit={handleSubmit}
-      >
+      <form action="" onSubmit={handleSubmit}>
+        <fieldset
+          disabled={isLocked}
+          className="border-0 p-0 m-0 min-w-0"
+        >
+          <Input
+            label="Correo"
+            name="userEmail"
+            type="email"
+            value={formData.userEmail}
+            placeholder="Escribe tu correo electronico"
+            htmlFor="user-email"
+            onChange={handleChange}
+            error={errors.userEmail}
+          />
 
-        {/* Correo */}
-        <Input
-          label="Correo"
-          name="userEmail"
-          type="email"
-          value={formData.userEmail}
-          placeholder="Escribe tu correo electronico"
-          htmlFor="user-email"
-          onChange={handleChange}
-          error={errors.userEmail}
-        />
+          <Input
+            label="Contraseña"
+            name="userPassword"
+            type="password"
+            value={formData.userPassword}
+            placeholder="Escribe tu contraseña"
+            htmlFor="user-password"
+            onChange={handleChange}
+            error={errors.userPassword}
+          />
 
-        {/* Contraseña */}
-        <Input
-          label="Contraseña"
-          name="userPassword"
-          type="password"
-          value={formData.userPassword}
-          placeholder="Escribe tu contraseña"
-          htmlFor="user-password"
-          onChange={handleChange}
-          error={errors.userPassword}
-        />
+          {!isLocked && (
+            <p className="text-sm text-text-secondary mt-2">
+              Intentos disponibles: {3 - failedAttempts} de 3
+            </p>
+          )}
 
-        <div className="grid gap-0 my-auto">
+          {isLocked && (
+            <p className="text-sm text-red-600 font-semibold mt-3">
+              Has agotado los 3 intentos. Recarga la página.
+            </p>
+          )}
 
-          {/* Checkbox */}
-          <div className="flex items-center justify-between my-6">
+          <div className="grid gap-0 my-auto">
+            <div className="flex items-center justify-between my-6">
+              <Checkbox
+                id="isSuperUser"
+                name="isSuperUser"
+                label="Recuerdame"
+                checked={formData.isSuperUser}
+                onChange={handleChange}
+              />
 
-            <Checkbox
-              id="isSuperUser"
-              name="isSuperUser"
-              label="Recuerdame"
-              checked={formData.isSuperUser}
-              onChange={handleChange}
-            />
+              <Link
+                to="/recover-password"
+                onClick={(e) => isLocked && e.preventDefault()}
+                className={isLocked ? "pointer-events-none opacity-50" : ""}
+              >
+                <button
+                  type="button"
+                  className="text-sm text-brand-strong hover:underline"
+                  tabIndex={isLocked ? -1 : 0}
+                >
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </Link>
+            </div>
 
-            {/* Olvidaste contraseña */}
-            <Link to="/recover-password">
-            <button
-              type="button"
-              className="text-sm text-brand-strong hover:underline"
+            <Link
+              to="/CreateUserLogin"
+              onClick={(e) => isLocked && e.preventDefault()}
+              className={isLocked ? "pointer-events-none opacity-50" : ""}
             >
-              ¿Olvidaste tu contraseña?
-            </button>
+              <button
+                type="button"
+                className="text-sm text-brand-strong hover:underline mb-4"
+                tabIndex={isLocked ? -1 : 0}
+              >
+                ¿No tienes cuenta?
+              </button>
             </Link>
-
           </div>
 
-          {/* Crear cuenta */}
-          <Link to="/CreateUserLogin">
-          <button
-            type="button"
-            className="text-sm text-brand-strong hover:underline mb-4"
-          >
-            ¿No tienes cuenta?
-          </button>
-          </Link>
-
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-6 items-center justify-center">
-
-          {/* Registrarse */}
-          <Link to="/CreateUserLogin">
-            <Button
-              variant="secondary"
-              size="md"
-              type="button"
+          <div className="flex gap-6 items-center justify-center">
+            <Link
+              to="/CreateUserLogin"
+              onClick={(e) => isLocked && e.preventDefault()}
+              className={isLocked ? "pointer-events-none opacity-50" : ""}
             >
-              Registrarse
+              <Button
+                variant="secondary"
+                size="md"
+                type="button"
+              >
+                Registrarse
+              </Button>
+            </Link>
+
+            <Button
+              variant="primary"
+              size="md"
+              type="submit"
+              disabled={isLocked}
+            >
+              {isLocked ? "Bloqueado" : "Iniciar Sesión"}
             </Button>
-          </Link>
-
-          {/* Iniciar sesión */}
-          <Button
-            variant="primary"
-            size="md"
-            type="submit"
-          >
-            Iniciar Sesión
-          </Button>
-
-        </div>
-
+          </div>
+        </fieldset>
       </form>
     </div>
   );
 }
-

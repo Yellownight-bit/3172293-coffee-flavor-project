@@ -1,32 +1,58 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { resetPassword } from "@/features/auth/services/authService.js";
 
 const ResetPassword = () => {
     const navigate = useNavigate();
 
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!password || !confirmPassword) {
-            alert("Completa todos los campos");
+            setError("Completa todos los campos");
             return;
         }
 
         if (password.length < 8) {
-            alert("La contraseña debe tener mínimo 8 caracteres");
+            setError("La contraseña debe tener mínimo 8 caracteres");
             return;
         }
 
         if (password !== confirmPassword) {
-            alert("Las contraseñas no coinciden");
+            setError("Las contraseñas no coinciden");
             return;
         }
 
-        alert("Contraseña restablecida correctamente");
-        navigate("/auth");
+        const resetToken = sessionStorage.getItem("resetToken");
+
+        if (!resetToken) {
+            setError("No tienes autorización para restablecer la contraseña");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            setError("");
+
+            await resetPassword(resetToken, password);
+
+            sessionStorage.removeItem("resetToken");
+            sessionStorage.removeItem("recoveryEmail");
+
+            alert("Contraseña restablecida correctamente");
+
+            navigate("/auth");
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -65,6 +91,7 @@ const ResetPassword = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Ingresa tu nueva contraseña"
+                            disabled={loading}
                             className="w-full rounded-md border border-border-soft bg-panel px-4 py-2.5 text-sm text-text-primary outline-none focus:border-focus-border focus:ring-2 focus:ring-focus-ring"
                         />
                     </div>
@@ -85,15 +112,23 @@ const ResetPassword = () => {
                                 setConfirmPassword(e.target.value)
                             }
                             placeholder="Confirma tu nueva contraseña"
+                            disabled={loading}
                             className="w-full rounded-md border border-border-soft bg-panel px-4 py-2.5 text-sm text-text-primary outline-none focus:border-focus-border focus:ring-2 focus:ring-focus-ring"
                         />
                     </div>
 
+                    {error && (
+                        <p className="text-sm text-red-500 text-center">
+                            {error}
+                        </p>
+                    )}
+
                     <button
                         type="submit"
-                        className="w-full rounded-md bg-accent px-4 py-2.5 font-semibold text-on-accent transition hover:bg-accent-hover"
+                        disabled={loading}
+                        className="w-full rounded-md bg-accent px-4 py-2.5 font-semibold text-on-accent transition hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Restablecer contraseña
+                        {loading ? "Restableciendo..." : "Restablecer contraseña"}
                     </button>
                 </form>
             </div>

@@ -4,22 +4,50 @@ import { API_URL } from "@/features/config";
 const INVENTORY_URL = `${API_URL}/inventory`;
 
 export async function createInventory(inventoryData) {
+  const token = sessionStorage.getItem("token");
+  const formData = new FormData();
+
+  Object.entries(inventoryData).forEach(([key, value]) => {
+    if (key === "productImage") {
+      if (Array.isArray(value)) {
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append("productImage", file);
+          }
+        });
+      } else if (value instanceof File) {
+        formData.append("productImage", value);
+      }
+
+      return;
+    }
+
+    if (value !== null && value !== undefined) {
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value);
+      }
+    }
+  });
+
   const response = await fetch(INVENTORY_URL, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(inventoryData),
+    body: formData,
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    const error = await response.json();
     throw new Error(
-      error.error || "Error al registrar el producto en el inventario"
+      data.error || "Error al registrar el producto en el inventario"
     );
   }
 
-  return response.json();
+  return data;
 }
 
 export async function getAllInventory() {
@@ -43,14 +71,38 @@ export async function getAllInventory() {
 
 export async function updateInventory(id, inventoryData) {
   const token = sessionStorage.getItem("token");
+  const formData = new FormData();
+
+  Object.entries(inventoryData).forEach(([key, value]) => {
+    if (key === "productImage") {
+      if (value instanceof File) {
+        formData.append("productImage", value);
+      } else if (Array.isArray(value)) {
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append("productImage", file);
+          }
+        });
+      }
+
+      return;
+    }
+
+    if (value !== null && value !== undefined) {
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value);
+      }
+    }
+  });
 
   const response = await fetch(`${INVENTORY_URL}/${id}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(inventoryData),
+    body: formData,
   });
 
   const data = await response.json();

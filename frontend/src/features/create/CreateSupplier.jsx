@@ -1,5 +1,13 @@
+
 import { useState, useEffect } from "react";
-import { Input, Select, Checkbox, Button, FileInput, CheckboxGroup } from "@/shared";
+import {
+  Input,
+  Select,
+  Checkbox,
+  Button,
+  FileInput,
+  CheckboxGroup,
+} from "@/shared";
 import { getSupplierDocumentTypes } from "@/services/selectSupplierService";
 import { getSupplierProducts } from "@/services/selectProductService";
 import { supplierSchema } from "../users/schemas/supplierSchema";
@@ -38,11 +46,17 @@ export default function SupplierRegisterForm() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    getSupplierProducts().then(setProducts);
+    getSupplierProducts()
+      .then(setProducts)
+      .catch((error) => console.error("Error al cargar productos:", error));
   }, []);
 
   useEffect(() => {
-    getSupplierDocumentTypes().then(setDocumentTypes);
+    getSupplierDocumentTypes()
+      .then(setDocumentTypes)
+      .catch((error) =>
+        console.error("Error al cargar tipos de documento:", error)
+      );
   }, []);
 
   const handleChange = (e) => {

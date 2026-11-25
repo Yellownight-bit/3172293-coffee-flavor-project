@@ -1,3 +1,4 @@
+
 import { pool } from "../../config/db.js";
 
 export const orderRepository = {
@@ -265,5 +266,21 @@ export const orderRepository = {
     } finally {
       client.release();
     }
+  },
+
+  async updateStatus(id, status) {
+    const query = `
+      UPDATE orders
+      SET status = $1
+      WHERE id = $2
+      RETURNING *;
+    `;
+
+    const result = await pool.query(query, [
+      status,
+      Number(id),
+    ]);
+
+    return result.rows[0] || null;
   },
 };

@@ -1,3 +1,4 @@
+
 import Swal from "sweetalert2";
 import "@/styles/alerts.css";
 
@@ -6,7 +7,7 @@ export function showSuccessAlert({
   text = "",
   confirmButtonText = "Aceptar",
   timer = 2000,
-}) {
+} = {}) {
   return Swal.fire({
     icon: "success",
     title,
@@ -32,7 +33,7 @@ export function showCancelDeleteAlert({
   text = "No se eliminó el registro.",
   confirmButtonText = "Aceptar",
   timer = 2000,
-}) {
+} = {}) {
   return Swal.fire({
     icon: "info",
     title,
@@ -59,7 +60,7 @@ export function showConfirmDeleteAlert({
   text = "¡No podrás revertir esta acción!",
   confirmButtonText = "Sí, eliminar",
   cancelButtonText = "No, cancelar",
-}) {
+} = {}) {
   return Swal.fire({
     title,
     text,
@@ -108,7 +109,7 @@ export function showUserErrorAlert({
   title = "Error al crear usuario",
   text =
     "No se pudo registrar el usuario. Por favor, verifica que los campos estén correctos.",
-}) {
+} = {}) {
   return Swal.fire({
     icon: "error",
     title,
@@ -120,6 +121,34 @@ export function showUserErrorAlert({
       title: "!text-error font-bold",
       confirmButton:
         "bg-error text-on-brand hover:bg-error-hover px-4 py-2 rounded-lg font-medium transition",
+    },
+
+    buttonsStyling: false,
+  });
+}
+
+export function showConfirmDeactivateAlert({
+  title = "¿Estás seguro de desactivar?",
+  text = "El registro dejará de estar activo en el sistema.",
+  confirmButtonText = "Sí, desactivar",
+  cancelButtonText = "No, cancelar",
+} = {}) {
+  return Swal.fire({
+    title,
+    text,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText,
+    cancelButtonText,
+    reverseButtons: true,
+
+    customClass: {
+      popup: "rounded-2xl",
+      title: "!text-brand-strong font-bold",
+      confirmButton:
+        "!bg-error text-on-brand hover:bg-error-hover px-4 py-2 rounded-lg ml-2 font-medium",
+      cancelButton:
+        "!bg-neutral text-on-brand hover:bg-neutral-hover px-4 py-2 rounded-lg font-medium",
     },
 
     buttonsStyling: false,

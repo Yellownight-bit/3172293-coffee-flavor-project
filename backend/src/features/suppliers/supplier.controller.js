@@ -1,20 +1,26 @@
+
 import { supplierService } from "./supplier.service.js";
 
 export const supplierController = {
   async create(req, res) {
-    console.log("BODY RECIBIDO:", req.body);
-
     try {
-      const supplier = await supplierService.createSupplier(req.body);
+      const supplierImage = req.files?.[0]
+        ? `/uploads/suppliers/${req.files[0].filename}`
+        : null;
 
-      res.status(201).json({
+      const supplier = await supplierService.createSupplier({
+        ...req.body,
+        supplierImage,
+      });
+
+      return res.status(201).json({
         message: "Proveedor creado correctamente",
         supplierId: supplier.id,
       });
     } catch (err) {
-      console.error("ERROR BACKEND:", err);
+      console.error("ERROR AL CREAR PROVEEDOR:", err);
 
-      res.status(500).json({
+      return res.status(500).json({
         error: err.message,
       });
     }
@@ -26,8 +32,11 @@ export const supplierController = {
 
       return res.status(200).json(suppliers);
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: err.message });
+      console.error("ERROR AL CONSULTAR PROVEEDORES:", err);
+
+      return res.status(500).json({
+        error: err.message,
+      });
     }
   },
 
@@ -35,10 +44,14 @@ export const supplierController = {
     try {
       const { id } = req.params;
 
-      const updatedSupplier = await supplierService.updateSupplier(
-        id,
-        req.body
-      );
+      const supplierImage = req.files?.[0]
+        ? `/uploads/suppliers/${req.files[0].filename}`
+        : null;
+
+      const updatedSupplier = await supplierService.updateSupplier(id, {
+        ...req.body,
+        supplierImage,
+      });
 
       if (!updatedSupplier) {
         return res.status(404).json({

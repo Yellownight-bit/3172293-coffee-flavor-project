@@ -1,54 +1,51 @@
-// Hooks de react para manerjar estados y efectos
+
 import { useState, useEffect } from "react";
-
-// Iconos usados dentro del switch
 import { Check, X } from "lucide-react";
+import { showConfirmDeactivateAlert } from "@/shared/services/alertService";
 
-// Componente reutilizable para representar un switch de estado (activo/inactivo)
 export default function StatusSwitch({
-  checked = false,    // Valor inicial del switch (controlado desde el padre)
-  onChange,           // Callback que se ejecuta cuando cambia el estado
-  disabled = false,   // Permite deshabilitar la interacción
-  size = "md",        // Tamaño del switch (sm, md, lg)
+  checked = false,
+  onChange,
+  disabled = false,
+  size = "md",
 }) {
-
-  // Estado interno del componente
-  // Se inicializa con el valor recibido desde la prop "checked"
   const [isActive, setIsActive] = useState(checked);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Efecto que sincroniza el estado interno
-  // con el valor recibido desde el componente padre
   useEffect(() => {
     setIsActive(checked);
-  }, [checked]); // Se ejecuta cada vez que cambia "checked"
+  }, [checked]);
 
-  // Función que maneja el cambio del switch
-  const handleToggle = () => {
+  const handleToggle = async () => {
+    if (disabled || isLoading) return;
 
-    // Si el switch está deshabilitado no permite interacción
-    if (disabled) return;
-
-    // Calcula el nuevo estado (invierte el valor actual)
     const newValue = !isActive;
 
-    // Actualiza el estado interno
-    setIsActive(newValue);
+    // Confirmar antes de desactivar
+    if (isActive) {
+      const result = await showConfirmDeactivateAlert();
 
-    // Si existe un callback onChange, se ejecuta
-    // enviando en nuevo valor al componente padre
-    if (onChange) {
-        onChange(newValue);
+      if (!result.isConfirmed) return;
+    }
+
+    if (!onChange) return;
+
+    try {
+      setIsLoading(true);
+
+      // El componente padre realiza la actualización en la base de datos
+      await onChange(newValue);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Clases de tamaño del contenedor del switch
   const sizes = {
     sm: "h-5 w-9",
     md: "h-6 w-11",
     lg: "h-7 w-14",
   };
 
-  // Clases de tamaño del "knob" (el circulo que se mueve)
   const knobSizes = {
     sm: "h-4 w-4",
     md: "h-5 w-5",
@@ -56,62 +53,33 @@ export default function StatusSwitch({
   };
 
   return (
-
-    // Botón que funciona como switch
     <button
-        onClick={handleToggle}  // Evento que cambia el estado
-        disabled={disabled}     // Permite deshabilitar el botón
-        className={`
-        
-            // Posicionamiento base del switch
-            relative inline-flex items-center
-            
-            // Forma redondeada del contenedor
-            rounded-full transition-colors
-            
-            // Tamaño dinámico según la prop "size"
-            ${sizes[size]}
-            
-            // Color dependiendo del estado
-            ${isActive ? "bg-brand-strong" : "bg-surface-muted"}
-            
-            // Estilo cuando está deshabilitado
-            ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-        `}
+      type="button"
+      onClick={handleToggle}
+      disabled={disabled || isLoading}
+      className={`
+        relative inline-flex items-center
+        rounded-full transition-colors
+        ${sizes[size]}
+        ${isActive ? "bg-brand-strong" : "bg-surface-muted"}
+        ${disabled || isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+      `}
     >
-        {/*
-            "Knob" del switch (el círculo que se mueve de izquierda a derecha)
-        */}
-        <span
-            className={`
-            absolute left-0.5 flex items-center justify-center
-            
-            // Forma del knob
-            rounded-full bg-panel shadow
-
-            // Animación de movimiento
-            transition-transform
-
-            // Tamaño dinámico del knob
-            ${knobSizes[size]}
-
-            // Posici+on dependiendo del estado
-            ${isActive ? "translate-x-full" : "translate-x-0"}
+      <span
+        className={`
+          absolute left-0.5 flex items-center justify-center
+          rounded-full bg-panel shadow
+          transition-transform
+          ${knobSizes[size]}
+          ${isActive ? "translate-x-full" : "translate-x-0"}
         `}
-        >
-
-        {/*
-            Icono que cambia dependiendo del estado
-            ✓ activo
-            ✕ inactivo
-        */}
+      >
         {isActive ? (
-            <Check size={12} className="text-brand-strong" />
+          <Check size={12} className="text-brand-strong" />
         ) : (
-            <X size={12} className="text-text-muted" />
+          <X size={12} className="text-text-muted" />
         )}
-        </span>
-
-        </button>
-    );
+      </span>
+    </button>
+  );
 }

@@ -2,7 +2,12 @@
 import { useEffect, useState } from "react";
 import { Button, DetailItem, StatusSwitch } from "@/shared";
 import { useNavigate, useParams } from "react-router-dom";
-import { getAllSuppliers } from "../services/supplierServices.js";
+import {
+    getAllSuppliers,
+    updateSupplierStatus,
+} from "../services/supplierServices.js";
+import { checkUserPermission } from "@/features/access/services/permissionService";
+import { API_URL } from "@/features/config";
 
 export default function ReadSupplier() {
 
@@ -11,6 +16,18 @@ export default function ReadSupplier() {
 
     const [supplier, setSupplier] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [canDisableSupplier, setCanDisableSupplier] = useState(false);
+    const [canUpdateSupplier, setCanUpdateSupplier] = useState(false);
+
+    const getImageUrl = (image) => {
+        if (!image) return null;
+
+        if (image.startsWith("http")) return image;
+
+        const serverUrl = API_URL.replace(/\/api\/?$/, "");
+
+        return `${serverUrl}${image.startsWith("/") ? image : `/${image}`}`;
+    };
 
     useEffect(() => {
 
@@ -18,14 +35,42 @@ export default function ReadSupplier() {
             try {
                 setLoading(true);
 
+                try {
+                    const [canDisable, canUpdate] = await Promise.all([
+                        checkUserPermission("disable_supplier"),
+                        checkUserPermission("update_supplier"),
+                    ]);
+
+                    setCanDisableSupplier(canDisable);
+                    setCanUpdateSupplier(canUpdate);
+                } catch (error) {
+                    console.error("Error al verificar los permisos:", error);
+                    setCanDisableSupplier(false);
+                    setCanUpdateSupplier(false);
+                }
+
                 const suppliers = await getAllSuppliers();
 
-                // Buscamos el proveedor correspondiente al ID de la URL
                 const supplierData = suppliers.find(
                     (supplier) => Number(supplier.id) === Number(id)
                 );
 
                 if (supplierData) {
+
+                    let suppliedProducts = supplierData.supplied_products || [];
+
+                    if (typeof suppliedProducts === "string") {
+                        try {
+                            suppliedProducts = JSON.parse(suppliedProducts);
+                        } catch {
+                            suppliedProducts = [];
+                        }
+                    }
+
+                    if (!Array.isArray(suppliedProducts)) {
+                        suppliedProducts = [];
+                    }
+
                     setSupplier({
                         id: supplierData.id,
                         companyName: supplierData.supplier_name,
@@ -34,11 +79,11 @@ export default function ReadSupplier() {
                         supplierEmail: supplierData.supplier_email,
                         supplierPhone: supplierData.supplier_phone,
                         supplierAddress: supplierData.supplier_address,
-                        productTypes: Array.isArray(supplierData.supplied_products)
-                            ? supplierData.supplied_products
-                            : [],
+                        supplierImage: supplierData.supplier_image || null,
+                        productTypes: suppliedProducts,
                         status: supplierData.is_active,
                     });
+
                 } else {
                     setSupplier(null);
                 }
@@ -54,6 +99,20 @@ export default function ReadSupplier() {
         loadSupplier();
 
     }, [id]);
+
+    const handleStatusChange = async (value) => {
+        try {
+            await updateSupplierStatus(supplier.id, value);
+
+            setSupplier((currentSupplier) => ({
+                ...currentSupplier,
+                status: value,
+            }));
+
+        } catch (error) {
+            console.error("Error al cambiar el estado del proveedor:", error);
+        }
+    };
 
     if (loading) {
         return (
@@ -82,7 +141,7 @@ export default function ReadSupplier() {
     return (
         <div className="min-h-screen flex flex-col font-sans bg-panel/80 backdrop-blur-md shadow-lg">
 
-            <div className="flex-1 p-6 flex justify-center items-center border">
+            <div className="flex-1 p-6 flex justify-center items-center">
 
                 <div className="w-full max-w-6xl rounded-3xl shadow-lg p-8 relative text-text-primary border-2 border-border">
 
@@ -112,9 +171,17 @@ export default function ReadSupplier() {
 
                             <div className="w-64 h-72 rounded-xl overflow-hidden border-4 border-panel shadow-md flex items-center justify-center bg-surface">
 
-                                <span className="text-7xl font-bold text-text-secondary uppercase">
-                                    {supplier.companyName?.trim().slice(0, 2)}
-                                </span>
+                                {supplier.supplierImage ? (
+                                    <img
+                                        src={getImageUrl(supplier.supplierImage)}
+                                        alt={`Imagen de ${supplier.companyName}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-7xl font-bold text-text-secondary uppercase">
+                                        {supplier.companyName?.trim().slice(0, 2)}
+                                    </span>
+                                )}
 
                             </div>
 
@@ -132,20 +199,30 @@ export default function ReadSupplier() {
 
                                 <StatusSwitch
                                     checked={supplier.status}
-                                    onChange={() => {}}
+                                    onChange={handleStatusChange}
+                                    disabled={!canDisableSupplier}
                                 />
 
                             </div>
 
                             <div className="flex justify-center mt-8">
 
-                                <Button
-                                    size="sm"
-                                    variant="primary"
-                                    onClick={() => navigate(`/UpdateSupplier/${supplier.id}`)}
-                                >
-                                    Editar
-                                </Button>
+                                <div className={`relative ${!canUpdateSupplier ? "cursor-not-allowed" : ""}`}>
+
+                                    <Button
+                                        size="sm"
+                                        variant="primary"
+                                        onClick={() => navigate(`/UpdateSupplier/${supplier.id}`)}
+                                        disabled={!canUpdateSupplier}
+                                    >
+                                        Editar
+                                    </Button>
+
+                                    {!canUpdateSupplier && (
+                                        <div className="absolute inset-0 cursor-not-allowed" />
+                                    )}
+
+                                </div>
 
                             </div>
 

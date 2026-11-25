@@ -115,6 +115,8 @@ export default function UpdateSupplier() {
 
         suppliedProducts = suppliedProducts.map(String);
 
+        const currentImage = supplier.supplier_image || null;
+
         setFormData({
           supplierName: supplier.supplier_name || "",
           supplierEmail: supplier.supplier_email || "",
@@ -127,9 +129,12 @@ export default function UpdateSupplier() {
           supplierAddress: supplier.supplier_address || "",
           suppliedProducts,
           observations: supplier.observations || "",
-          supplierImage: [],
+          supplierImage: currentImage ? [currentImage] : [],
           isActive: supplier.is_active,
         });
+
+        setFiles(currentImage ? [currentImage] : []);
+
       } catch (error) {
         console.error("Error al consultar proveedor:", error);
 
@@ -174,12 +179,18 @@ export default function UpdateSupplier() {
 
     if (saving) return;
 
-    const dataToValidate = {
+    const validationData = {
       ...formData,
-      supplierImage: files,
+      supplierImage: formData.supplierImage.filter(
+        (item) => typeof File !== "undefined" && item instanceof File
+      ),
     };
 
-    const result = supplierUpdateSchema.safeParse(dataToValidate);
+    if (validationData.supplierImage.length === 0) {
+      delete validationData.supplierImage;
+    }
+
+    const result = supplierUpdateSchema.safeParse(validationData);
 
     if (!result.success) {
       const fieldErrors = {};
@@ -214,6 +225,7 @@ export default function UpdateSupplier() {
         suppliedProducts: formData.suppliedProducts,
         observations: formData.observations,
         isActive: formData.isActive,
+        supplierImage: files,
       };
 
       await updateSupplier(id, supplierData);
@@ -321,7 +333,14 @@ export default function UpdateSupplier() {
                 <div className="w-full flex justify-center">
                   <FileInput
                     value={files}
-                    onChange={setFiles}
+                    onChange={(newFiles) => {
+                      setFiles(newFiles);
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        supplierImage: newFiles,
+                      }));
+                    }}
                     multiple={false}
                     accept="image/*"
                   />

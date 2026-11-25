@@ -1,22 +1,51 @@
+
 import { API_URL } from "@/features/config";
 
 const SUPPLIERS_URL = `${API_URL}/suppliers`;
 
 export async function createSupplier(supplierData) {
+  const token = sessionStorage.getItem("token");
+  const formData = new FormData();
+
+  Object.entries(supplierData).forEach(([key, value]) => {
+    if (key === "supplierImage") {
+      if (Array.isArray(value)) {
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append("supplierImage", file);
+          }
+        });
+      } else if (value instanceof File) {
+        formData.append("supplierImage", value);
+      }
+
+      return;
+    }
+
+    if (value !== null && value !== undefined) {
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value);
+      }
+    }
+  });
+
   const response = await fetch(SUPPLIERS_URL, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(supplierData),
+    body: formData,
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Error al crear el proveedor");
+    throw new Error(data.error || "Error al crear el proveedor");
   }
 
-  return response.json();
+  return data;
 }
 
 export async function getAllSuppliers() {
@@ -39,14 +68,38 @@ export async function getAllSuppliers() {
 
 export async function updateSupplier(id, supplierData) {
   const token = sessionStorage.getItem("token");
+  const formData = new FormData();
+
+  Object.entries(supplierData).forEach(([key, value]) => {
+    if (key === "supplierImage") {
+      if (Array.isArray(value)) {
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append("supplierImage", file);
+          }
+        });
+      } else if (value instanceof File) {
+        formData.append("supplierImage", value);
+      }
+
+      return;
+    }
+
+    if (value !== null && value !== undefined) {
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value);
+      }
+    }
+  });
 
   const response = await fetch(`${SUPPLIERS_URL}/${id}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(supplierData),
+    body: formData,
   });
 
   const data = await response.json();

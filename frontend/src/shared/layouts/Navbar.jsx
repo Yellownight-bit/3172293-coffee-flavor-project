@@ -181,7 +181,7 @@ export default function Navbar() {
 
               <DropdownItem>
                 <Link
-                  to="inventoryList"
+                  to="/dashboard/inventoryList"
                   className="flex items-center gap-2 w-full"
                 >
                   <Boxes size={17} />
@@ -191,7 +191,7 @@ export default function Navbar() {
 
               <DropdownItem>
                 <Link
-                  to="supplierList"
+                  to="/dashboard/supplierList"
                   className="flex items-center gap-2 w-full"
                 >
                   <Truck size={17} />
@@ -201,7 +201,7 @@ export default function Navbar() {
 
               <DropdownItem>
                 <Link
-                  to="orderList"
+                  to="/dashboard/orderList"
                   className="flex items-center gap-2 w-full"
                 >
                   <ClipboardList size={17} />

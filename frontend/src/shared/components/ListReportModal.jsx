@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import Button from "./Button";
@@ -6,29 +7,83 @@ import Select from "./Select";
 import { generateExcelReport } from "../../features/users/reports/services/generateExcelReport";
 import { generatePdfReport } from "../../features/users/reports/services/generatePdfReport";
 
-export default function ListReportModal({ isOpen, onClose, title, data, fields, filePrefix }) {
+export default function ListReportModal({
+  isOpen,
+  onClose,
+  title,
+  data,
+  fields,
+  filePrefix,
+}) {
   const [format, setFormat] = useState("pdf");
-  const [selectedKeys, setSelectedKeys] = useState(() => fields.filter((field) => field.default).map((field) => field.key));
+  const [selectedKeys, setSelectedKeys] = useState(() =>
+    fields.filter((field) => field.default).map((field) => field.key)
+  );
 
   if (!isOpen) return null;
 
   const toggleField = (key) => {
-    setSelectedKeys((current) => current.includes(key)
-      ? current.filter((item) => item !== key)
-      : [...current, key]);
+    setSelectedKeys((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key]
+    );
   };
 
   const handleGenerate = () => {
-    const selectedFields = fields.filter((field) => selectedKeys.includes(field.key));
+    const selectedFields = fields.filter((field) =>
+      selectedKeys.includes(field.key)
+    );
+
     const headers = selectedFields.map((field) => field.label);
-    const rows = data.map((item) => selectedFields.map((field) => item[field.key] ?? ""));
+
+    const rows = data.map((item) =>
+      selectedFields.map((field) => {
+        const value = item[field.key];
+
+        if (field.key === "is_active") {
+          return value === true
+            ? "Activo"
+            : value === false
+              ? "Inactivo"
+              : "";
+        }
+
+        if (field.key === "dishes") {
+          if (!Array.isArray(value) || value.length === 0) {
+            return "Sin productos";
+          }
+
+          return value
+            .map(
+              (dish) =>
+                dish.productName ||
+                dish.product_name ||
+                dish.name ||
+                "Producto"
+            )
+            .join(", ");
+        }
+
+        return value ?? "";
+      })
+    );
+
     const timestamp = new Date().toISOString().split("T")[0];
     const fileName = `${filePrefix}-report-${timestamp}`;
 
     if (format === "excel") {
-      generateExcelReport({ headers, rows, fileName: `${fileName}.xlsx` });
+      generateExcelReport({
+        headers,
+        rows,
+        fileName: `${fileName}.xlsx`,
+      });
     } else {
-      generatePdfReport({ headers, rows, fileName: `${fileName}.pdf` });
+      generatePdfReport({
+        headers,
+        rows,
+        fileName: `${fileName}.pdf`,
+      });
     }
 
     onClose();
@@ -37,7 +92,10 @@ export default function ListReportModal({ isOpen, onClose, title, data, fields, 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-overlay/60 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-[26px] bg-panel px-6 py-6 shadow-2xl">
-        <h2 className="mb-6 text-xl font-semibold">Generar reporte de {title}</h2>
+        <h2 className="mb-6 text-xl font-semibold">
+          Generar reporte de {title}
+        </h2>
+
         <div className="mb-4">
           <Select
             label="Formato del reporte"
@@ -49,7 +107,9 @@ export default function ListReportModal({ isOpen, onClose, title, data, fields, 
             ]}
           />
         </div>
+
         <p className="mb-2 font-medium">Campos del reporte:</p>
+
         <div className="grid grid-cols-2 gap-3">
           {fields.map((field) => (
             <Checkbox
@@ -61,9 +121,19 @@ export default function ListReportModal({ isOpen, onClose, title, data, fields, 
             />
           ))}
         </div>
+
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-          <Button variant="primary" onClick={handleGenerate} disabled={!selectedKeys.length}>Generar reporte</Button>
+          <Button variant="secondary" onClick={onClose}>
+            Cancelar
+          </Button>
+
+          <Button
+            variant="primary"
+            onClick={handleGenerate}
+            disabled={!selectedKeys.length}
+          >
+            Generar reporte
+          </Button>
         </div>
       </div>
     </div>,

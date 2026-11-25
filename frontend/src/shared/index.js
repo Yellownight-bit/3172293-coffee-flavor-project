@@ -38,4 +38,5 @@ export {
   showSuccessAlert,
   showCancelDeleteAlert,
   showConfirmDeleteAlert,
+  showConfirmDeactivateAlert,
 } from "./services/alertService";

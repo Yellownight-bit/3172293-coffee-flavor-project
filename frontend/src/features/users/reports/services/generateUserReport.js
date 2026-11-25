@@ -1,3 +1,4 @@
+
 import { buildReportDataset } from "../utils/buildReportDataset";
 
 import { generateExcelReport } from "./generateExcelReport";
@@ -10,17 +11,18 @@ export function generateUserReport({
   scope,
   documentNumber,
 }) {
-  // Adaptar los nombres recibidos desde PostgreSQL
   const normalizedUsers = users.map((user) => ({
     ...user,
-    userName: user.userName ?? user.user_name,
-    userEmail: user.userEmail ?? user.user_email,
-    userDocumentTypes:
-      user.userDocumentTypes ?? user.user_document_types,
-    userDocumentNumber:
-      user.userDocumentNumber ?? user.user_document_number,
-    userPhone: user.userPhone ?? user.user_phone,
-    isActive: user.isActive ?? user.is_active,
+    id: user.id,
+    user_name: user.user_name ?? user.userName,
+    rol: user.rol ?? user.role,
+    user_email: user.user_email ?? user.userEmail,
+    user_phone: user.user_phone ?? user.userPhone,
+    user_document_types:
+      user.user_document_types ?? user.userDocumentTypes,
+    user_document_number:
+      user.user_document_number ?? user.userDocumentNumber,
+    is_active: user.is_active ?? user.isActive,
   }));
 
   const { headers, rows } = buildReportDataset({

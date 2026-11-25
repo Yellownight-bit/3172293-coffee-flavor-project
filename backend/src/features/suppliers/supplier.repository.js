@@ -1,3 +1,4 @@
+
 import { pool } from "../../config/db.js";
 
 export const supplierRepository = {
@@ -55,7 +56,18 @@ export const supplierRepository = {
 
   async findAll() {
     const query = `
-      SELECT *
+      SELECT
+        id,
+        supplier_name,
+        supplier_email,
+        supplier_phone,
+        supplier_document_type,
+        supplier_document_number,
+        supplier_address,
+        observations,
+        supplier_image,
+        is_active,
+        supplied_products
       FROM suppliers
       ORDER BY id ASC;
     `;
@@ -75,6 +87,7 @@ export const supplierRepository = {
       supplierPassword,
       supplierAddress,
       observations,
+      supplierImage,
       isActive,
       suppliedProducts,
     } = supplierData;
@@ -90,9 +103,10 @@ export const supplierRepository = {
         supplier_password = COALESCE($6, supplier_password),
         supplier_address = $7,
         observations = $8,
-        is_active = $9,
-        supplied_products = $10
-      WHERE id = $11
+        supplier_image = COALESCE($9, supplier_image),
+        is_active = $10,
+        supplied_products = $11
+      WHERE id = $12
       RETURNING
         id,
         supplier_name,
@@ -116,6 +130,7 @@ export const supplierRepository = {
       supplierPassword,
       supplierAddress,
       observations || null,
+      supplierImage,
       isActive,
       JSON.stringify(suppliedProducts || []),
       id,
@@ -131,7 +146,18 @@ export const supplierRepository = {
       UPDATE suppliers
       SET is_active = $1
       WHERE id = $2
-      RETURNING *;
+      RETURNING
+        id,
+        supplier_name,
+        supplier_email,
+        supplier_phone,
+        supplier_document_type,
+        supplier_document_number,
+        supplier_address,
+        observations,
+        supplier_image,
+        is_active,
+        supplied_products;
     `;
 
     const values = [is_active, id];

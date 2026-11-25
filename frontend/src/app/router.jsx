@@ -21,9 +21,9 @@ import RecoverPassword from "@/features/password/pages/RecoverPassword";
 import VerifyCode from "@/features/password/pages/VerifyCode";
 import ResetPassword from "@/features/password/pages/ResetPassword";
 
-import ReadUser from "../features/users/pages/ReadUser"
+import ReadUser from "../features/users/pages/ReadUser";
 import ReadSupplier from "../features/suppliers/pages/ReadSupplier";
-import ReadOrder  from "../features/order/pages/ReadOrder";
+import ReadOrder from "../features/order/pages/ReadOrder";
 import ReadProduct from "../features/products/pages/ReadProduct";
 import ReadInventory from "../features/inventory/pages/ReadInventory";
 import ReadMenu from "../features/read/ReadMenu";
@@ -72,7 +72,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-
   {
     path: "/HomePage",
     element: (
@@ -84,7 +83,7 @@ const router = createBrowserRouter([
   {
     path: "/dashboard/access",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute role="Administrador">
         <AccessPage />
       </ProtectedRoute>
     ),
@@ -98,24 +97,57 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true },
-      { path: "userList", element: <UserListPage /> },
+      {
+        path: "userList",
+        element: (
+          <ProtectedRoute permission="list_user">
+            <UserListPage />
+          </ProtectedRoute>
+        ),
+      },
       { path: "userCreate", element: <UserRegisterForm /> },
-      { path: "inventoryList", element: <InventoryListPage /> },
-      { path: "supplierList", element: <SupplierListPage /> },
-      { path: "productList", element: <ProductListPage /> },
-      { path: "orderList", element: <OrderListPage /> },
+      {
+        path: "inventoryList",
+        element: (
+          <ProtectedRoute permission="list_inventory">
+            <InventoryListPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "supplierList",
+        element: (
+          <ProtectedRoute permission="list_supplier">
+            <SupplierListPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "productList",
+        element: (
+          <ProtectedRoute permission="list_product">
+            <ProductListPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "orderList",
+        element: (
+          <ProtectedRoute permission="list_order">
+            <OrderListPage />
+          </ProtectedRoute>
+        ),
+      },
       { path: "homePage", element: <HomePage /> },
-      { path: "/dashboard/userRead/:id", element: <ReadUser/> },
-      { path: "/dashboard/supplierRead/:id", element: <ReadSupplier />,},
+      { path: "/dashboard/userRead/:id", element: <ReadUser /> },
+      { path: "/dashboard/supplierRead/:id", element: <ReadSupplier /> },
       { path: "/dashboard/orderRead/:id", element: <ReadOrder /> },
       { path: "/dashboard/productRead/:id", element: <ReadProduct /> },
       { path: "/dashboard/inventoryRead/:id", element: <ReadInventory /> },
       { path: "/dashboard/readMenu", element: <ReadMenu /> },
       { path: "UpdateUser", element: <UpdateUser /> },
-      
     ],
   },
-
   {
     path: "/CreateUser",
     element: (
@@ -157,8 +189,8 @@ const router = createBrowserRouter([
     ),
   },
   {
-  path: "/UpdateUser/:id",
-  element: (
+    path: "/UpdateUser/:id",
+    element: (
       <ProtectedRoute>
         <UpdateUser />
       </ProtectedRoute>
@@ -167,7 +199,7 @@ const router = createBrowserRouter([
   {
     path: "/Permissions",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute role="Administrador">
         <PermissionManagement />
       </ProtectedRoute>
     ),
@@ -181,28 +213,28 @@ const router = createBrowserRouter([
     ),
   },
   {
-  path: "/UpdateInventory/:id",
-  element: (
-    <ProtectedRoute>
-      <UpdateInventory />
-    </ProtectedRoute>
-  ),
+    path: "/UpdateInventory/:id",
+    element: (
+      <ProtectedRoute>
+        <UpdateInventory />
+      </ProtectedRoute>
+    ),
   },
   {
-  path: "/UpdateProduct/:id",
-  element: (
-    <ProtectedRoute>
-      <UpdateProduct />
-    </ProtectedRoute>
-  ),
+    path: "/UpdateProduct/:id",
+    element: (
+      <ProtectedRoute>
+        <UpdateProduct />
+      </ProtectedRoute>
+    ),
   },
   {
-  path: "/UpdateOrder/:id",
-  element: (
-    <ProtectedRoute>
-      <UpdateOrder />
-    </ProtectedRoute>
-  ),
+    path: "/UpdateOrder/:id",
+    element: (
+      <ProtectedRoute>
+        <UpdateOrder />
+      </ProtectedRoute>
+    ),
   },
 ]);
 

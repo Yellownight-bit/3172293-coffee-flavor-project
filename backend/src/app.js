@@ -1,12 +1,10 @@
-// Importamos Express, el framework base para construir el servidor HTTP
-import express from "express";
 
-// Importamos el middleware CORS
-// Permite controlar qué orígenes pueden comunicarse con el backend
+import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // Importamos las rutas del feature
-// Cada feature expone su propio router independiente
 import userRoutes from "./features/users/user.routes.js";
 import authRoutes from "./features/auth/auth.routes.js";
 import supplierRoutes from "./features/suppliers/supplier.routes.js";
@@ -17,21 +15,26 @@ import accessRoutes from "./features/access/access.routes.js";
 import groupsRoutes from "./features/groups/groups.routes.js";
 import permissionsRoutes from "./features/permissions/permissions.routes.js";
 
-// Creamos la instancia principal de la aplicación Express
+// Creamos la instancia principal de Express
 const app = express();
 
+// Obtenemos la ruta del directorio actual
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Middleware de CORS
-// Permite solicitudes únicamente desde el frontend en localhost:5173
-// (típico proyecto Vite en desarrollo)
 app.use(cors({ origin: "http://localhost:5173" }));
 
-// Middleware para parsear cuerpos de petición en formato JSON
-// Sin este middleware, req.body sería undefined
+// Middleware para procesar JSON
 app.use(express.json());
 
-// Registro del router de usuarios
-// Todas las rutas del feature users quedarán bajo el prefijo /api/users
-// Ejemplo final: POST http://localhost:4000/api/users
+// Servir archivos estáticos de uploads
+app.use(
+    "/uploads",
+    express.static(path.resolve(__dirname, "../uploads"))
+);
+
+// Registro de rutas
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/suppliers", supplierRoutes);
@@ -42,6 +45,5 @@ app.use("/api/access", accessRoutes);
 app.use("/api/groups", groupsRoutes);
 app.use("/api/permissions", permissionsRoutes);
 
-// Exportamos la aplicación configurada
-// El arranque del servidor se hace en server.js
+// Exportamos la aplicación
 export default app;

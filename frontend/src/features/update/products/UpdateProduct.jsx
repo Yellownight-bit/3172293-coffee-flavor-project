@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Input,
@@ -38,6 +39,7 @@ export default function UpdateProduct() {
     productSupplierNames: "",
     productDescription: "",
     shippingDate: "",
+    productImage: [],
     nuevo: false,
     incluido: false,
     agotable: false,
@@ -90,6 +92,8 @@ export default function UpdateProduct() {
           return;
         }
 
+        const currentImage = foundProduct.product_image || null;
+
         setFormData({
           productName: foundProduct.product_name || "",
           productId: foundProduct.product_code || "",
@@ -101,6 +105,7 @@ export default function UpdateProduct() {
           shippingDate: foundProduct.shipping_date
             ? String(foundProduct.shipping_date).slice(0, 10)
             : "",
+          productImage: currentImage ? [currentImage] : [],
           nuevo: Boolean(foundProduct.nuevo),
           incluido: Boolean(foundProduct.incluido),
           agotable: Boolean(foundProduct.agotable),
@@ -111,6 +116,9 @@ export default function UpdateProduct() {
           importado: Boolean(foundProduct.importado),
           devoluciones: Boolean(foundProduct.devoluciones),
         });
+
+        setFiles(currentImage ? [currentImage] : []);
+
       } catch (error) {
         console.error("Error al cargar el producto:", error);
 
@@ -138,7 +146,20 @@ export default function UpdateProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = productUpdateSchema.safeParse(formData);
+    if (saving) return;
+
+    const validationData = {
+      ...formData,
+      productImage: formData.productImage.filter(
+        (item) => typeof File !== "undefined" && item instanceof File
+      ),
+    };
+
+    if (validationData.productImage.length === 0) {
+      delete validationData.productImage;
+    }
+
+    const result = productUpdateSchema.safeParse(validationData);
 
     if (!result.success) {
       const fieldErrors = {};
@@ -157,13 +178,16 @@ export default function UpdateProduct() {
       return;
     }
 
-    try {
-      setErrors({});
-      setSaving(true);
+    setErrors({});
+    setSaving(true);
 
-      await updateProduct(id, {
+    try {
+      const productData = {
         ...result.data,
-      });
+        productImage: files,
+      };
+
+      await updateProduct(id, productData);
 
       await showSuccessAlert({
         title: "Producto actualizado correctamente",
@@ -206,14 +230,16 @@ export default function UpdateProduct() {
       <div className="flex-1 px-3 py-4 sm:px-6 sm:py-8 flex items-center justify-center w-full max-w-full box-border">
         <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-md min-w-0 box-border overflow-hidden">
 
-          <Button
-            variant="back"
-            size="backProduct"
-            type="button"
-            onClick={() => navigate("/dashboard/productList")}
-          >
-            <span>←</span> Atrás
-          </Button>
+          <div className="mb-4">
+            <Button
+              variant="back"
+              size="backProduct"
+              type="button"
+              onClick={() => navigate("/dashboard/productList")}
+            >
+              <span>←</span> Atrás
+            </Button>
+          </div>
 
           <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-strong/30 pb-4 mb-6">
             <div className="flex items-center gap-2">
@@ -280,7 +306,14 @@ export default function UpdateProduct() {
                 <div className="w-full flex justify-center min-w-0">
                   <FileInput
                     value={files}
-                    onChange={setFiles}
+                    onChange={(newFiles) => {
+                      setFiles(newFiles);
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        productImage: newFiles,
+                      }));
+                    }}
                     multiple={false}
                     accept="image/*"
                   />

@@ -32,13 +32,17 @@ export default function UserRegisterForm() {
   });
 
   const [files, setFiles] = useState([]);
+  const [documentTypes, setDocumentTypes] = useState([]);
+  const [saving, setSaving] = useState(false);
 
   const navigate = useNavigate();
 
-  const [documentTypes, setDocumentTypes] = useState([]);
-
   useEffect(() => {
-    getDocumentTypes().then(setDocumentTypes);
+    getDocumentTypes()
+      .then(setDocumentTypes)
+      .catch((error) => {
+        console.error("Error al cargar tipos de documento:", error);
+      });
   }, []);
 
   const handleChange = (e) => {
@@ -53,7 +57,14 @@ export default function UserRegisterForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = userSchema.safeParse(formData);
+    if (saving) return;
+
+    const dataToValidate = {
+      ...formData,
+      userImage: files,
+    };
+
+    const result = userSchema.safeParse(dataToValidate);
 
     if (!result.success) {
       console.log(result.error.issues);
@@ -75,9 +86,15 @@ export default function UserRegisterForm() {
     }
 
     setErrors({});
+    setSaving(true);
 
     try {
-      const response = await createUser(result.data);
+      const userData = {
+        ...result.data,
+        userImage: files,
+      };
+
+      const response = await createUser(userData);
 
       console.log("Usuario creado:", response);
 
@@ -89,6 +106,7 @@ export default function UserRegisterForm() {
       });
 
       navigate("/dashboard/userList");
+
     } catch (error) {
       console.error("Error al crear usuario:", error);
 
@@ -96,6 +114,9 @@ export default function UserRegisterForm() {
         title: "Error al crear usuario",
         text: error.message || "No se pudo crear el usuario.",
       });
+
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -106,8 +127,8 @@ export default function UserRegisterForm() {
     >
       <Navbar />
 
-      <div className="flex-1 p-4 flex items-center justify-center">
-        <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-3xl p-8 shadow-md relative">
+      <div className="flex-1 w-full p-3 sm:p-4 lg:p-6 flex items-center justify-center">
+        <div className="w-full max-w-6xl min-w-0 bg-gradient-to-b from-gradient-start to-gradient-end rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-md relative">
 
           <Button
             variant="back"
@@ -118,23 +139,24 @@ export default function UserRegisterForm() {
             <span>←</span> Atrás
           </Button>
 
-          <div className="flex items-center gap-2 mt-8 mb-6 border-b border-brand-strong/30 pb-3">
-            <div className="text-2xl text-brand-strong">
+          <div className="flex items-center gap-2 mt-6 sm:mt-8 mb-6 border-b border-brand-strong/30 pb-3">
+            <div className="text-2xl text-brand-strong shrink-0">
               👤
               <span className="font-bold text-xl relative -top-2 -left-1">
                 +
               </span>
             </div>
 
-            <h2 className="text-brand-strong font-bold text-xl uppercase tracking-wider">
+            <h2 className="text-brand-strong font-bold text-lg sm:text-xl uppercase tracking-wider">
               Registrar usuario
             </h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
 
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+
+              <div className="space-y-4 min-w-0">
                 <Input
                   label="Nombre completo"
                   name="userName"
@@ -184,7 +206,7 @@ export default function UserRegisterForm() {
                 />
               </div>
 
-              <div className="space-y-5 flex flex-col items-center">
+              <div className="space-y-5 flex flex-col items-center min-w-0">
                 <div className="w-full flex justify-center">
                   <FileInput
                     value={files}
@@ -201,18 +223,20 @@ export default function UserRegisterForm() {
                   />
                 </div>
 
-                <Input
-                  label="Dirección"
-                  name="userAddress"
-                  type="text"
-                  value={formData.userAddress}
-                  placeholder="Dirección"
-                  htmlFor="user-address"
-                  onChange={handleChange}
-                  error={errors.userAddress}
-                />
+                <div className="w-full">
+                  <Input
+                    label="Dirección"
+                    name="userAddress"
+                    type="text"
+                    value={formData.userAddress}
+                    placeholder="Dirección"
+                    htmlFor="user-address"
+                    onChange={handleChange}
+                    error={errors.userAddress}
+                  />
+                </div>
 
-                <div className="relative">
+                <div className="relative w-full">
                   <Input
                     label="Número telefónico"
                     name="userPhone"
@@ -234,7 +258,7 @@ export default function UserRegisterForm() {
                 </div>
               </div>
 
-              <div className="space-y-5">
+              <div className="space-y-5 min-w-0 sm:col-span-2 lg:col-span-1">
                 <Input
                   label="Correo electrónico"
                   name="userEmail"
@@ -281,14 +305,15 @@ export default function UserRegisterForm() {
 
             </div>
 
-            <div className="pt-6 border-brand-strong/20 flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div className="pt-6 border-brand-strong/20 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-6">
 
-              <div className="flex items-center gap-6 bg-brand-subtle p-3 rounded-xl px-5 border border-brand-soft">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 bg-brand-subtle p-3 rounded-xl px-4 sm:px-5 border border-brand-soft w-full sm:w-fit">
+
                 <span className="font-bold text-text-secondary text-sm uppercase">
                   Estado:
                 </span>
 
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                   <Checkbox
                     id="isActive"
                     name="isActive"
@@ -298,16 +323,23 @@ export default function UserRegisterForm() {
                   />
 
                   <Checkbox
-                    id="isStaff"
-                    name="isStaff"
+                    id="isInactive"
+                    name="isInactive"
                     label="Inactivo"
-                    checked={formData.isStaff}
-                    onChange={handleChange}
+                    checked={!formData.isActive}
+                    onChange={(e) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        isActive: !e.target.checked,
+                      }));
+                    }}
                   />
                 </div>
+
               </div>
 
-              <div className="flex gap-4 self-end">
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto sm:self-end">
+
                 <Button
                   variant="cancel"
                   size="cancel"
@@ -321,9 +353,11 @@ export default function UserRegisterForm() {
                   variant="finish"
                   size="finish"
                   type="submit"
+                  disabled={saving}
                 >
-                  Finalizar
+                  {saving ? "Guardando..." : "Finalizar"}
                 </Button>
+
               </div>
 
             </div>

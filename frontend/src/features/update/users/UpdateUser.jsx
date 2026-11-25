@@ -71,6 +71,8 @@ export default function UpdateUser() {
           return;
         }
 
+        const currentImage = userData.user_image || null;
+
         setFormData({
           userName: userData.user_name || "",
           userEmail: userData.user_email || "",
@@ -81,12 +83,15 @@ export default function UpdateUser() {
           userDocumentTypes: userData.user_document_types || "",
           userDocumentNumber: userData.user_document_number || "",
           userPassword: "",
-          userImage: [],
+          userImage: currentImage ? [currentImage] : [],
           isStaff: userData.is_staff ?? false,
           isActive: userData.is_active ?? true,
           isSuperUser: userData.is_superuser ?? false,
           rol: userData.rol || "invitado",
         });
+
+        setFiles(currentImage ? [currentImage] : []);
+
       } catch (error) {
         console.error("Error al cargar el usuario:", error);
 
@@ -120,7 +125,18 @@ export default function UpdateUser() {
 
     if (saving) return;
 
-    const result = userUpdateSchema.safeParse(formData);
+    const validationData = {
+      ...formData,
+      userImage: formData.userImage.filter(
+        (item) => typeof File !== "undefined" && item instanceof File
+      ),
+    };
+
+    if (validationData.userImage.length === 0) {
+      delete validationData.userImage;
+    }
+
+    const result = userUpdateSchema.safeParse(validationData);
 
     if (!result.success) {
       const fieldErrors = {};
@@ -151,7 +167,8 @@ export default function UpdateUser() {
         userAddress: formData.userAddress,
         userDocumentTypes: formData.userDocumentTypes,
         userDocumentNumber: formData.userDocumentNumber,
-        userPassword: formData.userPassword.trim() || null,
+        userPassword: formData.userPassword.trim(),
+        userImage: files,
         isStaff: formData.isStaff,
         isActive: formData.isActive,
         isSuperUser: formData.isSuperUser,
@@ -184,7 +201,7 @@ export default function UpdateUser() {
   if (loading) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center bg-center bg-cover bg-no-repeat bg-image-themed"
+        className="min-h-screen flex items-center justify-center bg-center bg-cover bg-no-repeat bg-image-themed p-4"
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
         <div className="bg-panel p-6 rounded-xl shadow-md">
@@ -203,8 +220,8 @@ export default function UpdateUser() {
     >
       <Navbar />
 
-      <div className="flex-1 p-4 flex items-center justify-center">
-        <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-3xl p-8 shadow-md relative">
+      <div className="flex-1 w-full p-3 sm:p-4 lg:p-6 flex items-center justify-center">
+        <div className="w-full max-w-6xl min-w-0 bg-gradient-to-b from-gradient-start to-gradient-end rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-md relative">
 
           <Button
             variant="back"
@@ -215,23 +232,24 @@ export default function UpdateUser() {
             <span>←</span> Atrás
           </Button>
 
-          <div className="flex items-center gap-2 mt-8 mb-6 border-b border-brand-strong/30 pb-3">
-            <div className="text-2xl text-brand-strong">
+          <div className="flex items-center gap-2 mt-6 sm:mt-8 mb-6 border-b border-brand-strong/30 pb-3">
+            <div className="text-2xl text-brand-strong shrink-0">
               👤
               <span className="font-bold text-xl relative -top-2 -left-1">
                 +
               </span>
             </div>
 
-            <h2 className="text-brand-strong font-bold text-xl uppercase tracking-wider">
+            <h2 className="text-brand-strong font-bold text-lg sm:text-xl uppercase tracking-wider">
               Actualizar usuario
             </h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
 
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+
+              <div className="space-y-4 min-w-0">
                 <Input
                   label="Actualizar - Nombre completo"
                   name="userName"
@@ -281,7 +299,7 @@ export default function UpdateUser() {
                 />
               </div>
 
-              <div className="space-y-5 flex flex-col items-center">
+              <div className="space-y-5 flex flex-col items-center min-w-0">
                 <div className="w-full flex justify-center">
                   <FileInput
                     value={files}
@@ -298,18 +316,20 @@ export default function UpdateUser() {
                   />
                 </div>
 
-                <Input
-                  label="Actualizar - Dirección"
-                  name="userAddress"
-                  type="text"
-                  value={formData.userAddress}
-                  placeholder="Dirección"
-                  htmlFor="user-address"
-                  onChange={handleChange}
-                  error={errors.userAddress}
-                />
+                <div className="w-full">
+                  <Input
+                    label="Actualizar - Dirección"
+                    name="userAddress"
+                    type="text"
+                    value={formData.userAddress}
+                    placeholder="Dirección"
+                    htmlFor="user-address"
+                    onChange={handleChange}
+                    error={errors.userAddress}
+                  />
+                </div>
 
-                <div className="relative">
+                <div className="relative w-full">
                   <Input
                     label="Actualizar - Número telefónico"
                     name="userPhone"
@@ -331,7 +351,7 @@ export default function UpdateUser() {
                 </div>
               </div>
 
-              <div className="space-y-5">
+              <div className="space-y-5 min-w-0 sm:col-span-2 lg:col-span-1">
                 <Input
                   label="Actualizar - Correo electrónico"
                   name="userEmail"
@@ -375,16 +395,17 @@ export default function UpdateUser() {
                   error={errors.userPassword}
                 />
               </div>
+
             </div>
 
-            <div className="pt-6 border-brand-strong/20 flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div className="pt-6 border-brand-strong/20 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-6">
 
-              <div className="flex items-center gap-6 bg-brand-subtle p-3 rounded-xl px-5 border border-brand-soft">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 bg-brand-subtle p-3 rounded-xl px-4 sm:px-5 border border-brand-soft w-full sm:w-fit">
                 <span className="font-bold text-text-secondary text-sm uppercase">
                   Estado:
                 </span>
 
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                   <Checkbox
                     id="isActive"
                     name="isActive"
@@ -408,7 +429,7 @@ export default function UpdateUser() {
                 </div>
               </div>
 
-              <div className="flex gap-4 self-end">
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto sm:self-end">
                 <Button
                   variant="cancel"
                   size="cancel"

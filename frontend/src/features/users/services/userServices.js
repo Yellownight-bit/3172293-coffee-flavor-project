@@ -3,22 +3,68 @@ import { API_URL } from "@/features/config";
 
 const USERS_URL = `${API_URL}/users`;
 
-// Crear un usuario
+// Convierte los datos del usuario a FormData
+function createUserFormData(userData) {
+    const formData = new FormData();
+
+    Object.entries(userData).forEach(([key, value]) => {
+        if (key === "userImage") {
+            if (Array.isArray(value)) {
+                value.forEach((file) => {
+                    if (file instanceof File) {
+                        formData.append("userImage", file);
+                    }
+                });
+            } else if (value instanceof File) {
+                formData.append("userImage", value);
+            }
+
+            return;
+        }
+
+        if (value !== null && value !== undefined) {
+            formData.append(key, value);
+        }
+    });
+
+    return formData;
+}
+
+// Crear un usuario desde el sistema
 export async function createUser(userData) {
     const token = sessionStorage.getItem("token");
+    const formData = createUserFormData(userData);
 
     const response = await fetch(USERS_URL, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(userData),
+        body: formData,
     });
 
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Error al crear el usuario");
+    }
+
+    return response.json();
+}
+
+// Registrar un usuario desde el login
+export async function registerUser(userData) {
+    const formData = userData instanceof FormData
+        ? userData
+        : createUserFormData(userData);
+
+    const response = await fetch(`${USERS_URL}/register`, {
+        method: "POST",
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Error al registrar el usuario");
     }
 
     return response.json();
@@ -43,17 +89,36 @@ export async function getAllUsers() {
     return response.json();
 }
 
+// Consultar usuarios para gestión de permisos
+export async function getUsersForPermissions() {
+    const token = sessionStorage.getItem("token");
+
+    const response = await fetch(`${USERS_URL}/permissions`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Error al consultar usuarios para permisos");
+    }
+
+    return response.json();
+}
+
 // Actualizar los datos de un usuario
 export async function updateUser(id, userData) {
     const token = sessionStorage.getItem("token");
+    const formData = createUserFormData(userData);
 
     const response = await fetch(`${USERS_URL}/${id}`, {
         method: "PUT",
         headers: {
-            "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(userData),
+        body: formData,
     });
 
     const data = await response.json();

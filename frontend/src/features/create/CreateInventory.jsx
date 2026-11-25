@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Input,
@@ -35,13 +36,21 @@ export default function CreateProductInventory() {
   });
 
   const [files, setFiles] = useState([]);
+  const [supplierNames, setSupplierNames] = useState([]);
 
   const navigate = useNavigate();
 
-  const [supplierNames, setSupplierNames] = useState([]);
-
   useEffect(() => {
-    getSupplierNames().then(setSupplierNames);
+    const loadSuppliers = async () => {
+      try {
+        const options = await getSupplierNames();
+        setSupplierNames(options);
+      } catch (error) {
+        console.error("Error al cargar proveedores:", error);
+      }
+    };
+
+    loadSuppliers();
   }, []);
 
   const handleChange = (e) => {
@@ -81,7 +90,12 @@ export default function CreateProductInventory() {
     setErrors({});
 
     try {
-      await createInventory(result.data);
+      const inventoryData = {
+        ...result.data,
+        productImage: files,
+      };
+
+      await createInventory(inventoryData);
 
       await showSuccessAlert({
         title: "Producto creado correctamente",
@@ -111,14 +125,14 @@ export default function CreateProductInventory() {
       <div className="flex-1 p-4 flex items-center justify-center">
         <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-3xl p-8 shadow-md relative">
 
-          <Button
-            variant="back"
-            size="back"
-            type="button"
-            onClick={() => navigate("/dashboard/inventoryList")}
-          >
-            <span>←</span> Atrás
-          </Button>
+            <Button
+              variant="back"
+              size="back"
+              type="button"
+              onClick={() => navigate("/dashboard/inventoryList")}
+            >
+              <span>←</span> Atrás
+            </Button>
 
           <button
             type="button"
@@ -183,7 +197,14 @@ export default function CreateProductInventory() {
                 <div className="w-full flex justify-center">
                   <FileInput
                     value={files}
-                    onChange={setFiles}
+                    onChange={(newFiles) => {
+                      setFiles(newFiles);
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        productImage: newFiles,
+                      }));
+                    }}
                     multiple={false}
                     accept="image/*"
                   />
@@ -220,15 +241,17 @@ export default function CreateProductInventory() {
               </div>
 
               <div className="space-y-5">
-                <SelectInventory
-                  label="Nombre del proveedor"
-                  name="productSupplierNames"
-                  value={formData.productSupplierNames}
-                  htmlFor="productSupplierNames"
-                  onChange={handleChange}
-                  options={supplierNames}
-                  error={errors.productSupplierNames}
-                />
+                <div className="w-full min-w-0">
+                  <SelectInventory
+                    label="Proveedor"
+                    name="productSupplierNames"
+                    value={formData.productSupplierNames}
+                    htmlFor="productSupplierNames"
+                    onChange={handleChange}
+                    options={supplierNames}
+                    error={errors.productSupplierNames}
+                  />
+                </div>
 
                 <div className="relative">
                   <Input

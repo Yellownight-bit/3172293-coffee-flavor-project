@@ -34,9 +34,9 @@ const inventoryFields = {
 
   productPrice: z
     .string()
-    .regex(/^[0-9]+$/, "El precio debe contener solo números")
+    .min(1, "Debe ingresar un precio")
     .refine((value) => Number(value) > 0, {
-      message: "El precio debe ser mayor que cero",
+      message: "El precio debe ser mayor a 0",
     }),
 
   productEntryDate: z

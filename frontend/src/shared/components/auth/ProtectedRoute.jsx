@@ -1,14 +1,28 @@
 
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { checkUserPermission } from "@/features/access/services/permissionService";
 
 const INACTIVITY_TIME = 15 * 60 * 1000;
 
-export default function ProtectedRoute({ children }) {
+const getUserRole = (token) => {
+  try {
+    const payload = token.split(".")[1];
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(atob(base64)).rol || "";
+  } catch {
+    return "";
+  }
+};
+
+export default function ProtectedRoute({ children, permission, role }) {
   const token = sessionStorage.getItem("token");
   const navigate = useNavigate();
 
   const [isAuthenticated, setIsAuthenticated] = useState(!!token);
+  const [hasPermission, setHasPermission] = useState(null);
+
+  const userRole = getUserRole(token || "");
 
   useEffect(() => {
     if (!token) {
@@ -20,6 +34,7 @@ export default function ProtectedRoute({ children }) {
 
     const logout = () => {
       sessionStorage.removeItem("token");
+      sessionStorage.removeItem("rol");
       setIsAuthenticated(false);
       navigate("/auth", { replace: true });
     };
@@ -56,8 +71,59 @@ export default function ProtectedRoute({ children }) {
     };
   }, [token, navigate]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const verifyPermission = async () => {
+      if (!permission) {
+        setHasPermission(true);
+        return;
+      }
+
+      setHasPermission(null);
+
+      try {
+        const granted = await checkUserPermission(permission);
+
+        if (!cancelled) {
+          setHasPermission(granted);
+        }
+      } catch (error) {
+        console.error("Error verificando permiso:", error);
+
+        if (!cancelled) {
+          setHasPermission(false);
+        }
+      }
+    };
+
+    if (token) {
+      verifyPermission();
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [permission, token]);
+
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
+  }
+
+  if (role && userRole.toLowerCase() !== role.toLowerCase()) {
+    return <Navigate to="/HomePage" replace />;
+  }
+
+  if (permission && hasPermission === null) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Verificando permisos...
+      </div>
+    );
+  }
+
+  if (permission && !hasPermission) {
+    return <Navigate to="/HomePage" replace />;
   }
 
   return children || <Outlet />;

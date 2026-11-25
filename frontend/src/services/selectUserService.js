@@ -18,8 +18,10 @@ export const getOrderUsers = async () => {
     throw new Error(data.error || "Error al obtener los meseros");
   }
 
-  return data.map((user) => ({
-    value: user.id,
-    label: user.user_name,
-  }));
+  return data
+    .filter((user) => user.rol?.toLowerCase().trim() === "mesero")
+    .map((user) => ({
+      value: user.id,
+      label: user.user_name,
+    }));
 };

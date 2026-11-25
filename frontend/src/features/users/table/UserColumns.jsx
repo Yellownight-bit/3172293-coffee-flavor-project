@@ -1,9 +1,8 @@
 
 import { StatusSwitch } from "@/shared";
 import UserRowActions from "../components/UserRowActions";
-import { updateStatusSwitch } from "../services/userServices";
 
-export const UserColumns = [
+export const UserColumns = (handleStatusChange, canDisableUser) => [
   {
     accessorKey: "id",
     header: "Id",
@@ -39,9 +38,10 @@ export const UserColumns = [
       return (
         <StatusSwitch
           checked={row.original.is_active}
-          onChange={async (value) => {
-            await updateStatusSwitch(row.original.id, value);
-          }}
+          disabled={!canDisableUser}
+          onChange={(value) =>
+            handleStatusChange(row.original.id, value)
+          }
         />
       );
     },

@@ -1,149 +1,220 @@
-// frontend/src/features/access/pages/AccessPage.jsx
-// Estado compartido entre Sidebar y PermissionModule: el estado de edición vive en AccessPage.
 
 import { useEffect, useMemo, useState } from "react";
 import { Navbar } from "../../../shared";
 import AccessSidebar from "../../../shared/components/AccessSidebar";
 import PermissionModule from "../components/PermissionModule";
-import { getAllPermissions } from "../services/permissionService";
+import {
+    getAllPermissions,
+    updateUserPermissions,
+} from "../services/permissionService";
 import { updateGroupPermissions } from "../services/groupService";
 
-// Red de seguridad: ningún campo de los hijos puede ser más ancho que su caja
 const fieldFix =
-  "[&_input]:max-w-full [&_input]:min-w-0 [&_select]:max-w-full [&_select]:min-w-0 [&_textarea]:max-w-full [&_textarea]:min-w-0";
+    "[&_input]:max-w-full [&_input]:min-w-0 [&_select]:max-w-full [&_select]:min-w-0 [&_textarea]:max-w-full [&_textarea]:min-w-0";
 
 export default function AccessPage() {
-  const [selectedGroup, setSelectedGroup] = useState("");
-  const [selectedGroupName, setSelectedGroupName] = useState("");
+    // Selección de grupo
+    const [selectedGroup, setSelectedGroup] = useState("");
+    const [selectedGroupName, setSelectedGroupName] = useState("");
 
-  // Catálogo completo de permisos (PostgreSQL)
-  const [allPermissions, setAllPermissions] = useState([]);
+    // Selección de usuario
+    const [selectedUserId, setSelectedUserId] = useState("");
+    const [selectedUserName, setSelectedUserName] = useState("");
 
-  // Permisos asignados al grupo seleccionado
-  const [groupPermissions, setGroupPermissions] = useState([]);
+    // Catálogo de permisos
+    const [allPermissions, setAllPermissions] = useState([]);
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [permissionsDraft, setPermissionsDraft] = useState([]);
+    // Permisos del grupo
+    const [groupPermissions, setGroupPermissions] = useState([]);
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState("");
-  const [justSaved, setJustSaved] = useState(false);
+    // Permisos del usuario
+    const [userPermissionDetails, setUserPermissionDetails] = useState({
+        directPermissions: [],
+        inheritedPermissions: [],
+    });
 
-  useEffect(() => {
-    getAllPermissions().then(setAllPermissions).catch(console.error);
-  }, []);
+    // Estado de edición
+    const [isEditing, setIsEditing] = useState(false);
+    const [permissionsDraft, setPermissionsDraft] = useState([]);
 
-  useEffect(() => {
-    setPermissionsDraft(groupPermissions);
-    setIsEditing(false);
-  }, [groupPermissions]);
+    // Estado de guardado
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveError, setSaveError] = useState("");
+    const [justSaved, setJustSaved] = useState(false);
 
-  // Cambiar de grupo limpia los avisos anteriores
-  useEffect(() => {
-    setSaveError("");
-    setJustSaved(false);
-  }, [selectedGroup]);
+    // Cargar catálogo de permisos
+    useEffect(() => {
+        getAllPermissions()
+            .then(setAllPermissions)
+            .catch(console.error);
+    }, []);
 
-  // El aviso de "guardado" desaparece solo
-  useEffect(() => {
-    if (!justSaved) return;
-    const timer = setTimeout(() => setJustSaved(false), 3000);
-    return () => clearTimeout(timer);
-  }, [justSaved]);
+    // Determinar los permisos que se están mostrando
+    const currentPermissions = selectedUserId
+        ? userPermissionDetails.directPermissions
+        : groupPermissions;
 
-  // ¿El borrador es distinto de lo que ya está guardado?
-  const hasChanges = useMemo(() => {
-    const saved = new Set(groupPermissions.map((p) => p.permission_id));
-    const draft = new Set(permissionsDraft.map((p) => p.permission_id));
-    if (saved.size !== draft.size) return true;
-    for (const id of draft) if (!saved.has(id)) return true;
-    return false;
-  }, [groupPermissions, permissionsDraft]);
+    // Restablecer borrador cuando cambian los permisos seleccionados
+    useEffect(() => {
+        setPermissionsDraft(currentPermissions);
+        setIsEditing(false);
+    }, [currentPermissions]);
 
-  const handleEdit = () => {
-    setSaveError("");
-    setJustSaved(false);
-    setIsEditing(true);
-  };
+    // Limpiar mensajes al cambiar de selección
+    useEffect(() => {
+        setSaveError("");
+        setJustSaved(false);
+    }, [selectedGroup, selectedUserId]);
 
-  const handleCancel = () => {
-    setPermissionsDraft(groupPermissions);
-    setSaveError("");
-    setIsEditing(false);
-  };
+    // Ocultar mensaje de guardado después de tres segundos
+    useEffect(() => {
+        if (!justSaved) return;
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    setSaveError("");
-    try {
-      const permissionIds = permissionsDraft.map(
-        (permission) => permission.permission_id,
-      );
+        const timer = setTimeout(() => setJustSaved(false), 3000);
 
-      await updateGroupPermissions(selectedGroup, permissionIds);
+        return () => clearTimeout(timer);
+    }, [justSaved]);
 
-      setGroupPermissions(permissionsDraft);
-      setIsEditing(false);
-      setJustSaved(true);
-    } catch (error) {
-      console.error(error);
-      setSaveError(
-        "No se pudieron guardar los permisos. Revisa tu conexión e inténtalo de nuevo.",
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    // Detectar cambios en los permisos
+    const hasChanges = useMemo(() => {
+        const saved = new Set(
+            currentPermissions.map((permission) => permission.permission_id)
+        );
 
-  return (
-    <div className="min-h-screen bg-stone-50 text-stone-900">
-      <Navbar />
+        const draft = new Set(
+            permissionsDraft.map((permission) => permission.permission_id)
+        );
 
-      <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6">
-        <header className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Gestión de permisos
-          </h1>
-          <p className="mt-1 max-w-xl text-sm text-stone-600">
-            Elige un grupo para ver qué puede hacer en el sistema y ajustar sus
-            permisos.
-          </p>
-        </header>
+        if (saved.size !== draft.size) return true;
 
-        <div
-          className={`grid items-start gap-6 lg:grid-cols-[20rem_minmax(0,1fr)] ${fieldFix}`}
-        >
-          <div className="min-w-0 lg:sticky lg:top-6">
-            <AccessSidebar
-              selectedGroup={selectedGroup}
-              setSelectedGroup={setSelectedGroup}
-              setSelectedGroupName={setSelectedGroupName}
-              setGroupPermissions={setGroupPermissions}
-            />
-          </div>
+        for (const id of draft) {
+            if (!saved.has(id)) return true;
+        }
 
-          <div
-            aria-busy={isSaving}
-            className={`min-w-0 transition-opacity ${
-              isSaving ? "pointer-events-none opacity-60" : ""
-            }`}
-          >
-            <PermissionModule
-              selectedGroupName={selectedGroupName}
-              isEditing={isEditing}
-              hasChanges={hasChanges}
-              saveError={saveError}
-              justSaved={justSaved}
-              allPermissions={allPermissions}
-              permissionsDraft={permissionsDraft}
-              setPermissionsDraft={setPermissionsDraft}
-              onEdit={handleEdit}
-              onCancel={handleCancel}
-              onSave={handleSave}
-            />
-          </div>
+        return false;
+    }, [currentPermissions, permissionsDraft]);
+
+    // Editar permisos
+    const handleEdit = () => {
+        setSaveError("");
+        setJustSaved(false);
+        setIsEditing(true);
+    };
+
+    // Cancelar edición
+    const handleCancel = () => {
+        setPermissionsDraft(currentPermissions);
+        setSaveError("");
+        setIsEditing(false);
+    };
+
+    // Guardar permisos
+    const handleSave = async () => {
+        setIsSaving(true);
+        setSaveError("");
+
+        try {
+            const permissionIds = permissionsDraft.map(
+                (permission) => permission.permission_id
+            );
+
+            if (selectedUserId) {
+                await updateUserPermissions(
+                    Number(selectedUserId),
+                    permissionIds
+                );
+
+                setUserPermissionDetails((previous) => ({
+                    ...previous,
+                    directPermissions: permissionsDraft,
+                }));
+            } else if (selectedGroup) {
+                await updateGroupPermissions(
+                    selectedGroup,
+                    permissionIds
+                );
+
+                setGroupPermissions(permissionsDraft);
+            } else {
+                throw new Error(
+                    "Debes seleccionar un grupo o un usuario."
+                );
+            }
+
+            setIsEditing(false);
+            setJustSaved(true);
+        } catch (error) {
+            console.error(error);
+
+            setSaveError(
+                error.message ||
+                "No se pudieron guardar los permisos. Revisa tu conexión e inténtalo de nuevo."
+            );
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-stone-50 text-stone-900">
+            <Navbar />
+
+            <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6">
+                <header className="mb-8">
+                    <h1 className="text-2xl font-semibold tracking-tight">
+                        Gestión de permisos
+                    </h1>
+
+                    <p className="mt-1 max-w-xl text-sm text-stone-600">
+                        Elige un grupo o un usuario para consultar y administrar
+                        sus permisos en el sistema.
+                    </p>
+                </header>
+
+                <div
+                    className={`grid items-start gap-6 lg:grid-cols-[20rem_minmax(0,1fr)] ${fieldFix}`}
+                >
+                    <div className="min-w-0 lg:sticky lg:top-6">
+                        <AccessSidebar
+                            selectedGroup={selectedGroup}
+                            setSelectedGroup={setSelectedGroup}
+                            setGroupPermissions={setGroupPermissions}
+                            setSelectedGroupName={setSelectedGroupName}
+                            setSelectedUserId={setSelectedUserId}
+                            setSelectedUserName={setSelectedUserName}
+                            setUserPermissionDetails={setUserPermissionDetails}
+                        />
+                    </div>
+
+                    <div
+                        aria-busy={isSaving}
+                        className={`min-w-0 transition-opacity ${
+                            isSaving
+                                ? "pointer-events-none opacity-60"
+                                : ""
+                        }`}
+                    >
+                        <PermissionModule
+                            selectedGroupName={selectedGroupName}
+                            selectedUserName={selectedUserName}
+                            isUserSelected={Boolean(selectedUserId)}
+                            isEditing={isEditing}
+                            hasChanges={hasChanges}
+                            saveError={saveError}
+                            justSaved={justSaved}
+                            allPermissions={allPermissions}
+                            permissionsDraft={permissionsDraft}
+                            setPermissionsDraft={setPermissionsDraft}
+                            inheritedPermissions={
+                                userPermissionDetails.inheritedPermissions
+                            }
+                            onEdit={handleEdit}
+                            onCancel={handleCancel}
+                            onSave={handleSave}
+                        />
+                    </div>
+                </div>
+            </main>
         </div>
-      </main>
-    </div>
-  );
+    );
 }

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Input, Select, Checkbox, Button, FileInput } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
 import { userSchema } from "../users/schemas/userSchema";
-import { createUser } from "@/features/users/services/userServices";
+import { registerUser } from "@/features/users/services/userServices";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
 import {
@@ -95,12 +95,19 @@ export default function UserRegisterForm() {
     setErrors({});
 
     try {
-      const userData = {
-        ...result.data,
-        userImage: files[0] || null,
-      };
+      const userData = new FormData();
 
-      await createUser(userData);
+      Object.entries(result.data).forEach(([key, value]) => {
+        if (key !== "userImage") {
+          userData.append(key, value);
+        }
+      });
+
+      if (files[0]) {
+        userData.append("userImage", files[0]);
+      }
+
+      await registerUser(userData);
 
       await showSuccessAlert({
         title: "Usuario creado correctamente",

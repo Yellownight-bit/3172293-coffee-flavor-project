@@ -2,7 +2,11 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/shared";
 import { useNavigate, useParams } from "react-router-dom";
-import { getAllOrders } from "../services/orderServices.js";
+import {
+    getAllOrders,
+    updateOrderStatus,
+} from "../services/orderServices.js";
+import { checkUserPermission } from "@/features/access/services/permissionService";
 
 const formatPrice = (value) => {
     return new Intl.NumberFormat("es-CO", {
@@ -18,6 +22,9 @@ export default function ReadOrder() {
 
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [canUpdateOrder, setCanUpdateOrder] = useState(false);
+    const [newStatus, setNewStatus] = useState("");
+    const [updatingStatus, setUpdatingStatus] = useState(false);
 
     useEffect(() => {
         const loadOrder = async () => {
@@ -61,6 +68,8 @@ export default function ReadOrder() {
                             ? new Date(orderData.created_at).toLocaleString("es-CO")
                             : "Sin definir",
                     });
+
+                    setNewStatus(orderData.status);
                 } else {
                     setOrder(null);
                 }
@@ -72,8 +81,41 @@ export default function ReadOrder() {
             }
         };
 
+        const loadPermissions = async () => {
+            try {
+                const canUpdate = await checkUserPermission("update_order");
+                setCanUpdateOrder(canUpdate);
+            } catch (error) {
+                console.error("Error al verificar permisos:", error);
+                setCanUpdateOrder(false);
+            }
+        };
+
         loadOrder();
+        loadPermissions();
     }, [id]);
+
+    const handleUpdateStatus = async () => {
+        if (newStatus === order.status) {
+            return;
+        }
+
+        try {
+            setUpdatingStatus(true);
+
+            await updateOrderStatus(order.id, newStatus);
+
+            setOrder((prev) => ({
+                ...prev,
+                status: newStatus,
+            }));
+        } catch (error) {
+            console.error("Error al actualizar el estado:", error);
+            setNewStatus(order.status);
+        } finally {
+            setUpdatingStatus(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -102,7 +144,7 @@ export default function ReadOrder() {
     return (
         <div className="min-h-screen flex flex-col font-sans bg-panel/80 backdrop-blur-md shadow-lg">
 
-            <div className="flex-1 p-6 flex justify-center items-center border">
+            <div className="flex-1 p-6 flex justify-center items-center">
 
                 <div className="w-full max-w-6xl rounded-3xl shadow-lg p-8 relative text-text-primary border-2 border-border">
 
@@ -163,14 +205,53 @@ export default function ReadOrder() {
                                 <span className={`font-semibold ${
                                     order.status === "Abierta"
                                         ? "text-success"
-                                        : order.status === "Cerrada"
-                                            ? "text-text-secondary"
-                                            : "text-brand-strong"
+                                        : order.status === "Pagada"
+                                            ? "text-brand-strong"
+                                            : "text-text-secondary"
                                 }`}>
                                     {order.status}
                                 </span>
 
                             </div>
+
+                            {canUpdateOrder && (
+                                <div className="border-t border-border-soft mt-8 pt-6">
+
+                                    <h3 className="font-semibold mb-3">
+                                        Cambiar estado de la orden
+                                    </h3>
+
+                                    <div className="flex flex-col sm:flex-row gap-3">
+
+                                        <select
+                                            value={newStatus}
+                                            onChange={(e) => setNewStatus(e.target.value)}
+                                            disabled={updatingStatus}
+                                            className="flex-1 h-10 rounded-xl border border-border-soft px-3 bg-panel text-text-primary focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                                        >
+                                            <option value="Abierta">
+                                                Abierta
+                                            </option>
+
+                                            <option value="Pagada">
+                                                Pagada
+                                            </option>
+                                        </select>
+
+                                        <Button
+                                            size="sm"
+                                            variant="primary"
+                                            type="button"
+                                            onClick={handleUpdateStatus}
+                                            disabled={updatingStatus || newStatus === order.status}
+                                        >
+                                            {updatingStatus ? "Guardando..." : "Guardar estado"}
+                                        </Button>
+
+                                    </div>
+
+                                </div>
+                            )}
 
                             <div className="border-t border-border-soft mt-8 pt-6">
 
@@ -279,13 +360,20 @@ export default function ReadOrder() {
 
                     <div className="flex justify-center mt-8">
 
-                        <Button
-                            size="sm"
-                            variant="primary"
-                            onClick={() => navigate(`/UpdateOrder/${order.id}`)}
-                        >
-                            Editar orden
-                        </Button>
+                        <div className={!canUpdateOrder ? "relative cursor-not-allowed" : ""}>
+                            <Button
+                                size="sm"
+                                variant="primary"
+                                onClick={() => navigate(`/UpdateOrder/${order.id}`)}
+                                disabled={!canUpdateOrder}
+                            >
+                                Editar orden
+                            </Button>
+
+                            {!canUpdateOrder && (
+                                <div className="absolute inset-0 cursor-not-allowed" />
+                            )}
+                        </div>
 
                     </div>
 

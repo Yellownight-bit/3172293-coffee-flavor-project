@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Select, Button } from "@/shared";
 import { getOrderTables } from "@/services/selectOrderService";
@@ -43,18 +44,18 @@ export default function CreateOrder() {
   }, []);
 
   useEffect(() => {
-  const loadProducts = async () => {
-    try {
-      const data = await getOrderProducts();
-      console.log("Productos recibidos:", data);
-      setProducts(data);
-    } catch (error) {
-      console.error("Error cargando productos:", error);
-    }
-  };
+    const loadProducts = async () => {
+      try {
+        const data = await getOrderProducts();
+        console.log("Productos recibidos:", data);
+        setProducts(data);
+      } catch (error) {
+        console.error("Error cargando productos:", error);
+      }
+    };
 
-  loadProducts();
-}, []);
+    loadProducts();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

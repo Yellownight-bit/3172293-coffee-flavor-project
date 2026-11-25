@@ -1,36 +1,57 @@
-// ./features/users/user.routes.js
-// Agregar multer para procesar FormData
 
 import { Router } from "express";
-import multer from "multer";
 import { userController } from "./user.controller.js";
 import { authenticateToken } from "../../middlewares/auth.middleware.js";
+import { requirePermission } from "../../middlewares/permission.middleware.js";
+import { uploadUsers } from "../../config/multer.js";
 
 const router = Router();
-const upload = multer({ dest: "uploads/" }); // o config más avanzada
 
-// quí se procesa multipart/form-data
+// Registro público desde el login
 router.post(
-  "/",
-  authenticateToken,
-  upload.array("userImage"),
-  userController.create,
+    "/register",
+    uploadUsers.array("userImage", 1),
+    userController.create,
 );
 
+// Crear usuario desde el sistema
+router.post(
+    "/",
+    authenticateToken,
+    requirePermission("create_user"),
+    uploadUsers.array("userImage", 1),
+    userController.create,
+);
+
+// Obtener usuarios para gestión de permisos
 router.get(
-  "/",
-  authenticateToken,
-  userController.getAll,
+    "/permissions",
+    authenticateToken,
+    userController.getUsersForPermissions,
 );
 
+// Obtener todos los usuarios
+router.get(
+    "/",
+    authenticateToken,
+    requirePermission("list_user"),
+    userController.getAll,
+);
+
+// Actualizar usuario
 router.put(
-  "/:id",
-  authenticateToken,
-  userController.update,
+    "/:id",
+    authenticateToken,
+    requirePermission("update_user"),
+    uploadUsers.array("userImage", 1),
+    userController.update,
 );
 
+// Actualizar estado del usuario
 router.patch(
     "/:id",
+    authenticateToken,
+    requirePermission("disable_user"),
     userController.updateStatus,
 );
 

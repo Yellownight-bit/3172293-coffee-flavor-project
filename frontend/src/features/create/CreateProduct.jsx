@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Input,
@@ -47,7 +48,16 @@ export default function CreateProductInventory() {
   const [CategorieTypes, setCategorieTypes] = useState([]);
 
   useEffect(() => {
-    getSupplierNames().then(setSupplierNames);
+    const loadSuppliers = async () => {
+      try {
+        const suppliers = await getSupplierNames();
+        setSupplierNames(suppliers);
+      } catch (error) {
+        console.error("Error al cargar los proveedores:", error);
+      }
+    };
+
+    loadSuppliers();
   }, []);
 
   useEffect(() => {
@@ -66,7 +76,12 @@ export default function CreateProductInventory() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = productSchema.safeParse(formData);
+    const dataToValidate = {
+      ...formData,
+      productImage: files,
+    };
+
+    const result = productSchema.safeParse(dataToValidate);
 
     if (!result.success) {
       const fieldErrors = {};
@@ -90,7 +105,7 @@ export default function CreateProductInventory() {
     try {
       const productData = {
         ...result.data,
-        productImage: files[0] || null,
+        productImage: files,
       };
 
       await createProduct(productData);
@@ -122,7 +137,8 @@ export default function CreateProductInventory() {
 
       <div className="flex-1 px-3 py-4 sm:px-6 sm:py-8 flex items-center justify-center w-full max-w-full box-border">
         <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-md min-w-0 box-border overflow-hidden">
-          <div>
+
+          <div className="mb-4">
             <Button
               variant="back"
               size="backProduct"
@@ -147,6 +163,7 @@ export default function CreateProductInventory() {
 
           <form onSubmit={handleSubmit} className="space-y-6 w-full min-w-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-start w-full min-w-0">
+
               <div className="space-y-4 w-full min-w-0">
                 <Input
                   label="Nombre del platillo"

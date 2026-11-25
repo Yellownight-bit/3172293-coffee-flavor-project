@@ -2,7 +2,12 @@
 import { useEffect, useState } from "react";
 import { Button, DetailItem, StatusSwitch } from "@/shared";
 import { useNavigate, useParams } from "react-router-dom";
-import { getAllUsers } from "../services/userServices.js";
+import {
+    getAllUsers,
+    updateStatusSwitch,
+} from "../services/userServices.js";
+import { checkUserPermission } from "@/features/access/services/permissionService";
+import { API_URL } from "@/features/config";
 
 export default function ReadUser() {
 
@@ -11,6 +16,18 @@ export default function ReadUser() {
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [canDisableUser, setCanDisableUser] = useState(false);
+    const [canUpdateUser, setCanUpdateUser] = useState(false);
+
+    const getImageUrl = (image) => {
+        if (!image) return null;
+
+        if (image.startsWith("http")) return image;
+
+        const serverUrl = API_URL.replace(/\/api\/?$/, "");
+
+        return `${serverUrl}${image.startsWith("/") ? image : `/${image}`}`;
+    };
 
     useEffect(() => {
 
@@ -18,9 +35,23 @@ export default function ReadUser() {
             try {
                 setLoading(true);
 
+                try {
+                    const [canDisable, canUpdate] = await Promise.all([
+                        checkUserPermission("disable_user"),
+                        checkUserPermission("update_user"),
+                    ]);
+
+                    setCanDisableUser(canDisable);
+                    setCanUpdateUser(canUpdate);
+
+                } catch (error) {
+                    console.error("Error al verificar los permisos:", error);
+                    setCanDisableUser(false);
+                    setCanUpdateUser(false);
+                }
+
                 const users = await getAllUsers();
 
-                // Buscamos el usuario correspondiente al ID de la URL
                 const userData = users.find(
                     (user) => Number(user.id) === Number(id)
                 );
@@ -61,6 +92,20 @@ export default function ReadUser() {
 
     }, [id]);
 
+    const handleStatusChange = async (value) => {
+        try {
+            await updateStatusSwitch(user.id, value);
+
+            setUser((currentUser) => ({
+                ...currentUser,
+                status: value,
+            }));
+
+        } catch (error) {
+            console.error("Error al cambiar el estado del usuario:", error);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen text-text-primary">
@@ -86,11 +131,9 @@ export default function ReadUser() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col font-sans bg-panel/80
-          backdrop-blur-md
-          shadow-lg">
+        <div className="min-h-screen flex flex-col font-sans bg-panel/80 backdrop-blur-md shadow-lg">
 
-            <div className="flex-1 p-6 flex justify-center items-center border">
+            <div className="flex-1 p-6 flex justify-center items-center">
 
                 <div className="w-full max-w-6xl rounded-3xl shadow-lg p-8 relative text-text-primary border-2 border-border">
 
@@ -120,9 +163,20 @@ export default function ReadUser() {
 
                             <div className="w-64 h-72 rounded-xl overflow-hidden border-4 border-panel shadow-md flex items-center justify-center bg-surface">
 
-                                <span className="text-7xl font-bold text-text-secondary uppercase">
-                                    {user.userName?.trim().slice(0, 2)}
-                                </span>
+                                {user.userImage ? (
+                                    <img
+                                        src={getImageUrl(user.userImage)}
+                                        alt={`Fotografía de ${user.userName}`}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = "none";
+                                        }}
+                                    />
+                                ) : (
+                                    <span className="text-7xl font-bold text-text-secondary uppercase">
+                                        {user.userName?.trim().slice(0, 2)}
+                                    </span>
+                                )}
 
                             </div>
 
@@ -140,20 +194,30 @@ export default function ReadUser() {
 
                                 <StatusSwitch
                                     checked={user.status}
-                                    onChange={() => {}}
+                                    onChange={handleStatusChange}
+                                    disabled={!canDisableUser}
                                 />
 
                             </div>
 
                             <div className="flex justify-center mt-8">
 
-                                <Button
-                                    size="sm"
-                                    variant="primary"
-                                    onClick={() => navigate(`/UpdateUser/${id}`)}
-                                >
-                                    Editar
-                                </Button>
+                                <div className={`relative ${!canUpdateUser ? "cursor-not-allowed" : ""}`}>
+
+                                    <Button
+                                        size="sm"
+                                        variant="primary"
+                                        onClick={() => navigate(`/UpdateUser/${id}`)}
+                                        disabled={!canUpdateUser}
+                                    >
+                                        Editar
+                                    </Button>
+
+                                    {!canUpdateUser && (
+                                        <div className="absolute inset-0 cursor-not-allowed" />
+                                    )}
+
+                                </div>
 
                             </div>
 

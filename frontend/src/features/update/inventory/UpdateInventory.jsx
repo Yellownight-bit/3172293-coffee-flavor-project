@@ -84,6 +84,8 @@ export default function UpdateInventory() {
           return;
         }
 
+        const currentImage = inventory.product_image || null;
+
         setFormData({
           productName: inventory.product_name || "",
           productId: String(inventory.product_id ?? ""),
@@ -95,10 +97,12 @@ export default function UpdateInventory() {
           productEntryDate: inventory.product_entry_date
             ? String(inventory.product_entry_date).slice(0, 10)
             : "",
-          productImage: [],
+          productImage: currentImage ? [currentImage] : [],
           isStaff: Boolean(inventory.is_staff),
           isActive: Boolean(inventory.is_active),
         });
+
+        setFiles(currentImage ? [currentImage] : []);
       } catch (error) {
         console.error("Error al cargar inventario:", error);
 
@@ -130,10 +134,18 @@ export default function UpdateInventory() {
 
     if (saving) return;
 
-    const result = inventoryUpdateSchema.safeParse({
+    const validationData = {
       ...formData,
-      productImage: files,
-    });
+      productImage: formData.productImage.filter(
+        (item) => typeof File !== "undefined" && item instanceof File
+      ),
+    };
+
+    if (validationData.productImage.length === 0) {
+      delete validationData.productImage;
+    }
+
+    const result = inventoryUpdateSchema.safeParse(validationData);
 
     if (!result.success) {
       const fieldErrors = {};
@@ -157,16 +169,8 @@ export default function UpdateInventory() {
 
     try {
       const inventoryData = {
-        productName: formData.productName,
-        productId: formData.productId,
-        productQuantity: formData.productQuantity,
-        productSupplierNames: formData.productSupplierNames,
-        productSupplierNit: formData.productSupplierNit,
-        productDescription: formData.productDescription,
-        productPrice: formData.productPrice,
-        productEntryDate: formData.productEntryDate,
-        isActive: formData.isActive,
-        isStaff: formData.isStaff,
+        ...result.data,
+        productImage: files,
       };
 
       await updateInventory(id, inventoryData);
@@ -209,14 +213,16 @@ export default function UpdateInventory() {
       <div className="flex-1 p-4 flex items-center justify-center">
         <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-3xl p-8 shadow-md relative">
 
-          <Button
-            variant="back"
-            size="back"
-            type="button"
-            onClick={() => navigate("/dashboard/inventoryList")}
-          >
-            <span>←</span> Atrás
-          </Button>
+          <div className="mb-4">
+            <Button
+              variant="back"
+              size="back"
+              type="button"
+              onClick={() => navigate("/dashboard/inventoryList")}
+            >
+              <span>←</span> Atrás
+            </Button>
+          </div>
 
           <button
             type="button"
@@ -281,7 +287,14 @@ export default function UpdateInventory() {
                 <div className="w-full flex justify-center">
                   <FileInput
                     value={files}
-                    onChange={setFiles}
+                    onChange={(newFiles) => {
+                      setFiles(newFiles);
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        productImage: newFiles,
+                      }));
+                    }}
                     multiple={false}
                     accept="image/*"
                   />

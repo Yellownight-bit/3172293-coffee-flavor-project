@@ -1,3 +1,4 @@
+
 import { orderRepository } from "./order.repository.js";
 
 export const orderService = {
@@ -12,5 +13,9 @@ export const orderService = {
 
   async updateOrder(id, data) {
     return await orderRepository.update(id, data);
+  },
+
+  async updateOrderStatus(id, status) {
+    return await orderRepository.updateStatus(id, status);
   },
 };

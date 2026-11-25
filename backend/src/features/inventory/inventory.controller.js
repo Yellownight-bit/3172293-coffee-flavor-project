@@ -3,19 +3,24 @@ import { inventoryService } from "./inventory.service.js";
 
 export const inventoryController = {
   async create(req, res) {
-    console.log("BODY RECIBIDO:", req.body);
-
     try {
-      const inventory = await inventoryService.createInventory(req.body);
+      const productImage = req.files?.[0]
+        ? `/uploads/inventory/${req.files[0].filename}`
+        : null;
 
-      res.status(201).json({
+      const inventory = await inventoryService.createInventory({
+        ...req.body,
+        productImage,
+      });
+
+      return res.status(201).json({
         message: "Producto registrado correctamente en el inventario",
         inventoryId: inventory.id,
       });
     } catch (err) {
-      console.error("ERROR BACKEND:", err);
+      console.error("ERROR AL CREAR INVENTARIO:", err);
 
-      res.status(500).json({
+      return res.status(500).json({
         error: err.message,
       });
     }
@@ -39,9 +44,16 @@ export const inventoryController = {
     try {
       const { id } = req.params;
 
+      const productImage = req.files?.[0]
+        ? `/uploads/inventory/${req.files[0].filename}`
+        : null;
+
       const updatedInventory = await inventoryService.updateInventory(
         id,
-        req.body
+        {
+          ...req.body,
+          productImage,
+        }
       );
 
       if (!updatedInventory) {

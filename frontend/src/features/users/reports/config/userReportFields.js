@@ -1,32 +1,42 @@
 export const userReportFields = [
   {
-    key: "userName",
+    key: "id",
+    label: "Id",
+    default: true,
+  },
+  {
+    key: "user_name",
     label: "Nombre",
-    default: true
+    default: true,
   },
   {
-    key: "userEmail",
+    key: "rol",
+    label: "Rol",
+    default: true,
+  },
+  {
+    key: "user_email",
     label: "Email",
-    default: true
+    default: true,
   },
   {
-    key: "userDocumentTypes",
-    label: "Tipo de documento",
-    default: true
-  },
-  {
-    key: "userDocumentNumber",
-    label: "Documento",
-    default: true
-  },
-  {
-    key: "userPhone",
+    key: "user_phone",
     label: "Teléfono",
-    default: false
+    default: true,
   },
   {
-    key: "isActive",
-    label: "Activo",
-    default: false
-  }
+    key: "user_document_types",
+    label: "Tipo de documento",
+    default: true,
+  },
+  {
+    key: "user_document_number",
+    label: "Número de documento",
+    default: true,
+  },
+  {
+    key: "is_active",
+    label: "Estado",
+    default: true,
+  },
 ];

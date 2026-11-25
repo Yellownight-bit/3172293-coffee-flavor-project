@@ -21,45 +21,86 @@ export const userRepository = {
             rol,
         } = userData;
 
-        const query = `
-            INSERT INTO users (
-                user_name,
-                user_email,
-                confirm_email,
-                user_phone,
-                user_address,
-                user_document_types,
-                user_document_number,
-                user_password,
-                user_image,
-                is_staff,
-                is_active,
-                is_superuser,
-                rol
-            )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-            RETURNING id;
-        `;
+        const client = await pool.connect();
 
-        const values = [
-            userName,
-            userEmail,
-            confirmEmail,
-            userPhone,
-            userAddress,
-            userDocumentTypes,
-            userDocumentNumber,
-            userPassword,
-            userImage,
-            isStaff,
-            isActive,
-            isSuperUser,
-            rol,
-        ];
+        try {
+            await client.query("BEGIN");
 
-        const result = await pool.query(query, values);
+            const query = `
+                INSERT INTO users (
+                    user_name,
+                    user_email,
+                    confirm_email,
+                    user_phone,
+                    user_address,
+                    user_document_types,
+                    user_document_number,
+                    user_password,
+                    user_image,
+                    is_staff,
+                    is_active,
+                    is_superuser,
+                    rol
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                RETURNING id;
+            `;
 
-        return result.rows[0];
+            const values = [
+                userName,
+                userEmail,
+                confirmEmail,
+                userPhone,
+                userAddress,
+                userDocumentTypes,
+                userDocumentNumber,
+                userPassword,
+                userImage,
+                isStaff,
+                isActive,
+                isSuperUser,
+                rol,
+            ];
+
+            const result = await client.query(query, values);
+            const userId = result.rows[0].id;
+
+            if (rol?.toLowerCase() === "administrador") {
+                const groupResult = await client.query(
+                    `
+                        SELECT group_id
+                        FROM groups
+                        WHERE LOWER(TRIM(group_name)) = 'administrador'
+                        LIMIT 1;
+                    `
+                );
+
+                if (groupResult.rows.length === 0) {
+                    throw new Error("No existe el grupo Administrador");
+                }
+
+                await client.query(
+                    `
+                        INSERT INTO user_groups (
+                            user_id,
+                            group_id
+                        )
+                        VALUES ($1, $2);
+                    `,
+                    [userId, groupResult.rows[0].group_id]
+                );
+            }
+
+            await client.query("COMMIT");
+
+            return { id: userId };
+
+        } catch (error) {
+            await client.query("ROLLBACK");
+            throw error;
+        } finally {
+            client.release();
+        }
     },
 
     async findAll() {
@@ -86,6 +127,7 @@ export const userRepository = {
             userDocumentTypes,
             userDocumentNumber,
             userPassword,
+            userImage,
             isStaff,
             isActive,
             isSuperUser,
@@ -103,11 +145,12 @@ export const userRepository = {
                 user_document_types = $6,
                 user_document_number = $7,
                 user_password = COALESCE($8, user_password),
-                is_staff = $9,
-                is_active = $10,
-                is_superuser = $11,
-                rol = $12
-            WHERE id = $13
+                user_image = COALESCE($9, user_image),
+                is_staff = $10,
+                is_active = $11,
+                is_superuser = $12,
+                rol = $13
+            WHERE id = $14
             RETURNING
                 id,
                 user_name,
@@ -117,6 +160,7 @@ export const userRepository = {
                 user_address,
                 user_document_types,
                 user_document_number,
+                user_image,
                 is_staff,
                 is_active,
                 is_superuser,
@@ -132,6 +176,7 @@ export const userRepository = {
             userDocumentTypes,
             userDocumentNumber,
             userPassword,
+            userImage || null,
             isStaff,
             isActive,
             isSuperUser,
@@ -158,5 +203,22 @@ export const userRepository = {
         const result = await pool.query(query, values);
 
         return result.rows[0];
+    },
+
+    async getUsersForPermissions() {
+
+        const query = `
+            SELECT
+                id,
+                user_name,
+                user_email,
+                is_active
+            FROM users
+            ORDER BY user_name ASC;
+        `;
+
+        const result = await pool.query(query);
+
+        return result.rows;
     },
 };

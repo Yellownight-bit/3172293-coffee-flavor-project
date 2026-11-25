@@ -1,19 +1,20 @@
 
 import { useEffect, useState } from "react";
-import { Button, DetailItem, StatusSwitch } from "@/shared";
+import { Button, DetailItem } from "@/shared";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAllInventory } from "../services/inventoryServices.js";
+import { checkUserPermission } from "@/features/access/services/permissionService";
+import { API_URL } from "@/features/config";
 
 export default function ReadInventory() {
-
     const navigate = useNavigate();
     const { id } = useParams();
 
     const [inventory, setInventory] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [canUpdateInventory, setCanUpdateInventory] = useState(false);
 
     useEffect(() => {
-
         const loadInventory = async () => {
             try {
                 setLoading(true);
@@ -41,7 +42,6 @@ export default function ReadInventory() {
                 } else {
                     setInventory(null);
                 }
-
             } catch (error) {
                 console.error("Error al cargar el inventario:", error);
                 setInventory(null);
@@ -50,8 +50,18 @@ export default function ReadInventory() {
             }
         };
 
-        loadInventory();
+        const loadPermissions = async () => {
+            try {
+                const canUpdate = await checkUserPermission("update_inventory");
+                setCanUpdateInventory(canUpdate);
+            } catch (error) {
+                console.error("Error al verificar permisos:", error);
+                setCanUpdateInventory(false);
+            }
+        };
 
+        loadInventory();
+        loadPermissions();
     }, [id]);
 
     const formatPrice = (price) => {
@@ -103,11 +113,20 @@ export default function ReadInventory() {
         );
     }
 
+    const imageBaseUrl = API_URL.replace(/\/api\/?$/, "");
+
+    const productImage = inventory.productImage
+        ? inventory.productImage.startsWith("http") ||
+          inventory.productImage.startsWith("data:image")
+            ? inventory.productImage
+            : `${imageBaseUrl}${inventory.productImage.startsWith("/") ? "" : "/"}${inventory.productImage}`
+        : null;
+
+    const status = inventory.status ? "Activo" : "Inactivo";
+
     return (
         <div className="min-h-screen flex flex-col font-sans bg-panel/80 backdrop-blur-md shadow-lg">
-
-            <div className="flex-1 p-6 flex justify-center items-center border">
-
+            <div className="flex-1 p-6 flex justify-center items-center">
                 <div className="w-full max-w-6xl rounded-3xl shadow-lg p-8 relative text-text-primary border-2 border-border">
 
                     <Button
@@ -119,7 +138,6 @@ export default function ReadInventory() {
                     </Button>
 
                     <div className="flex items-center gap-3 mb-8 mt-8 border-b border-border-strong pb-3">
-
                         <div className="text-4xl">
                             📦
                         </div>
@@ -127,7 +145,6 @@ export default function ReadInventory() {
                         <h2 className="text-2xl font-bold uppercase text-text-primary">
                             Información del inventario
                         </h2>
-
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-10">
@@ -135,13 +152,9 @@ export default function ReadInventory() {
                         <div className="flex flex-col items-center">
 
                             <div className="w-64 h-72 rounded-xl overflow-hidden border-4 border-panel shadow-md flex items-center justify-center bg-surface">
-
-                                {inventory.productImage &&
-                                typeof inventory.productImage === "string" &&
-                                (inventory.productImage.startsWith("http") ||
-                                inventory.productImage.startsWith("data:image")) ? (
+                                {productImage ? (
                                     <img
-                                        src={inventory.productImage}
+                                        src={productImage}
                                         alt={inventory.productName}
                                         className="w-full h-full object-cover"
                                     />
@@ -150,7 +163,6 @@ export default function ReadInventory() {
                                         {inventory.productName?.trim().slice(0, 2) || "IN"}
                                     </span>
                                 )}
-
                             </div>
 
                             <h3 className="mt-5 text-xl font-bold text-text-primary">
@@ -160,28 +172,36 @@ export default function ReadInventory() {
                             <div className="w-full border-b border-border-strong my-5" />
 
                             <div className="flex items-center gap-3">
-
                                 <span className="font-semibold text-text-primary">
                                     Estado
                                 </span>
 
-                                <StatusSwitch
-                                    checked={inventory.status}
-                                    onChange={() => {}}
-                                />
-
+                                <span
+                                    className={`${
+                                        inventory.status
+                                            ? "bg-success"
+                                            : "bg-error"
+                                    } text-on-brand px-4 py-1 rounded-full text-sm font-semibold`}
+                                >
+                                    {status}
+                                </span>
                             </div>
 
                             <div className="flex justify-center mt-8">
+                                <div className={!canUpdateInventory ? "relative cursor-not-allowed" : ""}>
+                                    <Button
+                                        size="sm"
+                                        variant="primary"
+                                        onClick={() => navigate(`/UpdateInventory/${id}`)}
+                                        disabled={!canUpdateInventory}
+                                    >
+                                        Editar
+                                    </Button>
 
-                                <Button
-                                    size="sm"
-                                    variant="primary"
-                                    onClick={() => navigate(`/UpdateInventory/${id}`)}
-                                >
-                                    Editar
-                                </Button>
-
+                                    {!canUpdateInventory && (
+                                        <div className="absolute inset-0 cursor-not-allowed" />
+                                    )}
+                                </div>
                             </div>
 
                         </div>
@@ -194,36 +214,12 @@ export default function ReadInventory() {
                                     Información del producto
                                 </h3>
 
-                                <DetailItem
-                                    label="ID del registro"
-                                    value={inventory.id}
-                                />
-
-                                <DetailItem
-                                    label="ID del producto asociado"
-                                    value={inventory.productId}
-                                />
-
-                                <DetailItem
-                                    label="Nombre del producto"
-                                    value={inventory.productName}
-                                />
-
-                                <DetailItem
-                                    label="Cantidad en inventario"
-                                    value={inventory.productQuantity}
-                                />
-
-                                <DetailItem
-                                    label="Precio"
-                                    value={formatPrice(inventory.productPrice)}
-                                />
-
-                                <DetailItem
-                                    label="Fecha de entrada"
-                                    value={formatDate(inventory.entryDate)}
-                                />
-
+                                <DetailItem label="ID del registro" value={inventory.id} />
+                                <DetailItem label="ID del producto asociado" value={inventory.productId} />
+                                <DetailItem label="Nombre del producto" value={inventory.productName} />
+                                <DetailItem label="Cantidad en inventario" value={inventory.productQuantity} />
+                                <DetailItem label="Precio" value={formatPrice(inventory.productPrice)} />
+                                <DetailItem label="Fecha de entrada" value={formatDate(inventory.entryDate)} />
                                 <DetailItem
                                     label="Descripción"
                                     value={inventory.productDescription || "Sin descripción"}
@@ -238,7 +234,7 @@ export default function ReadInventory() {
                                 </h3>
 
                                 <DetailItem
-                                    label="Nombre del proveedor"
+                                    label="Id proveedor"
                                     value={inventory.supplierName || "No registrado"}
                                 />
 
@@ -250,13 +246,9 @@ export default function ReadInventory() {
                             </div>
 
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
     );
 }

@@ -1,0 +1,3 @@
+ALTER TABLE users
+ADD COLUMN accepted_data_policy BOOLEAN NOT NULL DEFAULT FALSE,
+ADD COLUMN data_policy_accepted_at TIMESTAMP NULL;

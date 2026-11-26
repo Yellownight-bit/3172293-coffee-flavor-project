@@ -48,6 +48,8 @@ const userFields = {
   isActive: z.boolean(),
   isSuperUser: z.boolean(),
 
+  acceptedDataPolicy: z.boolean(),
+
   rol: z.enum(
     ["administrador", "cajero", "mesero", "cocinero", "invitado"],
     {
@@ -65,6 +67,13 @@ export const userSchema = z
     {
       message: "Los correos electrónicos no coinciden",
       path: ["confirmEmail"],
+    }
+  )
+  .refine(
+    (data) => data.acceptedDataPolicy === true,
+    {
+      message: "Debe aceptar la política de tratamiento de datos personales",
+      path: ["acceptedDataPolicy"],
     }
   );
 

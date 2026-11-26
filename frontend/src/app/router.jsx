@@ -22,6 +22,7 @@ import VerifyCode from "@/features/password/pages/VerifyCode";
 import ResetPassword from "@/features/password/pages/ResetPassword";
 
 import ReadUser from "../features/users/pages/ReadUser";
+import MyProfile from "../features/users/pages/MyProfile";
 import ReadSupplier from "../features/suppliers/pages/ReadSupplier";
 import ReadOrder from "../features/order/pages/ReadOrder";
 import ReadProduct from "../features/products/pages/ReadProduct";
@@ -102,6 +103,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute permission="list_user">
             <UserListPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "myProfile",
+        element: (
+          <ProtectedRoute>
+            <MyProfile />
           </ProtectedRoute>
         ),
       },

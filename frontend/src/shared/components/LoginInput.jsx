@@ -1,5 +1,6 @@
 
-import { Mail, Lock } from "lucide-react";
+import { useState } from "react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginInput({
   label,
@@ -11,7 +12,10 @@ export default function LoginInput({
   error,
   disabled = false,
 }) {
-  const Icon = type === "password" ? Lock : Mail;
+  const [showPassword, setShowPassword] = useState(false);
+
+  const isPassword = type === "password";
+  const Icon = isPassword ? Lock : Mail;
 
   return (
     <div className="w-full">
@@ -43,7 +47,7 @@ export default function LoginInput({
         <input
           id={name}
           name={name}
-          type={type}
+          type={isPassword && showPassword ? "text" : type}
           value={value}
           placeholder={placeholder}
           onChange={onChange}
@@ -59,6 +63,23 @@ export default function LoginInput({
             disabled:cursor-not-allowed
           "
         />
+
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            disabled={disabled}
+            className="flex items-center justify-center px-4 h-full text-[#715c50] hover:text-[#a45328] transition-colors disabled:cursor-not-allowed"
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+          >
+            {showPassword ? (
+              <EyeOff size={21} strokeWidth={1.7} />
+            ) : (
+              <Eye size={21} strokeWidth={1.7} />
+            )}
+          </button>
+        )}
       </div>
 
       {error && (

@@ -7,7 +7,9 @@ import { getOrderProducts } from "@/services/selectOrderProductService";
 import {
   getAllOrders,
   updateOrder,
-} from "@/features/order/services/orderServices.js";;
+} from "@/features/order/services/orderServices.js";
+import OrderProductSelector from "@/features/order/components/OrderProductSelector";
+import TableSelector from "@/features/order/components/TableSelector";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
@@ -26,6 +28,7 @@ export default function UpdateOrder() {
   const [tables, setTables] = useState([]);
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   const [formData, setFormData] = useState({
     tableNumber: "",
@@ -38,16 +41,22 @@ export default function UpdateOrder() {
   useEffect(() => {
     const loadOptions = async () => {
       try {
-        const [tableOptions, userOptions, productOptions] =
-          await Promise.all([
-            getOrderTables(),
-            getOrderUsers(),
-            getOrderProducts(),
-          ]);
+        const [
+          tableOptions,
+          userOptions,
+          productOptions,
+          orderOptions,
+        ] = await Promise.all([
+          getOrderTables(),
+          getOrderUsers(),
+          getOrderProducts(),
+          getAllOrders(),
+        ]);
 
         setTables(tableOptions);
         setUsers(userOptions);
         setProducts(productOptions);
+        setOrders(orderOptions);
       } catch (error) {
         console.error("Error al cargar opciones:", error);
       }
@@ -121,39 +130,75 @@ export default function UpdateOrder() {
     }));
   };
 
-  const handleDishChange = (index, field, value) => {
-    setFormData((prev) => {
-      const updatedDishes = [...prev.dishes];
-
-      updatedDishes[index] = {
-        ...updatedDishes[index],
-        [field]: value,
-      };
-
-      return {
-        ...prev,
-        dishes: updatedDishes,
-      };
-    });
-  };
-
-  const addDish = () => {
+  const handleTableChange = (value) => {
     setFormData((prev) => ({
       ...prev,
-      dishes: [
-        ...prev.dishes,
-        {
-          productId: "",
-          quantity: 1,
-        },
-      ],
+      tableNumber: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      tableNumber: "",
     }));
   };
 
-  const removeDish = (index) => {
+  const addProduct = (productId) => {
+    setFormData((prev) => {
+      const existingDish = prev.dishes.find(
+        (dish) => String(dish.productId) === String(productId)
+      );
+
+      if (existingDish) {
+        return {
+          ...prev,
+          dishes: prev.dishes.map((dish) =>
+            String(dish.productId) === String(productId)
+              ? {
+                  ...dish,
+                  quantity: Number(dish.quantity) + 1,
+                }
+              : dish
+          ),
+        };
+      }
+
+      return {
+        ...prev,
+        dishes: [
+          ...prev.dishes,
+          {
+            productId: String(productId),
+            quantity: 1,
+          },
+        ],
+      };
+    });
+
+    setErrors((prev) => ({
+      ...prev,
+      dishes: "",
+    }));
+  };
+
+  const changeProductQuantity = (productId, quantity) => {
+    if (quantity < 1) return;
+
     setFormData((prev) => ({
       ...prev,
-      dishes: prev.dishes.filter((_, i) => i !== index),
+      dishes: prev.dishes.map((dish) =>
+        String(dish.productId) === String(productId)
+          ? { ...dish, quantity }
+          : dish
+      ),
+    }));
+  };
+
+  const removeProduct = (productId) => {
+    setFormData((prev) => ({
+      ...prev,
+      dishes: prev.dishes.filter(
+        (dish) => String(dish.productId) !== String(productId)
+      ),
     }));
   };
 
@@ -201,8 +246,8 @@ export default function UpdateOrder() {
 
     try {
       const orderData = {
-        tableNumber: formData.tableNumber,
-        waiter: formData.waiter,
+        tableNumber: Number(formData.tableNumber),
+        waiter: Number(formData.waiter),
         dishes: formData.dishes.map((dish) => ({
           productId: Number(dish.productId),
           quantity: Number(dish.quantity),
@@ -250,7 +295,6 @@ export default function UpdateOrder() {
 
       <div className="flex-1 p-4 flex items-center justify-center">
         <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-3xl p-8 shadow-md relative">
-
           <Button
             variant="back"
             size="back"
@@ -274,16 +318,15 @@ export default function UpdateOrder() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Select
-                label="Número de mesa"
-                name="tableNumber"
+            <div className="space-y-6">
+              <TableSelector
+                tables={tables}
+                orders={orders}
+                users={users}
                 value={formData.tableNumber}
-                htmlFor="tableNumber"
-                onChange={handleChange}
-                options={tables}
+                onChange={handleTableChange}
                 error={errors.tableNumber}
+                currentOrderId={id}
               />
 
               <Select
@@ -298,80 +341,13 @@ export default function UpdateOrder() {
             </div>
 
             <div className="bg-brand-subtle p-5 rounded-2xl border border-brand-soft">
-
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="font-bold text-text-secondary uppercase text-sm">
-                  Platillos de la orden
-                </h3>
-
-                <button
-                  type="button"
-                  onClick={addDish}
-                  className="text-sm font-semibold text-brand-strong hover:underline"
-                >
-                  + Agregar platillo
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {formData.dishes.map((dish, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_100px_40px] gap-4 items-end"
-                  >
-                    <Select
-                      label={`Platillo ${index + 1}`}
-                      name={`product-${index}`}
-                      value={dish.productId}
-                      htmlFor={`product-${index}`}
-                      onChange={(e) =>
-                        handleDishChange(
-                          index,
-                          "productId",
-                          e.target.value
-                        )
-                      }
-                      options={products}
-                    />
-
-                    <div className="w-[100px] max-w-full">
-                      <label
-                        htmlFor={`quantity-${index}`}
-                        className="block text-sm font-semibold text-text-secondary mb-2"
-                      >
-                        Cantidad
-                      </label>
-
-                      <input
-                        id={`quantity-${index}`}
-                        name={`quantity-${index}`}
-                        type="number"
-                        min="1"
-                        value={dish.quantity}
-                        onChange={(e) =>
-                          handleDishChange(
-                            index,
-                            "quantity",
-                            Number(e.target.value)
-                          )
-                        }
-                        className="w-full h-10 rounded-xl border border-border-soft px-3 focus:outline-none focus:ring-2 focus:ring-focus-ring"
-                      />
-                    </div>
-
-                    {formData.dishes.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeDish(index)}
-                        className="h-10 w-10 rounded-full bg-error-soft text-error hover:bg-error-soft-hover transition font-bold"
-                        title="Eliminar platillo"
-                      >
-                        🗑️
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <OrderProductSelector
+                products={products}
+                dishes={formData.dishes}
+                onAddProduct={addProduct}
+                onQuantityChange={changeProductQuantity}
+                onRemoveProduct={removeProduct}
+              />
 
               {errors.dishes && (
                 <p className="text-error text-sm mt-3">
@@ -413,7 +389,6 @@ export default function UpdateOrder() {
                 Actualizar orden
               </Button>
             </div>
-
           </form>
         </div>
       </div>

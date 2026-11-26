@@ -9,7 +9,7 @@ import { transporter } from "../../config/mailer.js";
 export const authService = {
 
     // Iniciar sesión
-    async login({ email, password }) {
+    async login({ email, password, acceptedDataPolicy }) {
         const user = await authRepository.findByEmail(email);
 
         if (!user) {
@@ -24,6 +24,20 @@ export const authService = {
 
         if (!user.is_active) {
             throw new Error("Usuario inactivo");
+        }
+
+        // Verificar aceptación de la política
+        if (!user.accepted_data_policy) {
+            if (acceptedDataPolicy !== true) {
+                throw new Error(
+                    "Debes aceptar la política de tratamiento de datos personales."
+                );
+            }
+
+            const acceptance = await authRepository.acceptDataPolicy(user.id);
+
+            user.accepted_data_policy = acceptance.accepted_data_policy;
+            user.data_policy_accepted_at = acceptance.data_policy_accepted_at;
         }
 
         const token = jwt.sign(
@@ -42,6 +56,8 @@ export const authService = {
                 id: user.id,
                 email: user.user_email,
                 rol: user.rol,
+                acceptedDataPolicy: user.accepted_data_policy,
+                dataPolicyAcceptedAt: user.data_policy_accepted_at,
             },
         };
     },

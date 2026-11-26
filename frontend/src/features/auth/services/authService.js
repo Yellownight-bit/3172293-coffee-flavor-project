@@ -13,6 +13,7 @@ export async function login(userData) {
         body: JSON.stringify({
             email: userData.email || userData.userEmail,
             password: userData.password || userData.userPassword,
+            acceptedDataPolicy: userData.acceptedDataPolicy === true,
         }),
     });
 

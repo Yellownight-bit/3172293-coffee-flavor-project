@@ -11,6 +11,9 @@ import {
   showUserErrorAlert,
 } from "@/shared/services/alertService";
 
+const DATA_POLICY_URL =
+  "https://normograma.sena.edu.co/compilacion/docs/acuerdo_sena_0013_2019.htm";
+
 export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
 
@@ -28,6 +31,7 @@ export default function UserRegisterForm() {
     isActive: true,
     isSuperUser: false,
     rol: "invitado",
+    acceptedDataPolicy: false,
   });
 
   const [files, setFiles] = useState([]);
@@ -69,6 +73,14 @@ export default function UserRegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.acceptedDataPolicy) {
+      await showUserErrorAlert({
+        title: "Aceptación requerida",
+        text: "Debes aceptar la política de tratamiento de datos personales para registrarte.",
+      });
+      return;
+    }
 
     const result = userSchema.safeParse({
       ...formData,
@@ -294,6 +306,27 @@ export default function UserRegisterForm() {
                   onChange={handleChange}
                   error={errors.userPassword}
                 />
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-brand-strong/20">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <Checkbox
+                  id="acceptedDataPolicy"
+                  name="acceptedDataPolicy"
+                  label="He leído y acepto la política de tratamiento de datos personales del SENA."
+                  checked={formData.acceptedDataPolicy}
+                  onChange={handleChange}
+                />
+
+                <a
+                  href={DATA_POLICY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-brand-strong underline hover:opacity-80 sm:ml-2"
+                >
+                  Consultar política
+                </a>
               </div>
             </div>
 

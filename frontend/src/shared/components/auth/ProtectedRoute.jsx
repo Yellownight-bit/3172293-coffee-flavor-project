@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { checkUserPermission } from "@/features/access/services/permissionService";
 
-const INACTIVITY_TIME = 15 * 60 * 1000;
+const INACTIVITY_TIME = 10 * 60 * 1000;
 
 const getUserRole = (token) => {
   try {
@@ -33,6 +33,7 @@ export default function ProtectedRoute({ children, permission, role }) {
     let inactivityTimer;
 
     const logout = () => {
+      sessionStorage.setItem("sessionExpired", "true");
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("rol");
       setIsAuthenticated(false);

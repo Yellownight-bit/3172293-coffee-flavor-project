@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import {
   Menu,
   House,
@@ -13,7 +14,10 @@ import {
   ClipboardList,
   ShieldCheck,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
+
 import {
   IconButton,
   Dropdown,
@@ -22,25 +26,56 @@ import {
   DropdownItem,
   SearchField,
 } from "@/shared";
+
 import logo from "@/assets/images/1-logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { showOpsAlert } from "@/shared/services/alertservice";
-
-import { Sun, Moon } from "lucide-react";
 import useTheme from "@/shared/context/useTheme";
-
-import { useNavigate } from "react-router-dom";
 import { logout } from "@/features/auth/services/logoutService";
+import { getMyProfile } from "@/features/users/services/userServices.js";
+import { API_URL } from "@/features/config";
 
 export default function Navbar() {
   const [search, setSearch] = useState("");
-  const { theme, toggleTheme } = useTheme();
+  const [profile, setProfile] = useState(null);
+  const [imageError, setImageError] = useState(false);
 
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const userData = await getMyProfile();
+        setProfile(userData);
+      } catch (error) {
+        console.error("Error al cargar el perfil:", error);
+      }
+    };
+
+    loadProfile();
+  }, []);
+
+  const getImageUrl = (image) => {
+    if (!image) return null;
+
+    if (image.startsWith("http")) return image;
+
+    const serverUrl = API_URL.replace(/\/api\/?$/, "");
+
+    return `${serverUrl}${image.startsWith("/") ? image : `/${image}`}`;
+  };
+
+  const profileImage = getImageUrl(profile?.user_image);
+
+  const initials = profile?.user_name
+    ?.trim()
+    .slice(0, 2)
+    .toUpperCase();
+
   const handleLogout = () => {
-  logout();
-  navigate("/auth", { replace: true });
+    logout();
+    navigate("/auth", { replace: true });
   };
 
   const handleSearch = (value) => {
@@ -134,7 +169,7 @@ export default function Navbar() {
 
           </ul>
 
-          {/* SearchField */}
+          {/* Buscador */}
           <div>
             <SearchField
               value={search}
@@ -148,7 +183,7 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Dropdown */}
+          {/* Menú hamburguesa */}
           <Dropdown className="z-50">
             <DropdownTrigger>
               <IconButton ariaLabel="Menú de usuario">
@@ -156,7 +191,6 @@ export default function Navbar() {
               </IconButton>
             </DropdownTrigger>
 
-            {/* Contenido */}
             <DropdownContent className="border-2 border-brand">
 
               <DropdownItem>
@@ -210,13 +244,16 @@ export default function Navbar() {
               </DropdownItem>
 
               <DropdownItem>
-                    <Link to="/dashboard/access" className="flex items-center gap-2 w-full">
-                    <ShieldCheck size={17} />
-                      Gestión permisos
-                    </Link>
-               </DropdownItem>
+                <Link
+                  to="/dashboard/access"
+                  className="flex items-center gap-2 w-full"
+                >
+                  <ShieldCheck size={17} />
+                  Gestión permisos
+                </Link>
+              </DropdownItem>
 
-              {/* El DropdownItem ya es un boton: recibe el onClick directo para no anidar un boton dentro de otro */}
+              {/* Cambiar tema */}
               <DropdownItem
                 onClick={toggleTheme}
                 className="flex items-center gap-2"
@@ -234,6 +271,7 @@ export default function Navbar() {
                 )}
               </DropdownItem>
 
+              {/* Cerrar sesión */}
               <DropdownItem>
                 <button
                   type="button"
@@ -247,6 +285,36 @@ export default function Navbar() {
 
             </DropdownContent>
           </Dropdown>
+
+          {/* Mi perfil */}
+          <Link
+            to="/dashboard/myProfile"
+            aria-label="Mi perfil"
+            title="Mi perfil"
+            className="
+              w-12 h-12
+              shrink-0
+              rounded-full
+              border border-gray-400
+              overflow-hidden
+              flex items-center justify-center
+              hover:border-brand
+              transition-colors duration-200
+            "
+          >
+            {profileImage && !imageError ? (
+              <img
+                src={profileImage}
+                alt="Foto de perfil"
+                className="w-full h-full object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <span className="text-sm font-bold text-text-secondary uppercase">
+                {initials || "👤"}
+              </span>
+            )}
+          </Link>
 
         </div>
       </div>

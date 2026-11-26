@@ -14,7 +14,7 @@ export default function Checkbox({
             htmlFor={id}
             className={`
                     flex items-center gap-2
-                    text-sm
+                    text-xs
                     cursor-printer
                     ${disabled ? "opacity-50 cursor-not-allowed" : ""}
                     ${className}

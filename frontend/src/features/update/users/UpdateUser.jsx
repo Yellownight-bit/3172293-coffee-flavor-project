@@ -15,6 +15,9 @@ import {
   showUserErrorAlert,
 } from "@/shared/services/alertservice";
 
+const DATA_POLICY_URL =
+  "https://normograma.sena.edu.co/compilacion/docs/acuerdo_sena_0013_2019.htm";
+
 export default function UpdateUser() {
   const [errors, setErrors] = useState({});
 
@@ -32,6 +35,7 @@ export default function UpdateUser() {
     isActive: true,
     isSuperUser: false,
     rol: "invitado",
+    acceptedDataPolicy: false,
   });
 
   const [files, setFiles] = useState([]);
@@ -88,6 +92,7 @@ export default function UpdateUser() {
           isActive: userData.is_active ?? true,
           isSuperUser: userData.is_superuser ?? false,
           rol: userData.rol || "invitado",
+          acceptedDataPolicy: userData.accepted_data_policy === true,
         });
 
         setFiles(currentImage ? [currentImage] : []);
@@ -160,20 +165,26 @@ export default function UpdateUser() {
 
     try {
       const userData = {
-        userName: formData.userName,
-        userEmail: formData.userEmail,
-        confirmEmail: formData.confirmEmail,
-        userPhone: formData.userPhone,
-        userAddress: formData.userAddress,
-        userDocumentTypes: formData.userDocumentTypes,
-        userDocumentNumber: formData.userDocumentNumber,
-        userPassword: formData.userPassword.trim(),
+        userName: result.data.userName,
+        userEmail: result.data.userEmail,
+        confirmEmail: result.data.confirmEmail,
+        userPhone: result.data.userPhone,
+        userAddress: result.data.userAddress,
+        userDocumentTypes: result.data.userDocumentTypes,
+        userDocumentNumber: result.data.userDocumentNumber,
+        userPassword: result.data.userPassword.trim(),
         userImage: files,
-        isStaff: formData.isStaff,
-        isActive: formData.isActive,
-        isSuperUser: formData.isSuperUser,
-        rol: formData.rol,
+        isStaff: result.data.isStaff,
+        isActive: result.data.isActive,
+        isSuperUser: result.data.isSuperUser,
+        rol: result.data.rol,
+        acceptedDataPolicy: result.data.acceptedDataPolicy,
       };
+
+      console.log(
+        "CONSENTIMIENTO ENVIADO:",
+        userData.acceptedDataPolicy
+      );
 
       await updateUser(id, userData);
 
@@ -365,7 +376,7 @@ export default function UpdateUser() {
 
                 <div className="relative">
                   <Input
-                    label="Confirmar correo electrónico"
+                    label="Actualizar - Confirmar correo electrónico"
                     name="confirmEmail"
                     type="email"
                     value={formData.confirmEmail}
@@ -396,6 +407,28 @@ export default function UpdateUser() {
                 />
               </div>
 
+            </div>
+
+            <div className="pt-4">
+              <div className="flex flex-col gap-2">
+                <Checkbox
+                  id="acceptedDataPolicy"
+                  name="acceptedDataPolicy"
+                  label="Acepto la política de tratamiento de datos personales del SENA."
+                  checked={formData.acceptedDataPolicy}
+                  onChange={handleChange}
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    window.open(DATA_POLICY_URL, "_blank", "noopener,noreferrer")
+                  }
+                  className="text-sm text-[var(--color-primary-800)] underline text-left hover:opacity-80"
+                >
+                  Consultar política de tratamiento de datos personales
+                </button>
+              </div>
             </div>
 
             <div className="pt-6 border-brand-strong/20 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-6">

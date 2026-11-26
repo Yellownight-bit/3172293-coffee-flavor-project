@@ -89,6 +89,25 @@ export async function getAllUsers() {
     return response.json();
 }
 
+// Consultar el perfil del usuario autenticado
+export async function getMyProfile() {
+    const token = sessionStorage.getItem("token");
+
+    const response = await fetch(`${USERS_URL}/me`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Error al consultar tu perfil");
+    }
+
+    return response.json();
+}
+
 // Consultar usuarios para gestión de permisos
 export async function getUsersForPermissions() {
     const token = sessionStorage.getItem("token");

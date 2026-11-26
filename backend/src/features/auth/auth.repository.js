@@ -10,13 +10,36 @@ export const authRepository = {
                 user_email,
                 user_password AS password,
                 is_active,
-                rol
+                rol,
+                accepted_data_policy,
+                data_policy_accepted_at
             FROM users
             WHERE user_email = $1
             LIMIT 1;
         `;
 
         const result = await pool.query(query, [userEmail]);
+
+        return result.rows[0];
+    },
+
+    // Registrar aceptación de la política
+    async acceptDataPolicy(userId) {
+        const query = `
+            UPDATE users
+            SET
+                accepted_data_policy = TRUE,
+                data_policy_accepted_at = COALESCE(
+                    data_policy_accepted_at,
+                    NOW()
+                )
+            WHERE id = $1
+            RETURNING
+                accepted_data_policy,
+                data_policy_accepted_at;
+        `;
+
+        const result = await pool.query(query, [userId]);
 
         return result.rows[0];
     },
@@ -83,7 +106,7 @@ export const authRepository = {
             WHERE id = $1;
         `;
 
-        await pool.query(query, [tokenId]);
+        await pool.query(query);
     },
 
     // Actualizar la contraseña del usuario

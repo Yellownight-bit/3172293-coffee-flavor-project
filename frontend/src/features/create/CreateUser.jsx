@@ -12,6 +12,9 @@ import {
 } from "@/shared/services/alertservice";
 import { createUser } from "@/features/users/services/userServices";
 
+const DATA_POLICY_URL =
+  "https://normograma.sena.edu.co/compilacion/docs/acuerdo_sena_0013_2019.htm";
+
 export default function UserRegisterForm() {
   const [errors, setErrors] = useState({});
 
@@ -29,6 +32,7 @@ export default function UserRegisterForm() {
     isActive: true,
     isSuperUser: false,
     rol: "invitado",
+    acceptedDataPolicy: false,
   });
 
   const [files, setFiles] = useState([]);
@@ -58,6 +62,21 @@ export default function UserRegisterForm() {
     e.preventDefault();
 
     if (saving) return;
+
+    if (!formData.acceptedDataPolicy) {
+      setErrors((prev) => ({
+        ...prev,
+        acceptedDataPolicy:
+          "Debes aceptar la política de tratamiento de datos personales.",
+      }));
+
+      await showUserErrorAlert({
+        title: "Aceptación requerida",
+        text: "Debes aceptar la política de tratamiento de datos personales para continuar.",
+      });
+
+      return;
+    }
 
     const dataToValidate = {
       ...formData,
@@ -92,7 +111,13 @@ export default function UserRegisterForm() {
       const userData = {
         ...result.data,
         userImage: files,
+        acceptedDataPolicy: result.data.acceptedDataPolicy,
       };
+
+      console.log(
+        "CONSENTIMIENTO ENVIADO:",
+        userData.acceptedDataPolicy
+      );
 
       const response = await createUser(userData);
 
@@ -303,6 +328,41 @@ export default function UserRegisterForm() {
                 />
               </div>
 
+            </div>
+
+            <div className="pt-4">
+              <div className="flex flex-col gap-2">
+                <Checkbox
+                  id="acceptedDataPolicy"
+                  name="acceptedDataPolicy"
+                  label="Acepto la política de tratamiento de datos personales del SENA."
+                  checked={formData.acceptedDataPolicy}
+                  onChange={(e) => {
+                    handleChange(e);
+
+                    setErrors((prev) => ({
+                      ...prev,
+                      acceptedDataPolicy: "",
+                    }));
+                  }}
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    window.open(DATA_POLICY_URL, "_blank", "noopener,noreferrer")
+                  }
+                  className="text-sm text-[var(--color-primary-800)] underline text-left hover:opacity-80"
+                >
+                  Consultar política de tratamiento de datos personales
+                </button>
+
+                {errors.acceptedDataPolicy && (
+                  <p className="text-sm text-red-600">
+                    {errors.acceptedDataPolicy}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="pt-6 border-brand-strong/20 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-6">

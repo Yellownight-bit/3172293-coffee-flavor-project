@@ -1,24 +1,24 @@
 export const getCategorieTypes = async () => {
   return [
     {
-      value: "rapido",
-      label: "Comida rápida",
+      value: "Comidas rápidas",
+      label: "Comidas rápidas",
     },
     {
-      value: "Saludable",
+      value: "Ensaladas",
       label: "Ensaladas",
     },
     {
-      value: "comida por pasta",
+      value: "Pastas",
       label: "Pastas",
     },
     {
-      value: "Dulce",
+      value: "Postres",
       label: "Postres",
     },
     {
-      value: "Liquido",
+      value: "Bebidas",
       label: "Bebidas",
     },
   ];
-}
+};

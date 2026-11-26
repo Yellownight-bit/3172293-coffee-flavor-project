@@ -30,6 +30,13 @@ router.get(
     userController.getUsersForPermissions,
 );
 
+// Obtener perfil del usuario autenticado
+router.get(
+    "/me",
+    authenticateToken,
+    userController.getMyProfile,
+);
+
 // Obtener todos los usuarios
 router.get(
     "/",

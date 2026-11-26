@@ -39,6 +39,27 @@ export const userController = {
         }
     },
 
+    async getMyProfile(req, res) {
+        try {
+            const user = await userService.getMyProfile(req.user.id);
+
+            if (!user) {
+                return res.status(404).json({
+                    error: "Usuario no encontrado",
+                });
+            }
+
+            return res.status(200).json(user);
+
+        } catch (error) {
+            console.error("Error obteniendo el perfil:", error);
+
+            return res.status(500).json({
+                error: "Error obteniendo el perfil del usuario",
+            });
+        }
+    },
+
     async updateStatus(req, res) {
         try {
             const { id } = req.params;

@@ -21,6 +21,10 @@ export const userRepository = {
             rol,
         } = userData;
 
+        const acceptedDataPolicy =
+            userData.acceptedDataPolicy === true ||
+            userData.acceptedDataPolicy === "true";
+
         const client = await pool.connect();
 
         try {
@@ -40,9 +44,16 @@ export const userRepository = {
                     is_staff,
                     is_active,
                     is_superuser,
-                    rol
+                    rol,
+                    accepted_data_policy,
+                    data_policy_accepted_at
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                VALUES (
+                    $1, $2, $3, $4, $5, $6, $7,
+                    $8, $9, $10, $11, $12, $13,
+                    $14,
+                    CASE WHEN $14 = TRUE THEN NOW() ELSE NULL END
+                )
                 RETURNING id;
             `;
 
@@ -60,6 +71,7 @@ export const userRepository = {
                 isActive,
                 isSuperUser,
                 rol,
+                acceptedDataPolicy,
             ];
 
             const result = await client.query(query, values);
@@ -116,6 +128,34 @@ export const userRepository = {
         return result.rows;
     },
 
+    async findProfileById(id) {
+
+        const query = `
+            SELECT
+                id,
+                user_name,
+                user_email,
+                confirm_email,
+                user_phone,
+                user_address,
+                user_document_types,
+                user_document_number,
+                user_image,
+                is_staff,
+                is_active,
+                is_superuser,
+                rol,
+                created_at
+            FROM users
+            WHERE id = $1
+            LIMIT 1;
+        `;
+
+        const result = await pool.query(query, [id]);
+
+        return result.rows[0];
+    },
+
     async update(id, userData) {
 
         const {
@@ -134,6 +174,10 @@ export const userRepository = {
             rol,
         } = userData;
 
+        const acceptedDataPolicy =
+            userData.acceptedDataPolicy === true ||
+            userData.acceptedDataPolicy === "true";
+
         const query = `
             UPDATE users
             SET
@@ -149,8 +193,16 @@ export const userRepository = {
                 is_staff = $10,
                 is_active = $11,
                 is_superuser = $12,
-                rol = $13
-            WHERE id = $14
+                rol = $13,
+                data_policy_accepted_at = CASE
+                    WHEN $14 = TRUE AND accepted_data_policy = FALSE
+                        THEN NOW()
+                    WHEN $14 = FALSE
+                        THEN NULL
+                    ELSE data_policy_accepted_at
+                END,
+                accepted_data_policy = $14
+            WHERE id = $15
             RETURNING
                 id,
                 user_name,
@@ -164,7 +216,9 @@ export const userRepository = {
                 is_staff,
                 is_active,
                 is_superuser,
-                rol;
+                rol,
+                accepted_data_policy,
+                data_policy_accepted_at;
         `;
 
         const values = [
@@ -181,6 +235,7 @@ export const userRepository = {
             isActive,
             isSuperUser,
             rol,
+            acceptedDataPolicy,
             id,
         ];
 

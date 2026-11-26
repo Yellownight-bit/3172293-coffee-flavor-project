@@ -1,12 +1,17 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { Users, ShieldCheck } from "lucide-react";
 
 import coffeeLogo from "@/assets/images/1-logo.png";
 import { loginSchema } from "@/features/users/schemas/loginSchema";
 import { login } from "@/features/auth/services/authService";
-import { LoginInput, LoginButton } from "@/shared";
+import { LoginInput, LoginButton, Checkbox } from "@/shared";
+import { showSessionExpiredAlert } from "@/shared/services/alertService";
+import SupportContact from "@/features/support/components/SupportContact";
+
+const DATA_POLICY_URL =
+  "https://normograma.sena.edu.co/compilacion/docs/acuerdo_sena_0013_2019.htm";
 
 export default function AuthLayout() {
   const navigate = useNavigate();
@@ -18,21 +23,31 @@ export default function AuthLayout() {
   const [formData, setFormData] = useState({
     userEmail: "",
     userPassword: "",
+    acceptedDataPolicy: false,
   });
 
   const isLocked = failedAttempts >= 3;
 
+  useEffect(() => {
+    if (sessionStorage.getItem("sessionExpired") === "true") {
+      sessionStorage.removeItem("sessionExpired");
+
+      showSessionExpiredAlert();
+    }
+  }, []);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
 
     setErrors((prev) => ({
       ...prev,
       [name]: "",
+      acceptedDataPolicy: "",
     }));
   };
 
@@ -57,7 +72,11 @@ export default function AuthLayout() {
     setErrors({});
 
     try {
-      const data = await login(result.data);
+      const data = await login({
+        ...result.data,
+        acceptedDataPolicy: formData.acceptedDataPolicy,
+      });
+
       console.log("RESPUESTA DEL LOGIN:", data);
 
       const userRole = data.rol || data.user?.rol;
@@ -95,11 +114,22 @@ export default function AuthLayout() {
       setFormData({
         userEmail: "",
         userPassword: "",
+        acceptedDataPolicy: false,
       });
 
       navigate("/dashboard/userList");
 
     } catch (error) {
+      const errorMessage =
+        error.message || "Correo o contraseña incorrectos";
+
+      if (errorMessage.toLowerCase().includes("política")) {
+        setErrors({
+          acceptedDataPolicy: errorMessage,
+        });
+        return;
+      }
+
       const nextAttempt = failedAttempts + 1;
 
       setFailedAttempts(nextAttempt);
@@ -110,9 +140,7 @@ export default function AuthLayout() {
         });
       } else {
         setErrors({
-          userEmail: `${
-            error.message || "Correo o contraseña incorrectos"
-          }. Intentos restantes: ${3 - nextAttempt}.`,
+          userEmail: `${errorMessage}. Intentos restantes: ${3 - nextAttempt}.`,
         });
       }
     }
@@ -287,11 +315,33 @@ export default function AuthLayout() {
                 />
               </div>
 
-              {!isLocked && (
-                <p className="text-xs text-[var(--color-primary-800)] mt-3">
-                  Intentos disponibles: {3 - failedAttempts} de 3
-                </p>
-              )}
+              {/* Aceptación de política de datos */}
+              <div className="mt-4">
+                <div className="flex flex-col gap-2">
+                  <Checkbox
+                    id="acceptedDataPolicy"
+                    name="acceptedDataPolicy"
+                    label="Acepto la política de tratamiento de datos personales del SENA."
+                    checked={formData.acceptedDataPolicy}
+                    onChange={handleChange}
+                  />
+
+                  <a
+                    href={DATA_POLICY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-[var(--color-primary-700)] hover:underline"
+                  >
+                    Consultar política de tratamiento de datos
+                  </a>
+                </div>
+
+                {errors.acceptedDataPolicy && (
+                  <p className="text-sm text-red-600 mt-2">
+                    {errors.acceptedDataPolicy}
+                  </p>
+                )}
+              </div>
 
               {isLocked && (
                 <p className="text-sm text-red-600 font-semibold mt-3">
@@ -348,6 +398,8 @@ export default function AuthLayout() {
 
         <Outlet />
       </div>
+
+      <SupportContact />
     </div>
   );
 }

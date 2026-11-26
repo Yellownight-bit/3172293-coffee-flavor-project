@@ -4,7 +4,12 @@ import { Select, Button } from "@/shared";
 import { getOrderTables } from "@/services/selectOrderService";
 import { getOrderUsers } from "@/services/selectUserService";
 import { getOrderProducts } from "@/services/selectOrderProductService";
-import { createOrder } from "@/features/order/services/orderServices";
+import {
+  createOrder,
+  getAllOrders,
+} from "@/features/order/services/orderServices";
+import OrderProductSelector from "@/features/order/components/OrderProductSelector";
+import TableSelector from "@/features/order/components/TableSelector";
 import Navbar from "@/shared/layouts/Navbar";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "@/assets/images/restaurant.jpg";
@@ -12,6 +17,9 @@ import {
   showSuccessAlert,
   showUserErrorAlert,
 } from "@/shared/services/alertService";
+
+const isActiveProduct = (product) =>
+  product.activo === true || product.activo === "true";
 
 export default function CreateOrder() {
   const navigate = useNavigate();
@@ -21,40 +29,69 @@ export default function CreateOrder() {
   const [tables, setTables] = useState([]);
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   const [formData, setFormData] = useState({
     tableNumber: "",
     waiter: "",
-    dishes: [
-      {
-        productId: "",
-        quantity: 1,
-      },
-    ],
+    dishes: [],
     observations: "",
     status: "Abierta",
   });
 
   useEffect(() => {
-    getOrderTables().then(setTables);
+    const loadTables = async () => {
+      try {
+        const data = await getOrderTables();
+        setTables(data);
+      } catch (error) {
+        console.error("Error cargando mesas:", error);
+      }
+    };
+
+    loadTables();
   }, []);
 
   useEffect(() => {
-    getOrderUsers().then(setUsers);
+    const loadUsers = async () => {
+      try {
+        const data = await getOrderUsers();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error cargando meseros:", error);
+      }
+    };
+
+    loadUsers();
   }, []);
 
   useEffect(() => {
     const loadProducts = async () => {
       try {
         const data = await getOrderProducts();
-        console.log("Productos recibidos:", data);
-        setProducts(data);
+
+        const availableProducts = data.filter(isActiveProduct);
+
+        setProducts(availableProducts);
       } catch (error) {
         console.error("Error cargando productos:", error);
       }
     };
 
     loadProducts();
+  }, []);
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        const data = await getAllOrders();
+        setOrders(data);
+      } catch (error) {
+        console.error("Error cargando órdenes:", error);
+      }
+    };
+
+    loadOrders();
   }, []);
 
   const handleChange = (e) => {
@@ -66,39 +103,80 @@ export default function CreateOrder() {
     }));
   };
 
-  const handleDishChange = (index, field, value) => {
-    setFormData((prev) => {
-      const updatedDishes = [...prev.dishes];
-
-      updatedDishes[index] = {
-        ...updatedDishes[index],
-        [field]: value,
-      };
-
-      return {
-        ...prev,
-        dishes: updatedDishes,
-      };
-    });
-  };
-
-  const addDish = () => {
+  const handleTableChange = (value) => {
     setFormData((prev) => ({
       ...prev,
-      dishes: [
-        ...prev.dishes,
-        {
-          productId: "",
-          quantity: 1,
-        },
-      ],
+      tableNumber: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      tableNumber: "",
     }));
   };
 
-  const removeDish = (index) => {
+  const addProduct = (productId) => {
+    const selectedProduct = products.find(
+      (product) => String(product.id) === String(productId)
+    );
+
+    if (!selectedProduct || !isActiveProduct(selectedProduct)) {
+      return;
+    }
+
+    setFormData((prev) => {
+      const existingDish = prev.dishes.find(
+        (dish) => String(dish.productId) === String(productId)
+      );
+
+      if (existingDish) {
+        return {
+          ...prev,
+          dishes: prev.dishes.map((dish) =>
+            String(dish.productId) === String(productId)
+              ? { ...dish, quantity: Number(dish.quantity) + 1 }
+              : dish
+          ),
+        };
+      }
+
+      return {
+        ...prev,
+        dishes: [
+          ...prev.dishes,
+          {
+            productId: String(productId),
+            quantity: 1,
+          },
+        ],
+      };
+    });
+
+    setErrors((prev) => ({
+      ...prev,
+      dishes: "",
+    }));
+  };
+
+  const changeProductQuantity = (productId, quantity) => {
+    if (quantity < 1) return;
+
     setFormData((prev) => ({
       ...prev,
-      dishes: prev.dishes.filter((_, i) => i !== index),
+      dishes: prev.dishes.map((dish) =>
+        String(dish.productId) === String(productId)
+          ? { ...dish, quantity }
+          : dish
+      ),
+    }));
+  };
+
+  const removeProduct = (productId) => {
+    setFormData((prev) => ({
+      ...prev,
+      dishes: prev.dishes.filter(
+        (dish) => String(dish.productId) !== String(productId)
+      ),
     }));
   };
 
@@ -123,7 +201,7 @@ export default function CreateOrder() {
       (dish) =>
         !dish.productId ||
         !dish.quantity ||
-        dish.quantity < 1
+        Number(dish.quantity) < 1
     );
 
     if (hasEmptyDish) {
@@ -131,12 +209,25 @@ export default function CreateOrder() {
         "Seleccione un platillo y una cantidad válida";
     }
 
+    const hasUnavailableProduct = formData.dishes.some((dish) => {
+      const product = products.find(
+        (item) => String(item.id) === String(dish.productId)
+      );
+
+      return !product || !isActiveProduct(product);
+    });
+
+    if (hasUnavailableProduct) {
+      newErrors.dishes =
+        "Uno o más productos ya no están disponibles. Verifique los productos seleccionados.";
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
 
       await showUserErrorAlert({
         title: "Error al crear orden",
-        text: "Hay campos vacíos o datos incorrectos. Por favor, verifica la información ingresada.",
+        text: "Hay campos vacíos, productos no disponibles o datos incorrectos. Por favor, verifica la información ingresada.",
       });
 
       return;
@@ -209,17 +300,18 @@ export default function CreateOrder() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Select
-                label="Número de mesa"
-                name="tableNumber"
+            <div>
+              <TableSelector
+                tables={tables}
+                orders={orders}
+                users={users}
                 value={formData.tableNumber}
-                htmlFor="tableNumber"
-                onChange={handleChange}
-                options={tables}
+                onChange={handleTableChange}
                 error={errors.tableNumber}
               />
+            </div>
 
+            <div>
               <Select
                 label="Mesero responsable"
                 name="waiter"
@@ -232,79 +324,13 @@ export default function CreateOrder() {
             </div>
 
             <div className="bg-brand-subtle p-5 rounded-2xl border border-brand-soft">
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="font-bold text-text-secondary uppercase text-sm">
-                  Platillos de la orden
-                </h3>
-
-                <button
-                  type="button"
-                  onClick={addDish}
-                  className="text-sm font-semibold text-brand-strong hover:underline"
-                >
-                  + Agregar platillo
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {formData.dishes.map((dish, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_100px_45px] gap-4 items-end"
-                  >
-                    <Select
-                      label={`Platillo ${index + 1}`}
-                      name={`product-${index}`}
-                      value={dish.productId}
-                      htmlFor={`product-${index}`}
-                      onChange={(e) =>
-                        handleDishChange(
-                          index,
-                          "productId",
-                          e.target.value
-                        )
-                      }
-                      options={products}
-                    />
-
-                    <div className="w-[100px] max-w-full">
-                      <label
-                        htmlFor={`quantity-${index}`}
-                        className="block text-sm font-semibold text-text-secondary mb-2"
-                      >
-                        Cantidad
-                      </label>
-
-                      <input
-                        id={`quantity-${index}`}
-                        name={`quantity-${index}`}
-                        type="number"
-                        min="1"
-                        value={dish.quantity}
-                        onChange={(e) =>
-                          handleDishChange(
-                            index,
-                            "quantity",
-                            Number(e.target.value)
-                          )
-                        }
-                        className="w-full h-10 rounded-xl border border-border-soft px-3 focus:outline-none focus:ring-2 focus:ring-focus-ring"
-                      />
-                    </div>
-
-                    {formData.dishes.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeDish(index)}
-                        className="h-10 w-10 rounded-full bg-error-soft text-error hover:bg-error-soft-hover transition font-bold"
-                        title="Eliminar platillo"
-                      >
-                        🗑️
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <OrderProductSelector
+                products={products}
+                dishes={formData.dishes}
+                onAddProduct={addProduct}
+                onQuantityChange={changeProductQuantity}
+                onRemoveProduct={removeProduct}
+              />
 
               {errors.dishes && (
                 <p className="text-error text-sm mt-3">

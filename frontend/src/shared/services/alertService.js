@@ -154,3 +154,28 @@ export function showConfirmDeactivateAlert({
     buttonsStyling: false,
   });
 }
+
+
+export function showSessionExpiredAlert({
+  title = "Sesión cerrada",
+  text = "Tu sesión se cerró automáticamente debido a un período de inactividad. Inicia sesión nuevamente para continuar.",
+  confirmButtonText = "Aceptar",
+} = {}) {
+  return Swal.fire({
+    icon: "warning",
+    title,
+    text,
+    confirmButtonText,
+
+    customClass: {
+      popup: "rounded-2xl",
+      title: "!text-[var(--color-primary-800)] font-bold",
+      confirmButton:
+        "bg-[var(--color-primary-700)] text-white hover:bg-[var(--color-primary-800)] px-4 py-2 rounded-lg font-medium",
+    },
+
+    buttonsStyling: false,
+  });
+}
+
+

@@ -55,11 +55,7 @@ export default function OrderListPage() {
                 });
             } catch (error) {
                 console.error("Error al verificar permisos:", error);
-
-                setPermissions({
-                    create: false,
-                    report: false,
-                });
+                setPermissions({ create: false, report: false });
             } finally {
                 setPermissionsLoaded(true);
             }
@@ -69,92 +65,71 @@ export default function OrderListPage() {
         loadPermissions();
     }, []);
 
+    const totalSales = orders.reduce((total, order) => {
+        const status = String(order.status || "").trim().toLowerCase();
+
+        if (status === "pagada" || status === "pagado") {
+            return total + Number(order.total || 0);
+        }
+
+        return total;
+    }, 0);
+
+    const formattedTotalSales = new Intl.NumberFormat("es-CO", {
+        style: "currency",
+        currency: "COP",
+        maximumFractionDigits: 0,
+    }).format(totalSales);
+
     return (
         <div className="p-6">
-            <div
-                className="
-                    rounded-2xl
-                    bg-panel/80
-                    backdrop-blur-md
-                    shadow-lg
-                    p-6
-                    border border-panel/40
-                "
-            >
+            <div className="rounded-2xl bg-panel/80 backdrop-blur-md shadow-lg p-6 border border-panel/40">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-xl font-semibold text-text-primary">
                         Listado de órdenes
                     </h1>
 
                     <div className="flex items-center gap-3">
-                        <div
-                            className={`relative ${
-                                !permissionsLoaded ||
-                                !permissions.report ||
-                                loading ||
-                                orders.length === 0
-                                    ? "cursor-not-allowed"
-                                    : ""
-                            }`}
-                        >
+                        {permissionsLoaded && permissions.report && (
                             <Button
+                                type="button"
                                 variant="secondary"
                                 onClick={() => setIsReportOpen(true)}
-                                disabled={
-                                    !permissionsLoaded ||
-                                    !permissions.report ||
-                                    loading ||
-                                    orders.length === 0
-                                }
                             >
                                 Generar reporte
                             </Button>
+                        )}
 
-                            {(
-                                !permissionsLoaded ||
-                                !permissions.report ||
-                                loading ||
-                                orders.length === 0
-                            ) && (
-                                <div className="absolute inset-0 cursor-not-allowed" />
-                            )}
-                        </div>
-
-                        <div
-                            className={`relative ${
-                                !permissionsLoaded || !permissions.create
-                                    ? "cursor-not-allowed"
-                                    : ""
-                            }`}
-                        >
-                            {permissions.create ? (
-                                <Link to="/CreateOrder">
-                                    <Button
-                                        variant="primary"
-                                        disabled={!permissionsLoaded}
-                                    >
-                                        Crear orden
-                                    </Button>
-                                </Link>
-                            ) : (
-                                <Button variant="primary" disabled>
+                        {permissionsLoaded && permissions.create && (
+                            <Link to="/CreateOrder">
+                                <Button type="button">
                                     Crear orden
                                 </Button>
-                            )}
-
-                            {(!permissionsLoaded || !permissions.create) && (
-                                <div className="absolute inset-0 cursor-not-allowed" />
-                            )}
-                        </div>
+                            </Link>
+                        )}
                     </div>
                 </div>
 
+                <div className="mb-6 rounded-2xl border border-border bg-panel-muted p-5">
+                    <p className="text-sm font-medium text-text-secondary">
+                        Total de ventas
+                    </p>
+
+                    <p className="mt-2 text-3xl font-bold text-brand-strong">
+                        {formattedTotalSales}
+                    </p>
+
+                    <p className="mt-1 text-xs text-text-muted">
+                        Calculado con las órdenes pagadas.
+                    </p>
+                </div>
+
                 {loading ? (
-                    <p className="text-center py-6 text-text-secondary">
+                    <p className="text-text-secondary">
                         Cargando órdenes...
                     </p>
                 ) : error ? (
-                    <p className="text-center py-6 text-error">
+                    <p className="text-red-500">
                         {error}
                     </p>
                 ) : (
@@ -168,10 +143,10 @@ export default function OrderListPage() {
             <ListReportModal
                 isOpen={isReportOpen}
                 onClose={() => setIsReportOpen(false)}
-                title="órdenes"
                 data={orders}
                 fields={orderReportFields}
-                filePrefix="orders"
+                title="Reporte de órdenes"
+                fileName="reporte_ordenes"
             />
         </div>
     );

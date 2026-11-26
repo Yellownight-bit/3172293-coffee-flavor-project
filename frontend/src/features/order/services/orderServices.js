@@ -4,10 +4,13 @@ import { API_URL } from "@/features/config";
 const ORDERS_URL = `${API_URL}/orders`;
 
 export async function createOrder(orderData) {
+  const token = sessionStorage.getItem("token");
+
   const response = await fetch(ORDERS_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(orderData),
   });
@@ -15,7 +18,17 @@ export async function createOrder(orderData) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Error al crear la orden");
+    console.error("Error del servidor al crear orden:", {
+      status: response.status,
+      response: data,
+    });
+
+    throw new Error(
+      data.error ||
+        data.message ||
+        JSON.stringify(data) ||
+        "Error al crear la orden"
+    );
   }
 
   return data;

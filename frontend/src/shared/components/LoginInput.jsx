@@ -53,7 +53,7 @@ export default function LoginInput({
           disabled={disabled}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${name}-error` : undefined}
-          className="w-full h-full min-w-0 px-3 bg-transparent outline-none text-[var(--color-primary-950)] placeholder:text-[var(--color-primary-800)]/60 text-base disabled:cursor-not-allowed"
+          className="w-full h-full min-w-0 px-4 bg-transparent outline-none text-[var(--color-primary-950)] placeholder:text-[var(--color-primary-800)]/60 text-base disabled:cursor-not-allowed"
         />
 
         {isPassword && (

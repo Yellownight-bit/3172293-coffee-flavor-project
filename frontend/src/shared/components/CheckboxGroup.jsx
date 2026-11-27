@@ -1,22 +1,31 @@
+// Componente CheckboxGroup
+// Grupo de casillas con fieldset + legend para que el lector de pantalla
+// anuncie el título del grupo. El error se muestra debajo y queda ligado al grupo.
 import { Checkbox } from "@/shared";
 
 export default function CheckboxGroup({
   label,
   name,
-  options,
+  options = [],
   value = [],
   onChange,
   error,
 }) {
+  const errorId = `${name}-error`;
+
   return (
-    <div className="flex flex-col gap-3">
-
-      <label className="font-semibold text-text-secondary">
+    <fieldset
+      className="flex flex-col gap-1"
+      aria-describedby={error ? errorId : undefined}
+      aria-invalid={error ? true : undefined}
+    >
+      {/* Título del grupo */}
+      <legend className="mb-1 font-semibold text-text-secondary">
         {label}
-      </label>
+      </legend>
 
-      <div className="grid grid-cols-2 gap-3">
-
+      {/* Casillas */}
+      <div className="grid grid-cols-2 gap-x-6">
         {options.map((option) => (
           <Checkbox
             key={option.value}
@@ -28,15 +37,14 @@ export default function CheckboxGroup({
             onChange={onChange}
           />
         ))}
-
       </div>
 
+      {/* Mensaje de error */}
       {error && (
-        <span className="text-error text-xs">
+        <p id={errorId} role="alert" className="text-small text-error">
           {error}
-        </span>
+        </p>
       )}
-
-    </div>
+    </fieldset>
   );
 }

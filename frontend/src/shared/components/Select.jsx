@@ -1,8 +1,5 @@
 // Componente Select
-// - Colores: solo tokens semánticos, cambian solos con el tema claro/oscuro.
-// - Estados: hover, focus, disabled y error.
-// - Medidas: alto de 56 px, ancho fluido (mínimo 200 px), 4 px entre label y campo.
-// - Accesibilidad: label conectado al select, error anunciado y ligado con aria-describedby.
+
 import { useId } from "react";
 import { ChevronDown } from "lucide-react";
 
@@ -32,7 +29,7 @@ export default function Select({
       {label && (
         <label
           htmlFor={selectId}
-          className="mb-1 block text-caption text-text-secondary"
+          className="mb-1 block text-small text-text-secondary"
         >
           {label}
         </label>
@@ -93,7 +90,7 @@ export default function Select({
 
       {/* Mensaje de error */}
       {error && (
-        <p id={errorId} role="alert" className="mt-1 text-caption text-error">
+        <p id={errorId} role="alert" className="mt-1 text-small text-error">
           {error}
         </p>
       )}

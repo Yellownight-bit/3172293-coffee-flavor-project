@@ -10,6 +10,7 @@ import {
 import {
   showSuccessAlert,
   showUserErrorAlert,
+  showConfirmDiscardAlert,
 } from "@/shared/services/alertService";
 import { getSupplierNames } from "@/services/selectService";
 import { getCategorieTypes } from "@/services/selectCategorieTypes";
@@ -143,6 +144,17 @@ export default function UpdateProduct() {
     }));
   };
 
+  const handleCancel = async () => {
+    const result = await showConfirmDiscardAlert({
+      title: "¿Deseas cancelar la actualización?",
+      text: "Si realizas esta acción, se perderán los cambios que hayas realizado.",
+    });
+
+    if (result.isConfirmed) {
+      navigate("/dashboard/productList");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -235,7 +247,7 @@ export default function UpdateProduct() {
               variant="back"
               size="backProduct"
               type="button"
-              onClick={() => navigate("/dashboard/productList")}
+              onClick={handleCancel}
             >
               <span>←</span> Atrás
             </Button>
@@ -456,7 +468,7 @@ export default function UpdateProduct() {
                   variant="cancel"
                   size="cancel"
                   type="button"
-                  onClick={() => navigate("/dashboard/productList")}
+                  onClick={handleCancel}
                 >
                   Cancelar
                 </Button>

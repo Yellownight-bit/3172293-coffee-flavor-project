@@ -6,7 +6,6 @@ import {
   Users,
   KeyRound,
   Utensils,
-  GraduationCap,
   Image,
   Package,
   Boxes,
@@ -29,7 +28,10 @@ import {
 
 import logo from "@/assets/images/1-logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { showOpsAlert } from "@/shared/services/alertservice";
+import {
+  showOpsAlert,
+  showConfirmLogoutAlert,
+} from "@/shared/services/alertService";
 import useTheme from "@/shared/context/useTheme";
 import { logout } from "@/features/auth/services/logoutService";
 import { getMyProfile } from "@/features/users/services/userServices.js";
@@ -73,9 +75,13 @@ export default function Navbar() {
     .slice(0, 2)
     .toUpperCase();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/auth", { replace: true });
+  const handleLogout = async () => {
+    const result = await showConfirmLogoutAlert();
+
+    if (result.isConfirmed) {
+      logout();
+      navigate("/auth", { replace: true });
+    }
   };
 
   const handleSearch = (value) => {
@@ -113,16 +119,6 @@ export default function Navbar() {
 
             <li>
               <Link
-                to={"/dashboard/userList"}
-                className="hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
-              >
-                <Users size={17} />
-                Usuarios
-              </Link>
-            </li>
-
-            <li>
-              <Link
                 to="/dashboard/access"
                 className="hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
               >
@@ -139,19 +135,6 @@ export default function Navbar() {
                 <Utensils size={17} />
                 Menu
               </Link>
-            </li>
-
-            <li
-              onClick={() =>
-                showOpsAlert({
-                  title: "Ops, hubo un error",
-                  text: "Esta opción no está disponible en este momento.",
-                })
-              }
-              className="cursor-pointer hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
-            >
-              <GraduationCap size={17} />
-              Cursos
             </li>
 
             <li

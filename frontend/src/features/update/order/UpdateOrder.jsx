@@ -16,6 +16,8 @@ import backgroundImage from "@/assets/images/restaurant.jpg";
 import {
   showSuccessAlert,
   showUserErrorAlert,
+  showConfirmDiscardAlert,
+  showConfirmRemoveProductAlert,
 } from "@/shared/services/alertService";
 
 export default function UpdateOrder() {
@@ -193,7 +195,13 @@ export default function UpdateOrder() {
     }));
   };
 
-  const removeProduct = (productId) => {
+  const removeProduct = async (productId) => {
+    const result = await showConfirmRemoveProductAlert({
+    text: "El producto se eliminará de la orden que estás actualizando.",
+  });
+
+    if (!result.isConfirmed) return;
+
     setFormData((prev) => ({
       ...prev,
       dishes: prev.dishes.filter(
@@ -299,7 +307,16 @@ export default function UpdateOrder() {
             variant="back"
             size="back"
             type="button"
-            onClick={() => navigate("/dashboard/orderList")}
+            onClick={async () => {
+              const result = await showConfirmDiscardAlert({
+                title: "¿Deseas salir de la actualización de la orden?",
+                text: "Si realizas esta acción, no se guardarán los cambios realizados.",
+              });
+
+              if (result.isConfirmed) {
+                navigate("/dashboard/orderList");
+              }
+            }}
           >
             <span>←</span> Atrás
           </Button>
@@ -376,7 +393,16 @@ export default function UpdateOrder() {
                 variant="cancel"
                 size="cancel"
                 type="button"
-                onClick={() => navigate("/dashboard/orderList")}
+                onClick={async () => {
+                  const result = await showConfirmDiscardAlert({
+                    title: "¿Deseas cancelar la actualización de la orden?",
+                    text: "Si realizas esta acción, no se guardarán los cambios realizados.",
+                  });
+
+                  if (result.isConfirmed) {
+                    navigate("/dashboard/orderList");
+                  }
+                }}
               >
                 Cancelar
               </Button>

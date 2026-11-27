@@ -10,6 +10,7 @@ import {
 import {
   showSuccessAlert,
   showUserErrorAlert,
+  showConfirmDiscardAlert,
 } from "@/shared/services/alertService";
 import { getSupplierNames } from "@/services/selectService";
 import { getCategorieTypes } from "@/services/selectCategorieTypes";
@@ -71,6 +72,17 @@ export default function CreateProductInventory() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleCancel = async () => {
+    const result = await showConfirmDiscardAlert({
+      title: "¿Deseas cancelar el registro del producto?",
+      text: "Si realizas esta acción, no se guardarán los datos ingresados.",
+    });
+
+    if (result.isConfirmed) {
+      navigate("/dashboard/productList");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -143,7 +155,7 @@ export default function CreateProductInventory() {
               variant="back"
               size="backProduct"
               type="button"
-              onClick={() => navigate("/dashboard/productList")}
+              onClick={handleCancel}
             >
               <span>←</span> Atrás
             </Button>
@@ -356,7 +368,7 @@ export default function CreateProductInventory() {
                   variant="cancel"
                   size="cancel"
                   type="button"
-                  onClick={() => navigate("/dashboard/productList")}
+                  onClick={handleCancel}
                 >
                   Cancelar
                 </Button>

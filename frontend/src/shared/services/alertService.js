@@ -179,3 +179,89 @@ export function showSessionExpiredAlert({
 }
 
 
+export function showConfirmLogoutAlert({
+  title = "¿Estás seguro de cerrar sesión?",
+  text = "Se cerrará tu sesión actual y tendrás que iniciar sesión nuevamente para continuar.",
+  confirmButtonText = "Sí, cerrar sesión",
+  cancelButtonText = "No, permanecer aquí",
+} = {}) {
+  return Swal.fire({
+    title,
+    text,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText,
+    cancelButtonText,
+    reverseButtons: true,
+
+    customClass: {
+      popup: "rounded-2xl",
+      title: "!text-brand-strong font-bold",
+      confirmButton:
+        "!bg-error text-on-brand hover:bg-error-hover px-4 py-2 rounded-lg ml-2 font-medium",
+      cancelButton:
+        "!bg-neutral text-on-brand hover:bg-neutral-hover px-4 py-2 rounded-lg font-medium",
+    },
+
+    buttonsStyling: false,
+  });
+}
+
+
+export function showConfirmDiscardAlert({
+  title = "¿Deseas cancelar?",
+  text = "Si realizas esta acción, no se guardarán los datos ingresados.",
+  confirmButtonText = "Sí, cancelar",
+  cancelButtonText = "Continuar",
+} = {}) {
+  return Swal.fire({
+    title,
+    text,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText,
+    cancelButtonText,
+    reverseButtons: true,
+
+    customClass: {
+      popup: "rounded-2xl",
+      title: "!text-brand-strong font-bold",
+      confirmButton:
+        "!bg-error text-on-brand hover:bg-error-hover px-4 py-2 rounded-lg ml-2 font-medium",
+      cancelButton:
+        "!bg-neutral text-on-brand hover:bg-neutral-hover px-4 py-2 rounded-lg font-medium",
+    },
+
+    buttonsStyling: false,
+  });
+}
+
+export function showConfirmRemoveProductAlert({
+  title = "¿Retirar este producto?",
+  text = "El producto se eliminará de la orden que estás creando.",
+  confirmButtonText = "Sí, retirar",
+  cancelButtonText = "No, mantener",
+} = {}) {
+  return Swal.fire({
+    title,
+    text,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText,
+    cancelButtonText,
+    reverseButtons: true,
+
+    customClass: {
+      popup: "rounded-2xl",
+      title: "!text-brand-strong font-bold",
+      confirmButton:
+        "!bg-error text-on-brand hover:bg-error-hover px-4 py-2 rounded-lg ml-2 font-medium",
+      cancelButton:
+        "!bg-neutral text-on-brand hover:bg-neutral-hover px-4 py-2 rounded-lg font-medium",
+    },
+
+    buttonsStyling: false,
+  });
+}
+
+

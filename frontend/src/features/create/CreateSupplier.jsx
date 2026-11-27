@@ -18,6 +18,7 @@ import backgroundImage from "@/assets/images/restaurant.jpg";
 import {
   showSuccessAlert,
   showUserErrorAlert,
+  showConfirmDiscardAlert,
 } from "@/shared/services/alertService";
 
 export default function SupplierRegisterForm() {
@@ -77,6 +78,17 @@ export default function SupplierRegisterForm() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleCancel = async () => {
+    const result = await showConfirmDiscardAlert({
+      title: "¿Deseas cancelar el registro del proveedor?",
+      text: "Si realizas esta acción, no se guardarán los datos ingresados.",
+    });
+
+    if (result.isConfirmed) {
+      navigate("/dashboard/supplierList");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -143,7 +155,7 @@ export default function SupplierRegisterForm() {
             variant="back"
             size="back"
             type="button"
-            onClick={() => navigate("/dashboard/supplierList")}
+            onClick={handleCancel}
           >
             <span>←</span> Atrás
           </Button>
@@ -377,7 +389,7 @@ export default function SupplierRegisterForm() {
                   variant="cancel"
                   size="cancel"
                   type="button"
-                  onClick={() => navigate("/dashboard/supplierList")}
+                  onClick={handleCancel}
                 >
                   Cancelar
                 </Button>

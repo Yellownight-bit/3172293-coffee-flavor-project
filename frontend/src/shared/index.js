@@ -15,7 +15,7 @@ export { IconButton } from "./components/IconButton";
 export { default as SearchField } from "./components/SearchField";
 export { default as StatusSwitch } from "./components/StatusSwitch";
 export { default as DataTable } from "./components/DataTable";
-export { default as FileInput } from "./components/Filelnput";
+export { default as FileInput } from "./components/FileInput";
 export { default as Card } from "./components/Card";
 export { default as ListReportModal } from "./components/ListReportModal";
 export { default as DetailItem } from "./components/DetailItem";

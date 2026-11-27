@@ -101,5 +101,6 @@
     --font-weight-heading: var(--semantic-font-weight-heading);
     --font-weight-body: var(--semantic-font-weight-body);
     --font-weight-label: var(--semantic-font-weight-label);
-
+    --font-weight-button: var(--semantic-font-weight-button);
+    
 }

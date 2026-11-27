@@ -47,7 +47,7 @@ export default function Checkbox({
           focus-visible:ring-offset-background
         "
       />
-
+      
       {/* Texto de la casilla */}
       <span>{label}</span>
     </label>

@@ -223,7 +223,7 @@ export default function SupplierRegisterForm() {
                   error={errors.supplierAddress}
                 />
 
-                <div className="relative">
+                <div className="relative w-full">
                   <Input
                     label="Número de contacto"
                     name="supplierPhone"

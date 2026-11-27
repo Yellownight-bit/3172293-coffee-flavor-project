@@ -1,65 +1,102 @@
-// Componente select
+// Componente Select
+// - Colores: solo tokens semánticos, cambian solos con el tema claro/oscuro.
+// - Estados: hover, focus, disabled y error.
+// - Medidas: alto de 56 px, ancho fluido (mínimo 200 px), 4 px entre label y campo.
+// - Accesibilidad: label conectado al select, error anunciado y ligado con aria-describedby.
+import { useId } from "react";
+import { ChevronDown } from "lucide-react";
 
 export default function Select({
+  label,
+  error,
+  htmlFor,
+  name,
+  onChange,
+  value,
+  options = [],
+  placeholder = "Seleccione una opción",
+  className = "",
+  ...props
+}) {
+  // El id conecta el label con el select. Si la vista no envía htmlFor ni name, se genera uno único.
+  const autoId = useId();
+  const selectId = htmlFor ?? name ?? autoId;
+  const errorId = `${selectId}-error`;
 
-    label,
-    error,
-    htmlFor,
-    name,
-    onChange,
-    value,
-    options = [],
-}){
-    return (
-        <div>
-            {/*Label solo se muestra su es truthy es uno lógico */}
-            {label && (
-                <label 
-                 htmlFor={htmlFor}
-                 className="
-                    block
-                    text-caption
-                    text-text-secondary
-                    "
-                >
-                 {label}
-                </label>
-            )}
+  // Si no hay label visible, el lector de pantalla usa el aria-label o el placeholder.
+  const ariaLabel = label ? undefined : (props["aria-label"] ?? placeholder);
 
-            {/* Select */}
-            <select
-                name={name}
-                value={value}
-                onChange={onChange}
-                id="htmlFor"
-                className="
-                    w-80
-                    h-12
-                    rounded-md
-                    border
-                    border-border
-                    bg-panel
-                    text-text-primary
-                    px-4
+  return (
+    <div className={`w-full min-w-50 ${className}`}>
+      {/* Label: solo se muestra si la vista lo envía */}
+      {label && (
+        <label
+          htmlFor={selectId}
+          className="mb-1 block text-caption text-text-secondary"
+        >
+          {label}
+        </label>
+      )}
 
-                    hover:border
-                    hover:border-2
-                    hover:border-focus-border
-                    "
-            >
+      {/* Contenedor relativo para ubicar la flecha */}
+      <div className="relative">
+        <select
+          {...props}
+          id={selectId}
+          name={name}
+          value={value}
+          onChange={onChange}
+          aria-label={ariaLabel}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          className={`
+            h-14
+            w-full
+            cursor-pointer
+            appearance-none
+            rounded-sm
+            border
+            bg-panel
+            pl-4
+            pr-12
+            text-body
+            text-text-primary
+            transition-colors
+            focus:outline-none
+            focus:ring-1
+            disabled:cursor-not-allowed
+            disabled:bg-panel-muted
+            disabled:text-text-muted
+            ${
+              error
+                ? "border-error focus:ring-error"
+                : "border-border enabled:hover:border-border-strong focus:border-focus-border focus:ring-focus-border"
+            }
+          `}
+        >
+          <option value="">{placeholder}</option>
 
-                <option value="">Seleccione una opcion</option>
+          {options.map((opt, index) => (
+            <option key={`${opt.value}-${index}`} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
 
-                {options.map((opt) => (
-                    <option key ={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                ))}
-            </select>
-            {/*feedback*/}
-            {error && (
-                <p className="text-caption text-error place-self-start mt-1">{error}</p>
-            )}
-        </div>
-    )
+        {/* Flecha decorativa (M3 trailing icon) */}
+        <ChevronDown
+          aria-hidden="true"
+          size={20}
+          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary"
+        />
+      </div>
+
+      {/* Mensaje de error */}
+      {error && (
+        <p id={errorId} role="alert" className="mt-1 text-caption text-error">
+          {error}
+        </p>
+      )}
+    </div>
+  );
 }

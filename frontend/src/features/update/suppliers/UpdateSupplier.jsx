@@ -28,6 +28,7 @@ import backgroundImage from "@/assets/images/restaurant.jpg";
 import {
   showSuccessAlert,
   showUserErrorAlert,
+  showConfirmDiscardAlert,
 } from "@/shared/services/alertService";
 
 export default function UpdateSupplier() {
@@ -174,6 +175,17 @@ export default function UpdateSupplier() {
     }));
   };
 
+  const handleCancel = async () => {
+    const result = await showConfirmDiscardAlert({
+      title: "¿Deseas cancelar la actualización?",
+      text: "Si realizas esta acción, se perderán los cambios que hayas realizado.",
+    });
+
+    if (result.isConfirmed) {
+      navigate("/dashboard/supplierList");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -274,7 +286,7 @@ export default function UpdateSupplier() {
             variant="back"
             size="back"
             type="button"
-            onClick={() => navigate("/dashboard/supplierList")}
+            onClick={handleCancel}
           >
             <span>←</span> Atrás
           </Button>
@@ -499,7 +511,7 @@ export default function UpdateSupplier() {
                   variant="cancel"
                   size="cancel"
                   type="button"
-                  onClick={() => navigate("/dashboard/supplierList")}
+                  onClick={handleCancel}
                 >
                   Cancelar
                 </Button>

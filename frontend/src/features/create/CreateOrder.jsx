@@ -16,6 +16,8 @@ import backgroundImage from "@/assets/images/restaurant.jpg";
 import {
   showSuccessAlert,
   showUserErrorAlert,
+  showConfirmDiscardAlert,
+  showConfirmRemoveProductAlert,
 } from "@/shared/services/alertService";
 
 const isActiveProduct = (product) =>
@@ -171,7 +173,11 @@ export default function CreateOrder() {
     }));
   };
 
-  const removeProduct = (productId) => {
+  const removeProduct = async (productId) => {
+    const result = await showConfirmRemoveProductAlert();
+
+    if (!result.isConfirmed) return;
+
     setFormData((prev) => ({
       ...prev,
       dishes: prev.dishes.filter(
@@ -281,7 +287,16 @@ export default function CreateOrder() {
             variant="back"
             size="back"
             type="button"
-            onClick={() => navigate("/dashboard/orderList")}
+            onClick={async () => {
+              const result = await showConfirmDiscardAlert({
+                title: "¿Deseas salir de la creación de la orden?",
+                text: "Si realizas esta acción, no se guardarán los datos ingresados.",
+              });
+
+              if (result.isConfirmed) {
+                navigate("/dashboard/orderList");
+              }
+            }}
           >
             <span>←</span> Atrás
           </Button>
@@ -359,7 +374,16 @@ export default function CreateOrder() {
                 variant="cancel"
                 size="cancel"
                 type="button"
-                onClick={() => navigate("/dashboard/orderList")}
+                onClick={async () => {
+                  const result = await showConfirmDiscardAlert({
+                    title: "¿Deseas cancelar la creación de la orden?",
+                    text: "Si realizas esta acción, no se guardarán los datos ingresados.",
+                  });
+
+                  if (result.isConfirmed) {
+                    navigate("/dashboard/orderList");
+                  }
+                }}
               >
                 Cancelar
               </Button>

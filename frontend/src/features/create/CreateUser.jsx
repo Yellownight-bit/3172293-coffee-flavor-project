@@ -9,7 +9,8 @@ import backgroundImage from "@/assets/images/restaurant.jpg";
 import {
   showSuccessAlert,
   showUserErrorAlert,
-} from "@/shared/services/alertservice";
+  showConfirmDiscardAlert,
+} from "@/shared/services/alertService";
 import { createUser } from "@/features/users/services/userServices";
 
 const DATA_POLICY_URL =
@@ -56,6 +57,17 @@ export default function UserRegisterForm() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleCancel = async () => {
+    const result = await showConfirmDiscardAlert({
+      title: "¿Deseas cancelar el registro del usuario?",
+      text: "Si realizas esta acción, no se guardarán los datos ingresados.",
+    });
+
+    if (result.isConfirmed) {
+      navigate("/dashboard/userList");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -159,7 +171,7 @@ export default function UserRegisterForm() {
             variant="back"
             size="back"
             type="button"
-            onClick={() => navigate("/dashboard/userList")}
+            onClick={handleCancel}
           >
             <span>←</span> Atrás
           </Button>
@@ -404,7 +416,7 @@ export default function UserRegisterForm() {
                   variant="cancel"
                   size="cancel"
                   type="button"
-                  onClick={() => navigate("/dashboard/userList")}
+                  onClick={handleCancel}
                 >
                   Cancelar
                 </Button>

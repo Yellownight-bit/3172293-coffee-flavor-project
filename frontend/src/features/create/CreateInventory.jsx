@@ -10,6 +10,7 @@ import {
 import {
   showSuccessAlert,
   showUserErrorAlert,
+  showConfirmDiscardAlert,
 } from "@/shared/services/alertService";
 import { getSupplierNames } from "@/services/selectService";
 import { inventorySchema } from "../users/schemas/inventorySchema";
@@ -60,6 +61,17 @@ export default function CreateProductInventory() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleCancel = async () => {
+    const result = await showConfirmDiscardAlert({
+      title: "¿Deseas cancelar el registro del producto?",
+      text: "Si realizas esta acción, no se guardarán los datos ingresados.",
+    });
+
+    if (result.isConfirmed) {
+      navigate("/dashboard/inventoryList");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -125,19 +137,19 @@ export default function CreateProductInventory() {
       <div className="flex-1 p-4 flex items-center justify-center">
         <div className="w-full max-w-6xl bg-gradient-to-b from-gradient-start to-gradient-end rounded-3xl p-8 shadow-md relative">
 
-            <Button
-              variant="back"
-              size="back"
-              type="button"
-              onClick={() => navigate("/dashboard/inventoryList")}
-            >
-              <span>←</span> Atrás
-            </Button>
+          <Button
+            variant="back"
+            size="back"
+            type="button"
+            onClick={handleCancel}
+          >
+            <span>←</span> Atrás
+          </Button>
 
           <button
             type="button"
             className="absolute top-6 left-240 bg-brand-strong text-on-brand px-4 py-2 rounded-lg text-md font-semibold flex items-center gap-1 hover:bg-brand transition"
-            onClick={() => navigate("/dashboard/inventoryList")}
+            onClick={handleCancel}
           >
             <span>👁️‍🗨️</span> Ver inventario
           </button>
@@ -308,7 +320,7 @@ export default function CreateProductInventory() {
                   variant="cancel"
                   size="cancel"
                   type="button"
-                  onClick={() => navigate("/dashboard/inventoryList")}
+                  onClick={handleCancel}
                 >
                   Cancelar
                 </Button>

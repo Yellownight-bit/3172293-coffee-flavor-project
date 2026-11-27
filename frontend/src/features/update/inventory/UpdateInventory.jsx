@@ -25,6 +25,7 @@ import backgroundImage from "@/assets/images/restaurant.jpg";
 import {
   showSuccessAlert,
   showUserErrorAlert,
+  showConfirmDiscardAlert,
 } from "@/shared/services/alertService";
 
 export default function UpdateInventory() {
@@ -129,6 +130,17 @@ export default function UpdateInventory() {
     }));
   };
 
+  const handleCancel = async () => {
+    const result = await showConfirmDiscardAlert({
+      title: "¿Deseas cancelar la actualización?",
+      text: "Si realizas esta acción, se perderán los cambios que hayas realizado.",
+    });
+
+    if (result.isConfirmed) {
+      navigate("/dashboard/inventoryList");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -218,7 +230,7 @@ export default function UpdateInventory() {
               variant="back"
               size="back"
               type="button"
-              onClick={() => navigate("/dashboard/inventoryList")}
+              onClick={handleCancel}
             >
               <span>←</span> Atrás
             </Button>
@@ -227,7 +239,7 @@ export default function UpdateInventory() {
           <button
             type="button"
             className="absolute top-6 right-8 bg-brand-strong text-on-brand px-4 py-2 rounded-lg text-md font-semibold flex items-center gap-1 hover:bg-brand transition"
-            onClick={() => navigate("/dashboard/inventoryList")}
+            onClick={handleCancel}
           >
             <span>👁️‍🗨️</span> Ver inventario
           </button>
@@ -384,7 +396,7 @@ export default function UpdateInventory() {
                   variant="cancel"
                   size="cancel"
                   type="button"
-                  onClick={() => navigate("/dashboard/inventoryList")}
+                  onClick={handleCancel}
                 >
                   Cancelar
                 </Button>

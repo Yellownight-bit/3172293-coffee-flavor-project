@@ -1,16 +1,30 @@
-
+// Layout de inicio de sesión
+// - Colores solo con tokens del tema (claro/oscuro) y contraste accesible.
+// - Sin scroll en escritorio (el contenido cabe); en pantallas pequeñas se permite bajar.
+// - Selector de acceso como botones segmentados (aria-pressed).
+// - Usa los componentes del sistema: Input (con ícono y ver contraseña), Button y Checkbox.
+// La lógica de inicio de sesión (handleSubmit, intentos y roles) no se modifica.
 import { useEffect, useState } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import { Users, ShieldCheck } from "lucide-react";
+import { Users, ShieldCheck, Mail, Lock, ArrowRight } from "lucide-react";
 
 import { loginSchema } from "@/features/users/schemas/loginSchema";
 import { login } from "@/features/auth/services/authService";
-import { LoginInput, LoginButton, Checkbox } from "@/shared";
+import { Input, Button, Checkbox } from "@/shared";
 import { showSessionExpiredAlert } from "@/shared/services/alertService";
 import SupportContact from "@/features/support/components/SupportContact";
 
 const DATA_POLICY_URL =
   "https://normograma.sena.edu.co/compilacion/docs/acuerdo_sena_0013_2019.htm";
+
+// Opciones del selector de acceso
+const ACCESS_OPTIONS = [
+  { value: "rapido", label: "Acceso Rápido", icon: Users },
+  { value: "administracion", label: "Administración", icon: ShieldCheck },
+];
+
+const linkStyles =
+  "rounded-sm text-text-primary underline underline-offset-2 transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring";
 
 export default function AuthLayout() {
   const navigate = useNavigate();
@@ -135,64 +149,55 @@ export default function AuthLayout() {
   };
 
   return (
-    <main className="fixed inset-0 h-dvh w-full overflow-hidden bg-[var(--color-primary-100)] flex items-center justify-center p-4 sm:p-6">
-      <div className="relative w-full max-w-[440px] z-10">
+    <main className="flex min-h-dvh w-full items-center justify-center overflow-y-auto bg-background p-4 sm:p-6">
+      <div className="relative z-10 w-full max-w-[440px]">
         {/* Panel */}
-        <section className="bg-[var(--color-primary-50)] border border-[var(--color-primary-200)] rounded-2xl shadow-lg p-5 sm:p-7">
-          {/* Selector de acceso */}
+        <section className="rounded-2xl border border-border-soft bg-panel p-5 shadow-lg sm:p-7">
+          {/* Selector de acceso (botones segmentados) */}
           <div
-            className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-[var(--color-primary-100)] mb-5"
-            role="tablist"
+            role="group"
             aria-label="Tipo de acceso"
+            className="mb-5 grid grid-cols-2 gap-1 rounded-full bg-panel-muted p-1"
           >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === "rapido"}
-              disabled={isLocked}
-              onClick={() => {
-                setActiveTab("rapido");
-                setErrors({});
-              }}
-              className={`min-h-11 px-3 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-700)] disabled:opacity-50 ${
-                activeTab === "rapido"
-                  ? "bg-[var(--color-primary-50)] text-[var(--color-primary-950)] shadow-sm"
-                  : "text-[var(--color-primary-800)] hover:bg-[var(--color-primary-200)]"
-              }`}
-            >
-              <Users size={24} strokeWidth={1.8} />
-              Acceso Rápido
-            </button>
+            {ACCESS_OPTIONS.map(({ value, label, icon: Icon }) => {
+              const selected = activeTab === value;
 
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === "administracion"}
-              disabled={isLocked}
-              onClick={() => {
-                setActiveTab("administracion");
-                setErrors({});
-              }}
-              className={`min-h-11 px-3 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary-700)] disabled:opacity-50 ${
-                activeTab === "administracion"
-                  ? "bg-[var(--color-primary-50)] text-[var(--color-primary-950)] shadow-sm"
-                  : "text-[var(--color-primary-800)] hover:bg-[var(--color-primary-200)]"
-              }`}
-            >
-              <ShieldCheck size={24} strokeWidth={1.8} />
-              Administración
-            </button>
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={selected}
+                  disabled={isLocked}
+                  onClick={() => {
+                    setActiveTab(value);
+                    setErrors({});
+                  }}
+                  className={`
+                    flex min-h-12 items-center justify-center gap-2 rounded-full px-3
+                    text-medium font-medium transition-colors
+                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring
+                    disabled:cursor-not-allowed disabled:opacity-50
+                    ${selected
+                      ? "bg-brand-soft text-text-primary shadow-sm"
+                      : "text-text-secondary enabled:hover:bg-panel"}
+                  `}
+                >
+                  <Icon aria-hidden="true" strokeWidth={1.8} className="size-5" />
+                  {label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Título */}
           <div className="mb-5">
-            <h2 className="text-xl font-semibold text-[var(--color-primary-950)]">
+            <h1 className="font-heading text-title text-text-primary">
               {activeTab === "administracion"
                 ? "Acceso administrativo"
                 : "Iniciar sesión - Coffee Flavor"}
-            </h2>
+            </h1>
 
-            <p className="text-sm text-[var(--color-primary-800)] mt-1">
+            <p className="mt-1 text-medium text-text-secondary">
               {activeTab === "administracion"
                 ? "Ingresa con tu cuenta de administrador."
                 : "Ingresa tus credenciales para continuar."}
@@ -201,108 +206,106 @@ export default function AuthLayout() {
 
           {/* Formulario */}
           <form onSubmit={handleSubmit} noValidate>
-            <fieldset
-              disabled={isLocked}
-              className="border-0 p-0 m-0 min-w-0"
-            >
-              <LoginInput
+            <fieldset disabled={isLocked} className="m-0 min-w-0 space-y-4 border-0 p-0">
+              <Input
                 label="Correo electrónico"
                 name="userEmail"
                 type="email"
+                autoComplete="email"
+                leadingIcon={Mail}
                 value={formData.userEmail}
                 placeholder="Correo electrónico"
                 onChange={handleChange}
                 error={errors.userEmail}
               />
 
-              <div className="mt-2">
-                <LoginInput
-                  label="Contraseña"
-                  name="userPassword"
-                  type="password"
-                  value={formData.userPassword}
-                  placeholder="Contraseña"
+              <Input
+                label="Contraseña"
+                name="userPassword"
+                type="password"
+                autoComplete="current-password"
+                leadingIcon={Lock}
+                value={formData.userPassword}
+                placeholder="Contraseña"
+                onChange={handleChange}
+                error={errors.userPassword}
+              />
+
+              {/* Política de datos */}
+              <div>
+                <Checkbox
+                  id="acceptedDataPolicy"
+                  name="acceptedDataPolicy"
+                  label="Acepto la política de tratamiento de datos personales del SENA."
+                  checked={formData.acceptedDataPolicy}
                   onChange={handleChange}
-                  error={errors.userPassword}
+                  aria-describedby={errors.acceptedDataPolicy ? "policy-error" : undefined}
+                  className="text-text-primary"
                 />
-              </div>
 
-              {/* Política */}
-              <div className="mt-5">
-                <div className="flex items-center gap-2 flex-wrap text-xs text-[var(--color-primary-800)]">
-                  <Checkbox
-                    id="acceptedDataPolicy"
-                    name="acceptedDataPolicy"
-                    label="Acepto la política de tratamiento de datos personales del SENA."
-                    checked={formData.acceptedDataPolicy}
-                    onChange={handleChange}
-                  />
-
-                  <a
-                    href={DATA_POLICY_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-medium text-[var(--color-primary-800)] underline underline-offset-2 hover:text-[var(--color-primary-950)] focus-visible:outline-2 focus-visible:outline-offset-2"
-                  >
-                    Consultar política de tratamiento de datos
-                  </a>
-                </div>
+                <a
+                  href={DATA_POLICY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`text-small font-medium ${linkStyles}`}
+                >
+                  Consultar política de tratamiento de datos
+                </a>
 
                 {errors.acceptedDataPolicy && (
-                  <p className="text-sm text-red-600 mt-2" role="alert">
+                  <p id="policy-error" role="alert" className="mt-2 text-small text-error">
                     {errors.acceptedDataPolicy}
                   </p>
                 )}
               </div>
 
               {isLocked && (
-                <p className="text-sm text-red-600 font-medium mt-4" role="alert">
+                <p role="alert" className="text-medium font-medium text-error">
                   Has agotado los 3 intentos. Recarga la página.
                 </p>
               )}
 
               {/* Recuperación */}
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-end">
                 <Link
                   to="/recover-password"
                   onClick={(e) => isLocked && e.preventDefault()}
-                  className={`text-sm font-medium text-[var(--color-primary-800)] underline underline-offset-2 hover:text-[var(--color-primary-950)] focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                    isLocked ? "pointer-events-none opacity-40" : ""
+                  aria-disabled={isLocked || undefined}
+                  className={`text-medium font-medium ${linkStyles} ${
+                    isLocked ? "pointer-events-none opacity-50" : ""
                   }`}
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
 
-              {/* Botón */}
-              <div className="mt-5">
-                <LoginButton disabled={isLocked}>
-                  {isLocked ? "Bloqueado" : "Iniciar sesión"}
-                </LoginButton>
-              </div>
+              {/* Botón principal */}
+              <Button type="submit" size="lg" disabled={isLocked} className="w-full">
+                {isLocked ? "Bloqueado" : "Iniciar sesión"}
+                <ArrowRight aria-hidden="true" className="size-5" />
+              </Button>
 
               {/* Registro */}
-              <div className="text-center mt-5">
-                <p className="text-sm text-[var(--color-primary-800)]">
-                  ¿No tienes una cuenta?{" "}
-                  <Link
-                    to="/CreateUserLogin"
-                    onClick={(e) => isLocked && e.preventDefault()}
-                    className={`font-semibold text-[var(--color-primary-950)] underline underline-offset-2 hover:text-[var(--color-primary-800)] ${
-                      isLocked ? "pointer-events-none opacity-40" : ""
-                    }`}
-                  >
-                    Regístrate
-                  </Link>
-                </p>
-              </div>
+              <p className="text-center text-medium text-text-secondary">
+                ¿No tienes una cuenta?{" "}
+                <Link
+                  to="/CreateUserLogin"
+                  onClick={(e) => isLocked && e.preventDefault()}
+                  aria-disabled={isLocked || undefined}
+                  className={`font-semibold ${linkStyles} ${
+                    isLocked ? "pointer-events-none opacity-50" : ""
+                  }`}
+                >
+                  Regístrate
+                </Link>
+              </p>
             </fieldset>
           </form>
         </section>
 
-        {/* Footer */}
-        <footer className="text-center mt-4">
-          <p className="text-xs text-[var(--color-primary-800)]">
+        {/* Pie */}
+        <footer className="mt-4 text-center">
+          <p className="text-small text-text-secondary">
             Coffee Flavor © 2026 · Todos los derechos reservados
           </p>
         </footer>

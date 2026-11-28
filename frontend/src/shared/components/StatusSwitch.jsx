@@ -1,83 +1,77 @@
-
-import { useState, useEffect } from "react";
-import { Check, X } from "lucide-react";
+// Componente StatusSwitch
+// Interruptor de estado (activo/inactivo) alineado a Material Design 3 (versión con íconos):
+// - Pista de 52 x 32 px con borde, perilla de 24 px, área táctil de 48 px.
+// - Colores solo con tokens: brand cuando está activo, border-strong cuando está inactivo.
+// - Accesibilidad: role="switch", aria-checked, nombre accesible y aria-busy al guardar.
+// - Controlado: el valor visible siempre es `checked`; el padre lo actualiza tras guardar.
+import { useState } from "react";
+import { Check, X, LoaderCircle } from "lucide-react";
 import { showConfirmDeactivateAlert } from "@/shared/services/alertService";
 
 export default function StatusSwitch({
   checked = false,
-  onChange,
+  onChange,                    // async (nuevoValor) => guarda en el backend
   disabled = false,
-  size = "md",
+  label = "Estado activo",     // Nombre que lee el lector de pantalla
+  confirmOnDeactivate = true,  // Pide confirmación antes de desactivar
 }) {
-  const [isActive, setIsActive] = useState(checked);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    setIsActive(checked);
-  }, [checked]);
+  const isDisabled = disabled || isLoading;
 
   const handleToggle = async () => {
-    if (disabled || isLoading) return;
-
-    const newValue = !isActive;
+    if (isDisabled || !onChange) return;
 
     // Confirmar antes de desactivar
-    if (isActive) {
+    if (checked && confirmOnDeactivate) {
       const result = await showConfirmDeactivateAlert();
-
       if (!result.isConfirmed) return;
     }
 
-    if (!onChange) return;
-
     try {
       setIsLoading(true);
-
-      // El componente padre realiza la actualización en la base de datos
-      await onChange(newValue);
+      await onChange(!checked);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const sizes = {
-    sm: "h-5 w-9",
-    md: "h-6 w-11",
-    lg: "h-7 w-14",
-  };
-
-  const knobSizes = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
-  };
-
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      aria-busy={isLoading || undefined}
       onClick={handleToggle}
-      disabled={disabled || isLoading}
+      disabled={isDisabled}
       className={`
-        relative inline-flex items-center
-        rounded-full transition-colors
-        ${sizes[size]}
-        ${isActive ? "bg-brand-strong" : "bg-surface-muted"}
-        ${disabled || isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+        relative inline-flex h-8 w-13 shrink-0 items-center
+        rounded-full border-2 transition-colors
+        before:absolute before:-inset-y-2 before:inset-x-0 before:content-['']
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring
+        focus-visible:ring-offset-2 focus-visible:ring-offset-background
+        ${checked ? "border-brand bg-brand" : "border-border-strong bg-panel-muted"}
+        ${isDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
       `}
     >
+      {/* Perilla */}
       <span
+        aria-hidden="true"
         className={`
-          absolute left-0.5 flex items-center justify-center
-          rounded-full bg-panel shadow
-          transition-transform
-          ${knobSizes[size]}
-          ${isActive ? "translate-x-full" : "translate-x-0"}
+          absolute left-0.5 flex size-6 items-center justify-center
+          rounded-full shadow-sm transition-transform
+          ${checked ? "translate-x-5.5 bg-on-brand" : "translate-x-0 bg-border-strong"}
         `}
       >
-        {isActive ? (
-          <Check size={12} className="text-brand-strong" />
+        {isLoading ? (
+          <LoaderCircle
+            size={16}
+            className={`animate-spin ${checked ? "text-brand" : "text-panel"}`}
+          />
+        ) : checked ? (
+          <Check size={16} className="text-brand" />
         ) : (
-          <X size={12} className="text-text-muted" />
+          <X size={16} className="text-panel" />
         )}
       </span>
     </button>

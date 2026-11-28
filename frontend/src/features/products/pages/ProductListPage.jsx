@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { DataTable, Button, ListReportModal } from "@/shared";
 import { productColumns } from "../table/ProductColumns";
 import { getAllProducts } from "../services/productServices";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { checkUserPermission } from "@/features/access/services/permissionService";
 
 const productReportFields = [
@@ -18,6 +18,9 @@ export default function ProductListPage() {
     const [isReportOpen, setIsReportOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    // Texto que llega desde el buscador del Navbar (?buscar=...)
+    const [searchParams] = useSearchParams();
+    const search = searchParams.get("buscar") ?? "";
 
     const [permissions, setPermissions] = useState({
         create: false,
@@ -161,8 +164,10 @@ export default function ProductListPage() {
                     </p>
                 ) : (
                     <DataTable
+                        key={search}
                         data={products}
                         columns={productColumns}
+                        initialSearch={search}
                     />
                 )}
             </div>

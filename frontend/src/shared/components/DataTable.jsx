@@ -1,9 +1,5 @@
 // Componente DataTable
-// Tabla reutilizable (TanStack Table) alineada a Material Design 3:
-// - Buscador con el Input del sistema y selector de filas con estilo de Select.
-// - Filas de mínimo 48 px, bordes suaves y colores solo con tokens.
-// - Estado vacío, paginación accesible (nav + aria-live) y "Ir a página" validado.
-// Todas las props nuevas tienen valor por defecto: las vistas solo envían data y columns.
+
 import { useId, useState } from "react";
 import {
   useReactTable,
@@ -23,6 +19,7 @@ export default function DataTable({
   emptyMessage = "No hay registros para mostrar",
   pageSizeOptions = [5, 10, 20, 50],
   initialPageSize = 5,
+    initialSearch = "",                     // Texto inicial del buscador (ej. desde la URL)
 }) {
   const pageSizeId = useId();
   const goToPageId = useId();
@@ -32,7 +29,7 @@ export default function DataTable({
     pageIndex: 0,
     pageSize: initialPageSize,
   });
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState(initialSearch);
 
   // ================== CONFIGURACIÓN DE LA TABLA ==================
   const table = useReactTable({

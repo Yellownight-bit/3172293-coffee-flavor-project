@@ -11,7 +11,7 @@ import {
 } from "react";
 import { Link } from "react-router-dom";
 
-export const DropdownContext = createContext(null);
+const DropdownContext = createContext(null);
 
 export function Dropdown({
   children,

@@ -1,93 +1,73 @@
-// src/shared/components/IconButton.jsx
-
-import React from "react";
+// Componente IconButton
+// Botón de solo ícono alineado a Material Design 3:
+// - Contenedor visible de 40 px (md) o 32 px (sm) y área táctil mínima de 48 px (::before).
+// - Ícono de 24 px para todos los usos.
+// - Variantes con tokens: standard (transparente) y filled (color de marca).
+// - Estado seleccionado (isActive) con aria-pressed, solo cuando la vista lo usa.
+// - React 19: `ref` llega como prop normal; {...props} permite que DropdownTrigger
+//   agregue onClick, aria-expanded y aria-haspopup.
 import clsx from "clsx";
 
-/**
- * IconButton
- * - Área táctil (hit area): tamaño del botón
- * - Área visible: tamaño del ícono (controlado por wrapper interno)
- */
+const baseStyles = `
+  relative inline-flex shrink-0 items-center justify-center rounded-full
+  transition-colors
+  before:absolute before:content-['']
+  [&_svg]:size-6
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring
+  focus-visible:ring-offset-2 focus-visible:ring-offset-background
+  disabled:cursor-not-allowed disabled:opacity-50
+`;
 
- //React.forwardRef"puente para que el padre controle el DOM interno".
+const sizeStyles = {
+  sm: "size-8 before:-inset-2",   // 32 px visible + 48 px táctil
+  md: "size-10 before:-inset-1",  // 40 px visible + 48 px táctil
+};
 
-export const IconButton = React.forwardRef(function IconButton(
-  {
-    children,
-    onClick,
-    disabled = false,
-    className = "",
-    variant = "default",
+const variantStyles = {
+  standard: "text-text-secondary enabled:hover:bg-panel-muted enabled:hover:text-text-primary",
+  filled: "bg-brand text-on-brand enabled:hover:bg-brand-hover",
+};
 
-    // Tamaños
-    hitSize = 48,   // px (área táctil)
-    iconSize = 24,  // px (ícono visible)
+// Alias para no romper usos anteriores
+const variantAlias = {
+  default: "standard",
+  ghost: "standard",
+  primary: "filled",
+};
 
-    // Accesibilidad
-    ariaLabel,
+export function IconButton({
+  ref,
+  children,
+  ariaLabel,              // Obligatorio: el botón no tiene texto visible
+  variant = "standard",
+  size = "md",
+  isActive,               // true/false = botón de alternar; sin valor = botón normal
+  disabled = false,
+  className = "",
+  ...props                // onClick, aria-expanded, etc.
+}) {
+  const resolvedVariant = variantAlias[variant] ?? variant;
 
-    // Estados
-    isActive = false,
+  return (
+    <button
+      type="button"
+      {...props}
+      ref={ref}
+      aria-label={ariaLabel ?? props["aria-label"]}
+      aria-pressed={isActive}
+      disabled={disabled}
+      className={clsx(
+        baseStyles,
+        sizeStyles[size] ?? sizeStyles.md,
+        isActive
+          ? "bg-brand-soft text-brand"
+          : variantStyles[resolvedVariant] ?? variantStyles.standard,
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
+}
 
-    ...props 
-  },
-
-    ref
-)   {
-    const baseStyles = `
-        inline-flex items-center justify-center
-        rounded-full
-        transition-colors duration-200
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
-        disabled:opacity-50 disabled:pointer-events-none
-    `;
-
-    const variants = {
-        default: `
-            text-text-secondary
-            hover:bg-panel-muted
-            focus-visible:ring-border
-        `,
-        ghost: `
-            text-text-secondary
-            hover:bg-panel-muted
-            focus-visible:ring-border
-        `,
-        primary: `
-            text-on-brand bg-info
-            hover:bg-info-hover
-            focus-visible:ring-info
-        `,
-    };
-
-    return (
-        <button
-            ref={ref}
-            type="button"
-            aria-label={ariaLabel}
-            disabled={disabled}
-            onClick={onClick}
-            className={clsx(baseStyles, variants[variant], className, {
-                "bg-surface": isActive,
-            })}
-            style={{
-                width: `${hitSize}px`,
-                height: `${hitSize}px`,
-            }}
-            {...props}
-        >
-
-            <span
-            style={{
-                width: `${iconSize}px`,
-                height: `${iconSize}px`,
-            }}
-            className="flex items-center justify-center"
-            >
-            {children}
-            </span>
-        </button>
-    );
-});
-    
-// export default IconButton;
+export default IconButton;

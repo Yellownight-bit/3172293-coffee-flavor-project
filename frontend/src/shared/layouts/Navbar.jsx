@@ -12,6 +12,7 @@ import {
   Boxes,
   Truck,
   ClipboardList,
+  ShieldCheck,
   LogOut,
   Sun,
   Moon,
@@ -52,6 +53,7 @@ const MENU_LINKS = [
   { to: "/dashboard/inventoryList", label: "Inventario", icon: Boxes },
   { to: "/dashboard/supplierList", label: "Proveedores", icon: Truck },
   { to: "/dashboard/orderList", label: "Órdenes", icon: ClipboardList },
+  { to: "/dashboard/access", label: "Gestión permisos", icon: ShieldCheck },
 ];
 
 // Arma la URL completa de la foto guardada en el backend

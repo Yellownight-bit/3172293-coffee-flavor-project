@@ -1,138 +1,154 @@
+// Componente Dropdown
+
 import {
   createContext,
   useContext,
   useEffect,
+  useId,
   useRef,
   useState,
-  cloneElement
-} from "react"
+  cloneElement,
+} from "react";
+import { Link } from "react-router-dom";
 
-export const DropdownContext = createContext(null)
+const DropdownContext = createContext(null);
 
 export function Dropdown({
   children,
   open: controlledOpen,
   onOpenChange,
-  className = ""
+  className = "",
 }) {
-  const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
 
-  const isControlled = controlledOpen !== undefined
-  const open = isControlled ? controlledOpen : uncontrolledOpen
+  const containerRef = useRef(null);
+  const triggerRef = useRef(null);
+  const contentId = useId();
 
   const setOpen = (value) => {
     if (isControlled) {
-      onOpenChange?.(value)
+      onOpenChange?.(value);
     } else {
-      setUncontrolledOpen(value)
+      setUncontrolledOpen(value);
     }
-  }
+  };
 
-  const containerRef = useRef(null)
-
-  // Click outside
+  // Cerrar con clic fuera o con Escape (solo mientras está abierto)
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setOpen(false)
+    if (!open) return;
+
+    const close = () => {
+      if (isControlled) {
+        onOpenChange?.(false);
+      } else {
+        setUncontrolledOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    const handleMouseDown = (e) => {
+      if (!containerRef.current?.contains(e.target)) close();
+    };
 
-  // Escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") setOpen(false)
-    }
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        close();
+        triggerRef.current?.focus();
+      }
+    };
 
-    document.addEventListener("keydown", handleEscape)
-    return () => document.removeEventListener("keydown", handleEscape)
-  }, [])
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, isControlled, onOpenChange]);
 
   return (
-    <DropdownContext.Provider value={{ open, setOpen }}>
-      <div ref={containerRef} className={`relative inline-block ${className}`}>
+    <DropdownContext.Provider value={{ open, setOpen, triggerRef, contentId }}>
+      <div
+        ref={containerRef}
+        className={`relative inline-block ${className}`}
+        // Cerrar si el foco sale del menú con Tab
+        onBlur={(e) => {
+          if (open && !e.currentTarget.contains(e.relatedTarget)) setOpen(false);
+        }}
+      >
         {children}
       </div>
     </DropdownContext.Provider>
-  )
+  );
 }
 
-// Trigger (asChild pattern)
+// Trigger: agrega al hijo (por ejemplo IconButton) el clic, la ref y los atributos ARIA
 export function DropdownTrigger({ children }) {
-  const { open, setOpen } = useContext(DropdownContext)
+  const { open, setOpen, triggerRef, contentId } = useContext(DropdownContext);
 
-  if (!children) return null
+  if (!children) return null;
 
   return cloneElement(children, {
+    ref: triggerRef,
     onClick: (e) => {
-      children.props.onClick?.(e)
-      setOpen(!open)
+      children.props.onClick?.(e);
+      setOpen(!open);
     },
     "aria-expanded": open,
-    "aria-haspopup": "menu"
-  })
+    "aria-controls": contentId,
+  });
 }
 
-// Content
-export function DropdownContent({ children, className = "" }) {
-  const { open } = useContext(DropdownContext)
+// Contenido: panel con la lista de opciones
+export function DropdownContent({ children, className = "", align = "end" }) {
+  const { open, contentId } = useContext(DropdownContext);
 
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <div
-      role="menu"
+      id={contentId}
       className={`
-        absolute
-        mt-1
-        min-w-48
-        border
-        text-on-brand
-        p-1
-        bg-overlay/80
-        backdrop-blur-[1px]
-        shadow-lg
-        rounded-2xl
-        overflow-hidden
-        hover:shadow-black
-        transition-shadow duration-700
+        absolute top-full z-50 mt-2 min-w-56
+        overflow-hidden rounded-sm border border-border bg-panel py-2
+        text-text-primary shadow-lg
+        ${align === "end" ? "right-0" : "left-0"}
         ${className}
       `}
     >
-      {children}
+      <ul className="flex flex-col">{children}</ul>
     </div>
-  )
+  );
 }
 
-// Item
-export function DropdownItem({
-  children,
-  onClick,
-  className = ""
-}) {
-  const { setOpen } = useContext(DropdownContext)
+// Ítem: Link si recibe `to`, botón si no. `className` se aplica al <li>.
+export function DropdownItem({ children, to, onClick, className = "" }) {
+  const { setOpen } = useContext(DropdownContext);
 
   const handleClick = (e) => {
-    onClick?.(e)
-    setOpen(false)
-  }
+    onClick?.(e);
+    setOpen(false);
+  };
+
+  const itemStyles = `
+    flex min-h-12 w-full items-center gap-3 px-4 text-left
+    text-medium text-text-primary transition-colors
+    hover:bg-panel-muted
+    focus-visible:bg-panel-muted focus-visible:outline-none
+    [&_svg]:size-5 [&_svg]:shrink-0 [&_svg]:text-text-secondary
+  `;
 
   return (
-    <button
-      role="menuitem"
-      onClick={handleClick}
-      className={`
-        w-full text-left px-3 py-2 rounded-lg
-        hover:bg-neutral focus:bg-neutral
-        transition-colors
-        ${className}
-      `}
-    >
-      {children}
-    </button>
-  )
+    <li className={className}>
+      {to ? (
+        <Link to={to} onClick={handleClick} className={itemStyles}>
+          {children}
+        </Link>
+      ) : (
+        <button type="button" onClick={handleClick} className={itemStyles}>
+          {children}
+        </button>
+      )}
+    </li>
+  );
 }

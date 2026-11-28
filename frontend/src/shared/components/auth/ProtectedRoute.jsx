@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { checkUserPermission } from "@/features/access/services/permissionService";
@@ -19,16 +18,15 @@ export default function ProtectedRoute({ children, permission, role }) {
   const token = sessionStorage.getItem("token");
   const navigate = useNavigate();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(!!token);
+  // true cuando la sesión se cerró por inactividad
+  const [expired, setExpired] = useState(false);
   const [hasPermission, setHasPermission] = useState(null);
 
   const userRole = getUserRole(token || "");
 
+  // Cerrar sesión por inactividad
   useEffect(() => {
-    if (!token) {
-      setIsAuthenticated(false);
-      return;
-    }
+    if (!token) return;
 
     let inactivityTimer;
 
@@ -36,7 +34,7 @@ export default function ProtectedRoute({ children, permission, role }) {
       sessionStorage.setItem("sessionExpired", "true");
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("rol");
-      setIsAuthenticated(false);
+      setExpired(true);
       navigate("/auth", { replace: true });
     };
 
@@ -72,6 +70,7 @@ export default function ProtectedRoute({ children, permission, role }) {
     };
   }, [token, navigate]);
 
+  // Verificar el permiso de la ruta
   useEffect(() => {
     let cancelled = false;
 
@@ -107,7 +106,7 @@ export default function ProtectedRoute({ children, permission, role }) {
     };
   }, [permission, token]);
 
-  if (!isAuthenticated) {
+  if (!token || expired) {
     return <Navigate to="/auth" replace />;
   }
 
@@ -117,7 +116,10 @@ export default function ProtectedRoute({ children, permission, role }) {
 
   if (permission && hasPermission === null) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div
+        role="status"
+        className="flex min-h-screen items-center justify-center bg-background text-medium text-text-secondary"
+      >
         Verificando permisos...
       </div>
     );

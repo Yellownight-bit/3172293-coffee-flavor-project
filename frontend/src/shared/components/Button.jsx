@@ -99,6 +99,13 @@ const SIZES = {
         before:-inset-y-1
         before:inset-x-0
     `,
+    
+    // 48 px visibles (botón principal destacado, ej. login)
+    lg: `
+        h-12
+        gap-2
+        px-8
+    `,
 
     cancel: `
         h-10

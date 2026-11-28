@@ -230,8 +230,8 @@ export default function OrderListPage() {
                 onClose={() => setIsReportOpen(false)}
                 data={filteredOrders}
                 fields={orderReportFields}
-                title="Reporte de órdenes"
-                fileName="reporte_ordenes"
+                title="órdenes"
+                filePrefix="orders"
             />
         </div>
     );

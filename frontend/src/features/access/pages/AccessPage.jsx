@@ -1,7 +1,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Navbar } from "../../../shared";
-import AccessSidebar from "../../../shared/components/AccessSidebar";
+import AccessSidebar from "../components/AccessSidebar";
 import PermissionModule from "../components/PermissionModule";
 import {
     getAllPermissions,

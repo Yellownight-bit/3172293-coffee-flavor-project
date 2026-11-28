@@ -1,20 +1,21 @@
+// Componente Navbar
 
 import { useEffect, useState } from "react";
 import {
   Menu,
   House,
-  Users,
   KeyRound,
   Utensils,
   Image,
+  Users,
   Package,
   Boxes,
   Truck,
   ClipboardList,
-  ShieldCheck,
   LogOut,
   Sun,
   Moon,
+  User,
 } from "lucide-react";
 
 import {
@@ -27,7 +28,7 @@ import {
 } from "@/shared";
 
 import logo from "@/assets/images/1-logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   showOpsAlert,
   showConfirmLogoutAlert,
@@ -36,6 +37,56 @@ import useTheme from "@/shared/context/useTheme";
 import { logout } from "@/features/auth/services/logoutService";
 import { getMyProfile } from "@/features/users/services/userServices.js";
 import { API_URL } from "@/features/config";
+
+// Enlaces principales (barra en escritorio, menú en móvil)
+const NAV_LINKS = [
+  { to: "/HomePage", label: "Inicio", icon: House },
+  { to: "/dashboard/access", label: "Permisos", icon: KeyRound },
+  { to: "/dashboard/readMenu", label: "Menú", icon: Utensils },
+];
+
+// Enlaces del menú desplegable
+const MENU_LINKS = [
+  { to: "/dashboard/userList", label: "Usuarios", icon: Users },
+  { to: "/dashboard/productList", label: "Productos", icon: Package },
+  { to: "/dashboard/inventoryList", label: "Inventario", icon: Boxes },
+  { to: "/dashboard/supplierList", label: "Proveedores", icon: Truck },
+  { to: "/dashboard/orderList", label: "Órdenes", icon: ClipboardList },
+];
+
+// Arma la URL completa de la foto guardada en el backend
+const getImageUrl = (image) => {
+  if (!image) return null;
+  if (image.startsWith("http")) return image;
+  const serverUrl = API_URL.replace(/\/api\/?$/, "");
+  return `${serverUrl}${image.startsWith("/") ? image : `/${image}`}`;
+};
+
+// Iniciales: primera letra de las dos primeras palabras ("Jacobo Agudelo" → "JA")
+const getInitials = (name) =>
+  name
+    ?.trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
+
+// Estilo de los enlaces de la barra (resalta la página actual)
+const navLinkClass = ({ isActive }) => `
+  flex min-h-12 items-center gap-2 rounded-full px-3 text-medium transition-colors
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring
+  [&_svg]:size-5 [&_svg]:shrink-0
+  ${isActive
+    ? "bg-brand-soft font-semibold text-text-primary"
+    : "text-text-primary hover:bg-panel-muted"}
+`;
+
+const showUnavailable = () =>
+  showOpsAlert({
+    title: "Ops, hubo un error",
+    text: "Esta opción no está disponible en este momento.",
+  });
 
 export default function Navbar() {
   const [search, setSearch] = useState("");
@@ -58,23 +109,10 @@ export default function Navbar() {
     loadProfile();
   }, []);
 
-  const getImageUrl = (image) => {
-    if (!image) return null;
-
-    if (image.startsWith("http")) return image;
-
-    const serverUrl = API_URL.replace(/\/api\/?$/, "");
-
-    return `${serverUrl}${image.startsWith("/") ? image : `/${image}`}`;
-  };
-
   const profileImage = getImageUrl(profile?.user_image);
+  const initials = getInitials(profile?.user_name);
 
-  const initials = profile?.user_name
-    ?.trim()
-    .slice(0, 2)
-    .toUpperCase();
-
+  // Cerrar sesión (lógica de auth: sin cambios)
   const handleLogout = async () => {
     const result = await showConfirmLogoutAlert();
 
@@ -84,188 +122,113 @@ export default function Navbar() {
     }
   };
 
+  // Buscar: lleva a la lista de productos filtrada
   const handleSearch = (value) => {
-    console.log("Buscar:", value);
-  };
-
-  const handleClear = () => {
-    console.log("Campo limpiado");
+    const term = value.trim();
+    navigate(
+      term
+        ? `/dashboard/productList?buscar=${encodeURIComponent(term)}`
+        : "/dashboard/productList"
+    );
   };
 
   return (
-    <nav className="w-full border-b-2 border-transparent bg-surface-alt text-text-primary dark:border-border">
-      <div className="mx-auto max-w-7xl px-4">
-        <div className="flex h-16 items-center justify-between">
+    <nav
+      aria-label="Navegación principal"
+      className="w-full border-b border-border-soft bg-surface-alt text-text-primary"
+    >
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4">
+        {/* Logo de marca */}
+        <Link
+          to="/HomePage"
+          className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        >
+          <img src={logo} alt="Coffee Flavor - Inicio" className="h-10 sm:h-12" />
+        </Link>
 
-          {/* Logo de marca */}
-          <div className="hidden sm:block items-center">
-            <Link to={"/HomePage"} className="text-h1 font-heading">
-              <img src={logo} alt="logo" className="h-12" />
-            </Link>
-          </div>
-
-          {/* Links de navegación */}
-          <ul className="hidden md:flex items-center gap-6">
-
-            <li>
-              <Link
-                to={"/HomePage"}
-                className="hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
-              >
-                <House size={17} />
-                Inicio
-              </Link>
+        {/* Enlaces principales (escritorio) */}
+        <ul className="hidden items-center gap-1 md:flex">
+          {NAV_LINKS.map(({ to, label, icon: Icon }) => (
+            <li key={to}>
+              <NavLink to={to} className={navLinkClass}>
+                <Icon aria-hidden="true" />
+                {label}
+              </NavLink>
             </li>
+          ))}
 
-            <li>
-              <Link
-                to="/dashboard/access"
-                className="hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
-              >
-                <KeyRound size={17} />
-                Permisos
-              </Link>
-            </li>
-
-            <li>
-              <Link
-                to={"/dashboard/readMenu"}
-                className="hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
-              >
-                <Utensils size={17} />
-                Menu
-              </Link>
-            </li>
-
-            <li
-              onClick={() =>
-                showOpsAlert({
-                  title: "Ops, hubo un error",
-                  text: "Esta opción no está disponible en este momento.",
-                })
-              }
-              className="cursor-pointer hover:text-on-brand dark:hover:text-brand-strong transition flex items-center gap-1.5"
+          <li>
+            <button
+              type="button"
+              onClick={showUnavailable}
+              className={navLinkClass({ isActive: false })}
             >
-              <Image size={17} />
+              <Image aria-hidden="true" />
               Multimedia
-            </li>
+            </button>
+          </li>
+        </ul>
 
-          </ul>
-
+        <div className="flex items-center gap-2">
           {/* Buscador */}
-          <div>
-            <SearchField
-              value={search}
-              onChange={setSearch}
-              onSubmit={handleSearch}
-              onClear={handleClear}
-              placeholder="Buscar productos..."
-              size="md"
-              variant="outlined"
-              className="w-76"
-            />
-          </div>
+          <SearchField
+            value={search}
+            onChange={setSearch}
+            onSubmit={handleSearch}
+            placeholder="Buscar productos..."
+            size="md"
+            variant="outlined"
+            className="hidden w-56 sm:flex lg:w-72"
+          />
 
-          {/* Menú hamburguesa */}
-          <Dropdown className="z-50">
+          {/* Menú */}
+          <Dropdown>
             <DropdownTrigger>
               <IconButton ariaLabel="Menú de usuario">
                 <Menu />
               </IconButton>
             </DropdownTrigger>
 
-            <DropdownContent className="border-2 border-brand">
-
-              <DropdownItem>
-                <Link
-                  to="/dashboard/userList"
-                  className="flex items-center gap-2 w-full"
-                >
-                  <Users size={17} />
-                  Usuarios
-                </Link>
+            <DropdownContent>
+              {/* En móvil: enlaces principales */}
+              {NAV_LINKS.map(({ to, label, icon: Icon }) => (
+                <DropdownItem key={`m-${to}`} to={to} className="md:hidden">
+                  <Icon aria-hidden="true" />
+                  {label}
+                </DropdownItem>
+              ))}
+              <DropdownItem onClick={showUnavailable} className="md:hidden">
+                <Image aria-hidden="true" />
+                Multimedia
               </DropdownItem>
 
-              <DropdownItem>
-                <Link
-                  to="/dashboard/productList"
-                  className="flex items-center gap-2 w-full"
-                >
-                  <Package size={17} />
-                  Productos
-                </Link>
-              </DropdownItem>
-
-              <DropdownItem>
-                <Link
-                  to="/dashboard/inventoryList"
-                  className="flex items-center gap-2 w-full"
-                >
-                  <Boxes size={17} />
-                  Inventario
-                </Link>
-              </DropdownItem>
-
-              <DropdownItem>
-                <Link
-                  to="/dashboard/supplierList"
-                  className="flex items-center gap-2 w-full"
-                >
-                  <Truck size={17} />
-                  Proveedores
-                </Link>
-              </DropdownItem>
-
-              <DropdownItem>
-                <Link
-                  to="/dashboard/orderList"
-                  className="flex items-center gap-2 w-full"
-                >
-                  <ClipboardList size={17} />
-                  Ordenes
-                </Link>
-              </DropdownItem>
-
-              <DropdownItem>
-                <Link
-                  to="/dashboard/access"
-                  className="flex items-center gap-2 w-full"
-                >
-                  <ShieldCheck size={17} />
-                  Gestión permisos
-                </Link>
-              </DropdownItem>
+              {MENU_LINKS.map(({ to, label, icon: Icon }) => (
+                <DropdownItem key={to} to={to}>
+                  <Icon aria-hidden="true" />
+                  {label}
+                </DropdownItem>
+              ))}
 
               {/* Cambiar tema */}
-              <DropdownItem
-                onClick={toggleTheme}
-                className="flex items-center gap-2"
-              >
+              <DropdownItem onClick={toggleTheme} className="mt-2 border-t border-border-soft pt-2">
                 {theme === "light" ? (
                   <>
-                    <Moon size={17} />
+                    <Moon aria-hidden="true" />
                     Modo oscuro
                   </>
                 ) : (
                   <>
-                    <Sun size={17} />
+                    <Sun aria-hidden="true" />
                     Modo claro
                   </>
                 )}
               </DropdownItem>
 
               {/* Cerrar sesión */}
-              <DropdownItem>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 w-full text-left"
-                >
-                  <LogOut size={17} />
-                  Cerrar sesión
-                </button>
+              <DropdownItem onClick={handleLogout}>
+                <LogOut aria-hidden="true" />
+                Cerrar sesión
               </DropdownItem>
-
             </DropdownContent>
           </Dropdown>
 
@@ -275,30 +238,27 @@ export default function Navbar() {
             aria-label="Mi perfil"
             title="Mi perfil"
             className="
-              w-12 h-12
-              shrink-0
-              rounded-full
-              border border-gray-400
-              overflow-hidden
-              flex items-center justify-center
-              hover:border-brand
-              transition-colors duration-200
+              flex size-12 shrink-0 items-center justify-center overflow-hidden
+              rounded-full border border-border bg-panel
+              transition-colors hover:border-brand
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring
             "
           >
             {profileImage && !imageError ? (
               <img
                 src={profileImage}
-                alt="Foto de perfil"
-                className="w-full h-full object-cover"
+                alt=""
+                className="h-full w-full object-cover"
                 onError={() => setImageError(true)}
               />
-            ) : (
-              <span className="text-sm font-bold text-text-secondary uppercase">
-                {initials || "👤"}
+            ) : initials ? (
+              <span className="text-medium font-semibold text-text-secondary">
+                {initials}
               </span>
+            ) : (
+              <User aria-hidden="true" className="size-6 text-text-secondary" />
             )}
           </Link>
-
         </div>
       </div>
     </nav>

@@ -42,7 +42,7 @@ export default function Input({
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className={`
-          h-14
+          h-12
           w-full
           rounded-sm
           border
